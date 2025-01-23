@@ -1,70 +1,98 @@
-# Getting Started with Create React App
+# Cobalt Open Data Portal (Alpha)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React-based frontend for CKAN, designed to provide a user-friendly interface for exploring and managing open data. This project is part of an alpha testing phase to evaluate its effectiveness among a range of open data portal tools.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Table of Contents
 
-### `npm start`
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Getting Started](#getting-started)
+   - [Prerequisites](#prerequisites)
+   - [Installation](#installation)
+   - [Configuration](#configuration)
+4. [Usage](#usage)
+5. [API Integration](#api-integration)
+6. [Contributing](#contributing)
+7. [License](#license)
+8. [Acknowledgements](#acknowledgements)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Overview
 
-### `npm test`
+The **Cobalt Open Data Portal** is a modern, responsive frontend built with **React** that interacts with a **CKAN** backend via its RESTful API. It provides an intuitive interface for users to search, explore, and download datasets, as well as for administrators to manage data resources.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This project is currently in **alpha testing** and is being evaluated alongside other open data portal tools.
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Features
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Search and Filter**: Easily search and filter datasets by keywords, organizations, and resource types.
+- **Dataset Details**: View detailed information about datasets, including metadata, resources, and download links.
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices.
+- **CKAN API Integration**: Seamlessly communicates with a CKAN instance using its RESTful API.
+- **Alpha Testing Tools**: Includes features for alpha testers to provide feedback and report issues.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## Getting Started
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Prerequisites
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Before you begin, ensure you have the following installed:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- [npm](https://www.npmjs.com/) (v8 or higher)
+- A running instance of [CKAN](https://ckan.org/) (for backend API)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Installation
 
-## Learn More
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/cobalt-open-data-portal.git
+   cd cobalt-open-data-portal
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2. Install dependencies:
+   ```bash
+    npm install
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3.  Start the development server:
+   ```bash
+    npm start
+    Open your browser and navigate to http://localhost:3000.
 
-### Code Splitting
+### Configuration
+To connect the frontend to your CKAN instance, update the API endpoint in the configuration file:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Open src/config.js.
 
-### Analyzing the Bundle Size
+Replace the CKAN_API_URL with your CKAN instance's API endpoint:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+javascript
+export const CKAN_API_URL = 'https://your-ckan-instance/api/3/action';
+Usage
+For Users
+Search for Datasets: Use the search bar on the homepage to find datasets by keyword.
 
-### Making a Progressive Web App
+Explore Datasets: Click on a dataset to view its details, including metadata and downloadable resources.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Download Resources: Download datasets in various formats (e.g., CSV, PDF).
 
-### Advanced Configuration
+For Alpha Testers
+Provide Feedback: Use the feedback form (accessible via the footer) to share your thoughts and report issues.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Test Features: Explore all features and provide feedback on usability, performance, and functionality.
 
-### Deployment
+### API Integration
+The frontend interacts with CKAN using its RESTful API. Key API endpoints used include:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Package Search: /api/3/action/package_search
 
-### `npm run build` fails to minify
+Package Show: /api/3/action/package_show
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Organization List: /api/3/action/organization_list
+
+For more information, refer to the CKAN API Documentation.
