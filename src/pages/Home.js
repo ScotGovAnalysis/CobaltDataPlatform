@@ -58,7 +58,7 @@ const Home = () => {
         </div>
 
         {/* Browse by Category Section */}
-        <div className="ds_wrapper" style={{ marginTop: '2rem' }}> {/* Added more space below the search bar */}
+        <div className="ds_wrapper" style={{ marginTop: '0.5rem' }}> {/* Added more space below the search bar */}
           <div className="ds_cb__inner">
             <h2 className="ds_h2">Browse by Category</h2>
             <p className="ds_lead">

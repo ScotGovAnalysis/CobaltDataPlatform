@@ -16,7 +16,7 @@ const Header = () => {
                 alt="The Scottish Government"
               />
             </a>
-            <div className="ds_site-branding__title">Statistics.gov.scot</div>
+            <div className="ds_site-branding__title">Cobalt Open Data Portal</div>
           </div>
           <div className="ds_site-header__controls">
             <label aria-controls="mobile-navigation" className="ds_site-header__control js-toggle-menu" htmlFor="menu">
@@ -33,7 +33,7 @@ const Header = () => {
           <Navigation /> {/* Using the reusable Navigation component */}
           <div className="ds_site-header__search">
             <div className="ds_site-search ds_autocomplete" data-module="ds-autocomplete">
-              <form action="/search" role="search" className="ds_site-search__form" method="GET">
+              <form action="/results" role="search" className="ds_site-search__form" method="GET">
                 <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
                 <div id="autocomplete-status" className="visually-hidden"></div>
                 <div className="ds_input__wrapper ds_input__wrapper--has-icon">

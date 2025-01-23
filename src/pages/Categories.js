@@ -60,14 +60,16 @@ const Categories = () => {
   }
 
   return (
+    
     <div className="ds_page__middle">
     <div className="ds_wrapper">
+  
       <div className="ds_layout ds_layout--article">
         <div className="ds_layout__content">
           <header className="ds_page-header">
             <h1 className="ds_page-header__title">Categories</h1>
             <p className="ds_page-header__subtitle">
-              {groups.length} dataset{groups.length !== 1 ? 's' : ''} found
+              {groups.length} categor{groups.length !== 1 ? 'ies' : 'y'} found
             </p>
           </header>
             <ul className="ds_list">
@@ -86,21 +88,9 @@ const Categories = () => {
             </ul>
           </div>
 
-          <div className="ds_layout__sidebar">
-            <div className="ds_card">
-              <h2 className="ds_heading--small">Related Links</h2>
-              <ul className="ds_list">
-                <li className="ds_list__item">
-                  <a href="/datasets" className="ds_link">View All Datasets</a>
-                </li>
-                <li className="ds_list__item">
-                  <a href="/about" className="ds_link">About Our Data</a>
-                </li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
+      
     </div>
   );
 };

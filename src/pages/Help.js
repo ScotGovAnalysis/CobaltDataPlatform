@@ -1,58 +1,80 @@
 import React from 'react';
-import '@scottish-government/design-system/dist/css/design-system.min.css'; // Ensure Design System is properly imported
+import '@scottish-government/design-system/dist/css/design-system.min.css';
 
 const Help = () => {
   return (
-    <div>
-      <div className="ds_page__middle">
-        <main id="main-content" style={{ marginTop: '10vh' }}>
-          <div className="ds_wrapper">
-            <div className="ds_cb__inner ds_cb__inner--spacious">
-              <div className="ds_cb__text ds_cb__content ds_cb__text--center">
-                <h1 className="ds_page-header__title">Search Results</h1>
-                <p className="ds_lead ds_lead--spacious">
-                  Explore the datasets matching your search criteria.
-                </p>
-                <div className="ds_site-search ds_site-search--large ds_site-search--spacious ds_site-search--with-border">
-                  <form action="/search" role="search" className="ds_site-search__form" method="GET">
-                    <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
-                    <div className="ds_input__wrapper ds_input__wrapper--has-icon ds_input__wrapper--bordered">
-                      <input
-                        className="ds_input ds_site-search__input"
-                        id="site-search"
-                        name="q"
-                        placeholder="Search here"
-                        type="search"
-                      />
-                      <button type="submit" className="ds_button ds_button--icon-only ds_button--search ds_button--square">
-                        <span className="visually-hidden">Search</span>
-                        <svg className="ds_icon ds_icon--magnifying-glass" aria-hidden="true" role="img">
-                          <use href="/webfiles/1737461086955/assets/images/icons/icons.stack.svg#magnifying-glass"></use>
-                        </svg>
-                      </button>
-                    </div>
-                  </form>
+    <div className="ds_page__middle">
+      <div className="ds_wrapper">
+        <main id="main-content">
+          {/* Page Header */}
+          <header className="ds_page-header">
+            <h1 className="ds_page-header__title">Help & Support</h1>
+            <p className="ds_page-header__subtitle">
+              Find answers to common questions and get support for the Cobalt Open Data Portal.
+            </p>
+          </header>
+
+          {/* FAQ Section */}
+          <section className="ds_layout ds_layout--article">
+            <div className="ds_layout__content">
+              <h2 className="ds_h2">Frequently Asked Questions</h2>
+              <div className="ds_accordion">
+                <div className="ds_accordion-item">
+                  <input
+                    type="checkbox"
+                    className="visually-hidden ds_accordion-item__control"
+                    id="faq-1"
+                  />
+                  <div className="ds_accordion-item__header">
+                    <h3 className="ds_accordion-item__title">How do I search for datasets?</h3>
+                    <span className="ds_accordion-item__indicator"></span>
+                    <label className="ds_accordion-item__label" htmlFor="faq-1">
+                      <span className="visually-hidden">Show this section</span>
+                    </label>
+                  </div>
+                  <div className="ds_accordion-item__body">
+                    <p>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin euismod, nisl nec tincidunt
+                      aliquet, nunc nisi aliquet nunc, nec aliquet nunc nisi nec nunc.
+                    </p>
+                  </div>
                 </div>
-                <p className="ds_hint-text ds_hint-text--spacious">For example, "population estimates" or "economy".</p>
-              </div>
-              <div className="ds_results">
-                <h2>Results</h2>
-                <ul className="ds_results__list">
-                  <li className="ds_results__item">
-                    <h3 className="ds_results__item-title">Dataset 1</h3>
-                    <p className="ds_results__item-description">Description of dataset 1.</p>
-                    <a href="#" className="ds_results__item-link">View Dataset</a>
-                  </li>
-                  <li className="ds_results__item">
-                    <h3 className="ds_results__item-title">Dataset 2</h3>
-                    <p className="ds_results__item-description">Description of dataset 2.</p>
-                    <a href="#" className="ds_results__item-link">View Dataset</a>
-                  </li>
-                  {/* Add more dataset items as needed */}
-                </ul>
+                <div className="ds_accordion-item">
+                  <input
+                    type="checkbox"
+                    className="visually-hidden ds_accordion-item__control"
+                    id="faq-2"
+                  />
+                  <div className="ds_accordion-item__header">
+                    <h3 className="ds_accordion-item__title">How do I download a dataset?</h3>
+                    <span className="ds_accordion-item__indicator"></span>
+                    <label className="ds_accordion-item__label" htmlFor="faq-2">
+                      <span className="visually-hidden">Show this section</span>
+                    </label>
+                  </div>
+                  <div className="ds_accordion-item__body">
+                    <p>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin euismod, nisl nec tincidunt
+                      aliquet, nunc nisi aliquet nunc, nec aliquet nunc nisi nec nunc.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </section>
+
+          {/* Contact Support Section */}
+          <section className="ds_layout ds_layout--article">
+            <div className="ds_layout__content">
+              <h2 className="ds_h2">Contact Support</h2>
+              <p>
+                If you can't find the answer to your question, please contact our support team. We're here to help!
+              </p>
+              <a href="mailto:auren.clark@gov.scot" className="ds_button ds_button--primary">
+                Contact Support
+              </a>
+            </div>
+          </section>
         </main>
       </div>
     </div>
