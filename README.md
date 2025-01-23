@@ -40,7 +40,7 @@ This project is currently in **alpha testing** and is being evaluated alongside 
 
 ## Getting Started
 
-### Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
@@ -48,21 +48,24 @@ Before you begin, ensure you have the following installed:
 - [npm](https://www.npmjs.com/) (v8 or higher)
 - A running instance of [CKAN](https://ckan.org/) (for backend API)
 
-### Installation
+## Installation
 
 1. Clone the repository:
-   ```bash
+```bash
    git clone https://github.com/your-username/cobalt-open-data-portal.git
    cd cobalt-open-data-portal
+```
 
 2. Install dependencies:
-   ```bash
+```bash
     npm install
+```
 
 3.  Start the development server:
-   ```bash
+```bash
     npm start
     Open your browser and navigate to http://localhost:3000.
+```
 
 ### Configuration
 To connect the frontend to your CKAN instance, update the API endpoint in the configuration file:
@@ -71,22 +74,24 @@ Open src/config.js.
 
 Replace the CKAN_API_URL with your CKAN instance's API endpoint:
 
-javascript
+```javascript
 export const CKAN_API_URL = 'https://your-ckan-instance/api/3/action';
-Usage
-For Users
+```
+
+## Usage
+### For Users
 Search for Datasets: Use the search bar on the homepage to find datasets by keyword.
 
 Explore Datasets: Click on a dataset to view its details, including metadata and downloadable resources.
 
 Download Resources: Download datasets in various formats (e.g., CSV, PDF).
 
-For Alpha Testers
+### For Alpha Testers
 Provide Feedback: Use the feedback form (accessible via the footer) to share your thoughts and report issues.
 
 Test Features: Explore all features and provide feedback on usability, performance, and functionality.
 
-### API Integration
+## API Integration
 The frontend interacts with CKAN using its RESTful API. Key API endpoints used include:
 
 Package Search: /api/3/action/package_search
