@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { format } from 'date-fns';
+// Import the CSS file
+import '../index.css'; // Adjust the path if necessary
 
 const Dataset = () => {
   const { id } = useParams();
@@ -22,7 +24,6 @@ const Dataset = () => {
         return '/documents/generic.svg';
     }
   };
-  
 
   useEffect(() => {
     const fetchDatasetDetails = async () => {
@@ -210,55 +211,74 @@ const Dataset = () => {
 
                     <h2 className="ds_heading">Resources</h2>
                     <div className="ds_file-download-list">
-                      {dataset.resources.map((resource, index) => (
-                        <div key={index} className="ds_file-download">
-                          <div className="ds_file-download__thumbnail">
-                            <a
-                              className="ds_file-download__thumbnail-link"
-                              aria-hidden="true"
-                              tabindex="-1"
-                              href={resource.url}
-                            >
-                              <span className="visually-hidden">Document cover image</span>
-                              <img
-                                className="ds_file-download__thumbnail-image"
-                                src={getThumbnailImage(resource.format)}
-                                alt=""
-                              />
-                            </a>
-                          </div>
+  {dataset.resources.map((resource, index) => (
+    <div key={index} className="ds_file-download">
+      <div className="ds_file-download__thumbnail">
+        <a
+          className="ds_file-download__thumbnail-link"
+          aria-hidden="true"
+          tabIndex="-1"
+          href={resource.url}
+        >
+          <span className="visually-hidden">Document cover image</span>
+          <img
+            className="ds_file-download__thumbnail-image"
+            src={getThumbnailImage(resource.format)}
+            alt=""
+          />
+        </a>
+      </div>
 
-                          <div className="ds_file-download__content">
-                            <a
-                              href={resource.url}
-                              className="ds_file-download__title"
-                              aria-describedby={`file-download-${index}`}
-                            >
-                              {resource.name || `Resource ${index + 1}`}
-                            </a>
+      <div className="ds_file-download__content">
+        <a
+          href={resource.url}
+          className="ds_file-download__title"
+          aria-describedby={`file-download-${index}`}
+        >
+          {resource.name || `Resource ${index + 1}`}
+        </a>
 
-                            <div id={`file-download-${index}`} className="ds_file-download__details">
-                              <dl className="ds_metadata ds_metadata--inline">
-                                <div className="ds_metadata__item">
-                                  <dt className="ds_metadata__key visually-hidden">File type</dt>
-                                  <dd className="ds_metadata__value">
-                                    {resource.format || 'Unknown format'}
-                                    <span className="visually-hidden">,</span>
-                                  </dd>
-                                </div>
+        <div id={`file-download-${index}`} className="ds_file-download__details">
+          <dl className="ds_metadata ds_metadata--inline">
+            <div className="ds_metadata__item">
+              <dt className="ds_metadata__key visually-hidden">File type</dt>
+              <dd className="ds_metadata__value">
+                {resource.format || 'Unknown format'}
+                <span className="visually-hidden">,</span>
+              </dd>
+            </div>
 
-                                <div className="ds_metadata__item">
-                                  <dt className="ds_metadata__key visually-hidden">File size</dt>
-                                  <dd className="ds_metadata__value">
-                                    {(resource.size / 1024).toFixed(2)} KB
-                                  </dd>
-                                </div>
-                              </dl>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+            <div className="ds_metadata__item">
+              <dt className="ds_metadata__key visually-hidden">File size</dt>
+              <dd className="ds_metadata__value">
+                {(resource.size / 1024).toFixed(2)} KB
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      {/* Buttons container */}
+      <div className="ds_button-group">
+        <a 
+          href={resource.url} 
+          className="ds_button ds_button--download"
+          download
+        >
+          Download
+        </a>
+        {resource.format.toLowerCase() === 'csv' && (
+          <a 
+            href={`/dataset/${dataset.id}/explore`} 
+            className="ds_button ds_button--secondary"
+          >
+            Explore
+          </a>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
                   </div>
                 </div>
               </div>

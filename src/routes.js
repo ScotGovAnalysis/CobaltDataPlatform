@@ -8,6 +8,7 @@ import About from './pages/About';
 import Categories from './pages/Categories';
 import Help from './pages/Help';
 import Organisation from './pages/Organisation';
+import DatasetExplorer from './pages/DatasetExplorer';
 
 const routes = [
   { path: '/about', element: <About /> },
@@ -15,6 +16,7 @@ const routes = [
   { path: '/home', element: <Home /> },
   { path: '/results', element: <Results /> },
   { path: '/dataset/:id', element: <Dataset /> },
+  { path: '/dataset/:id/explore', element: <DatasetExplorer /> },
   { path: '/datasets', element: <Datasets /> },
   { path: '/organisations', element: <Organisations /> },
   { path: '/organisation/:id', element: <Organisation /> },
