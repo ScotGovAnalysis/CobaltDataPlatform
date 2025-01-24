@@ -9,6 +9,7 @@ import Categories from './pages/Categories';
 import Help from './pages/Help';
 import Organisation from './pages/Organisation';
 import DatasetExplorer from './pages/DatasetExplorer';
+import DatasetAnalysis from './pages/DatasetAnalysis';
 
 const routes = [
   { path: '/about', element: <About /> },
@@ -24,7 +25,7 @@ const routes = [
   { path: '/results', element: <Results /> },
   { path: '/help', element: <Help /> },
   { path: '/datasets', element: <Results /> },
-
+  { path: '/analyse-dataset', element: <DatasetAnalysis /> }, 
 ];
 
 export default routes;

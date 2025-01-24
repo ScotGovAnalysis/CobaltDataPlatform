@@ -1,41 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 
-const Organisation = () => {
-  const { OrganisationId } = useParams(); // Get the Organisation ID from the URL
-  const [Organisation, setOrganisation] = useState(null);
+const Organisations = () => {
+  const [organisations, setOrganisations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch Organisation details from CKAN API
   useEffect(() => {
-    const fetchOrganisationDetails = async () => {
+    const fetchOrganisations = async () => {
       try {
-        const response = await fetch('/api/3/action/organization_show', {
+        const response = await fetch('/api/3/action/organization_list', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            action: 'Organisation_show', // CKAN API action
-            id: OrganisationId, // Organisation ID from the URL
-            include_datasets: true, // Include datasets in the response
-            include_users: true, // Include users in the response
+            all_fields: true,
+            include_dataset_count: true,
+            include_users: true,
           }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch Organisation details');
+          throw new Error('Failed to fetch organisations');
         }
 
         const data = await response.json();
-
-        if (!data.result) {
-          throw new Error('Organisation not found');
-        }
-
-        setOrganisation(data.result);
+        setOrganisations(data.result);
         setLoading(false);
       } catch (error) {
         setError(error.message);
@@ -43,8 +35,8 @@ const Organisation = () => {
       }
     };
 
-    fetchOrganisationDetails();
-  }, [OrganisationId]);
+    fetchOrganisations();
+  }, []);
 
   if (loading) {
     return (
@@ -52,7 +44,7 @@ const Organisation = () => {
         <div className="ds_wrapper">
           <div className="ds_loading">
             <div className="ds_loading__spinner"></div>
-            <p>Loading Organisation details...</p>
+            <p>Loading organisations...</p>
           </div>
         </div>
       </div>
@@ -71,102 +63,124 @@ const Organisation = () => {
     );
   }
 
-  if (!Organisation) {
-    return (
-      <div className="ds_page__middle">
-        <div className="ds_wrapper">
-          <div className="ds_error">
-            <p>Organisation not found.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="ds_page__middle">
       <div className="ds_wrapper">
-        <div className="ds_layout">
+        <main className="ds_layout ds_layout--search-results--filters">
+          {/* Sidebar with Filters */}
+          <div className="ds_layout__sidebar">
+            <div className="ds_search-filters">
+              <h2 className="ds_search-filters__title">Filters</h2>
+              {/* Example Filter: Organisation Type */}
+              <div className="ds_accordion ds_accordion--small">
+                <div className="ds_accordion-item">
+                  <input
+                    type="checkbox"
+                    className="visually-hidden ds_accordion-item__control"
+                    id="organisation-type-panel"
+                  />
+                  <div className="ds_accordion-item__header">
+                    <h3 className="ds_accordion-item__title">Organisation Type</h3>
+                    <span className="ds_accordion-item__indicator"></span>
+                    <label
+                      className="ds_accordion-item__label"
+                      htmlFor="organisation-type-panel"
+                    >
+                      <span className="visually-hidden">Show this section</span>
+                    </label>
+                  </div>
+                  <div className="ds_accordion-item__body">
+                    <div className="ds_search-filters__checkboxes">
+                      <div className="ds_checkbox ds_checkbox--small">
+                        <input
+                          id="type-government"
+                          type="checkbox"
+                          className="ds_checkbox__input"
+                        />
+                        <label htmlFor="type-government" className="ds_checkbox__label">
+                          Government
+                        </label>
+                      </div>
+                      <div className="ds_checkbox ds_checkbox--small">
+                        <input
+                          id="type-non-profit"
+                          type="checkbox"
+                          className="ds_checkbox__input"
+                        />
+                        <label htmlFor="type-non-profit" className="ds_checkbox__label">
+                          Non-Profit
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Main Content */}
           <div className="ds_layout__content">
-            <header className="ds_page-header">
-              <h1 className="ds_page-header__title">{Organisation.title || Organisation.name}</h1>
-              <p className="ds_page-header__subtitle">
-                {Organisation.package_count || 0} dataset{Organisation.package_count !== 1 ? 's' : ''} found
-              </p>
-            </header>
+            <div className="ds_search-results">
+              <header className="ds_page-header">
+                <h1 className="ds_page-header__title">Organisations</h1>
+                <p className="ds_page-header__subtitle">
+                  {organisations.length} Organisation{organisations.length !== 1 ? 's' : ''} found
+                </p>
+              </header>
 
-            {/* Organisation Description */}
-            <section className="ds_section">
-              <h2 className="ds_section__title">Description</h2>
-              <p className="ds_section__content">
-                {Organisation.description || 'No description available.'}
-              </p>
-            </section>
+              {/* Search Bar */}
+              <form className="ds_search-form" action="/organisations/" method="get">
+                <div className="ds_input__wrapper ds_input__wrapper--has-icon">
+                  <input
+                    type="search"
+                    name="q"
+                    className="ds_input"
+                    placeholder="Search organisations..."
+                    aria-label="Search organisations"
+                  />
+                  <button className="ds_button ds_button--primary" type="submit" aria-label="Search">
+                    <span className="visually-hidden">Search</span>
+                    <svg className="ds_icon" aria-hidden="true" role="img">
+                      <use href="/assets/images/icons/icons.stack.svg#search"></use>
+                    </svg>
+                  </button>
+                </div>
+              </form>
 
-            {/* Datasets Section */}
-            <section className="ds_section">
-              <h2 className="ds_section__title">Datasets</h2>
-              {Organisation.packages && Organisation.packages.length > 0 ? (
-                <ul className="ds_search-results__list">
-                  {Organisation.packages.map((dataset) => (
-                    <li key={dataset.id} className="ds_search-result">
-                      <h3 className="ds_search-result__title">
-                        <Link
-                          to={`/dataset/${dataset.name}`}
-                          className="ds_search-result__link"
-                        >
-                          {dataset.title || dataset.name}
-                        </Link>
-                      </h3>
-                      <p className="ds_search-result__summary">
-                        {dataset.notes || 'No description available.'}
-                      </p>
-                      <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
-                        <div className="ds_metadata__item">
-                          <dt className="ds_metadata__key">Format</dt>
-                          <dd className="ds_metadata__value">
-                            {dataset.resources && dataset.resources.length > 0
-                              ? dataset.resources[0].format
-                              : 'N/A'}
-                          </dd>
-                        </div>
-                        <div className="ds_metadata__item">
-                          <dt className="ds_metadata__key">Last Updated</dt>
-                          <dd className="ds_metadata__value">
-                            {dataset.metadata_modified || 'N/A'}
-                          </dd>
-                        </div>
-                      </dl>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No datasets found for this Organisation.</p>
-              )}
-            </section>
-
-            {/* Members Section */}
-            <section className="ds_section">
-              <h2 className="ds_section__title">Members</h2>
-              {Organisation.users && Organisation.users.length > 0 ? (
-                <ul className="ds_list">
-                  {Organisation.users.map((user) => (
-                    <li key={user.id} className="ds_list__item">
-                      <span className="ds_list__value">{user.name}</span>
-                      <span className="ds_list__label">{user.capacity}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No members found for this Organisation.</p>
-              )}
-            </section>
+              {/* Organisations List */}
+              <ul className="ds_search-results__list">
+                {organisations.map((org) => (
+                  <li key={org.id} className="ds_search-result">
+                    <h2 className="ds_search-result__title">
+                      <Link
+                        to={`/organisation/${org.name}`}
+                        className="ds_search-result__link"
+                      >
+                        {org.title || org.name}
+                      </Link>
+                    </h2>
+                    <p className="ds_search-result__summary">
+                      {org.description || 'No description available'}
+                    </p>
+                    <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Datasets</dt>
+                        <dd className="ds_metadata__value">{org.package_count || 0}</dd>
+                      </div>
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Members</dt>
+                        <dd className="ds_metadata__value">{org.users ? org.users.length : 0}</dd>
+                      </div>
+                    </dl>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );
 };
 
-export default Organisation;
+export default Organisations;

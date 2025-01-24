@@ -30,7 +30,7 @@ code {
 .ds_file-download-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 5px;
 }
 
 .ds_file-download {
