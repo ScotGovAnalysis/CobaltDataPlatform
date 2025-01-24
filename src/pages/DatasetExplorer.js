@@ -317,10 +317,10 @@ const DatasetExplorer = () => {
                             <label>{column}</label>
                             <Select
                               isMulti
-                              options={distinctValues.map(value => ({ value, label: value }))}
+                              options={distinctValues.map(value => ({ value, label : value }))}
                               onChange={(selectedOptions) => setFilterQueries({
                                 ...filterQueries,
-                                [column]: selectedOptions.map(option => option.value).join(', ')
+                                [column] : selectedOptions.map(option => option.value).join(', ')
                               })}
                             />
                           </div>

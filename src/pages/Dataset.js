@@ -18,7 +18,7 @@ const Dataset = () => {
         return '/documents/csv.svg';
       case 'pdf':
         return '/documents/pdf.svg';
-      case 'excel':
+      case 'xls':
         return '/documents/excel.svg';
       default:
         return '/documents/generic.svg';
@@ -172,28 +172,28 @@ const Dataset = () => {
                     <div className="ds_metadata__item">
                       <dt className="ds_metadata__key">Published</dt>
                       <dd className="ds_metadata__value">
-                        <strong>{format(new Date(dataset.metadata_created), 'dd MMMM yyyy')}</strong>
+                        <strong> {format(new Date(dataset.metadata_created), 'dd MMMM yyyy')}</strong>
                       </dd>
                     </div>
 
                     <div className="ds_metadata__item">
-                      <dt className="ds_metadata__key">Organization</dt>
-                      <dd className="ds_metadata__value">
+                      <dt className="ds_metadata__key">Organisation</dt>
+                      <dd className="ds_metadata__value"> &nbsp;
                         <a href="#" className="ds_link">
-                          {dataset.organization?.title || 'Not specified'}
+                           {dataset.organization?.title || 'Not specified'}
                         </a>
                       </dd>
                     </div>
 
                     <div className="ds_metadata__item">
                       <dt className="ds_metadata__key">License</dt>
-                      <dd className="ds_metadata__value">{dataset.license_title || 'Not specified'}</dd>
+                      <dd className="ds_metadata__value"> {dataset.license_title || 'Not specified'}</dd>
                     </div>
 
                     <div className="ds_metadata__item">
                       <dt className="ds_metadata__key">Last Modified</dt>
                       <dd className="ds_metadata__value">
-                        {format(new Date(dataset.metadata_modified), 'dd MMMM yyyy')}
+                        {format(new Date(dataset.metadata_modified), ' dd MMMM yyyy')}
                       </dd>
                     </div>
                   </dl>
@@ -267,7 +267,7 @@ const Dataset = () => {
         >
           Download
         </a>
-        {resource.format.toLowerCase() === 'csv' && (
+        {resource.format.toLowerCase() === 'xls' && (
           <a 
             href={`/dataset/${dataset.id}/explore`} 
             className="ds_button ds_button--secondary"
