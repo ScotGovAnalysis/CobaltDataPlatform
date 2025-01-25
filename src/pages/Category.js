@@ -1,28 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 
-const Categories = () => {
-  const [groups, setGroups] = useState([]);
+const Category = () => {
+  const { categoryName } = useParams();
+  const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchGroups = async () => {
+    const fetchGroupDetails = async () => {
       try {
-        const response = await fetch(`/api/3/action/group_list`);
+        const response = await fetch(`/api/3/action/group_show?id=${categoryName}&include_datasets=true&include_dataset_count=true&include_extras=true&include_users=true&include_groups=true&include_tags=true&include_followers=true`);
         if (!response.ok) {
-          throw new Error('Failed to fetch groups');
+          throw new Error('Failed to fetch group details');
         }
         const data = await response.json();
-        const detailedGroups = await Promise.all(data.result.map(async (groupId) => {
-          const groupResponse = await fetch(`/api/3/action/group_show?id=${groupId}`);
-          if (!groupResponse.ok) {
-            throw new Error(`Failed to fetch details for group ${groupId}`);
-          }
-          return await groupResponse.json();
-        }));
-        setGroups(detailedGroups.map(group => group.result));
+        setGroup(data.result);
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -30,8 +24,8 @@ const Categories = () => {
       }
     };
 
-    fetchGroups();
-  }, []);
+    fetchGroupDetails();
+  }, [categoryName]);
 
   if (loading) {
     return (
@@ -39,7 +33,7 @@ const Categories = () => {
         <div className="ds_wrapper">
           <div className="ds_loading">
             <div className="ds_loading__spinner"></div>
-            <p>Loading categories...</p>
+            <p>Loading category details...</p>
           </div>
         </div>
       </div>
@@ -64,12 +58,12 @@ const Categories = () => {
         <main className="ds_layout ds_layout--search-results--filters">
           <div className="ds_layout__header">
             <header className="ds_page-header">
-              <h1 className="ds_page-header__title">Categories</h1>
+              <h1 className="ds_page-header__title">{group.display_name}</h1>
             </header>
           </div>
           <div className="ds_layout__content">
             <div className="ds_site-search">
-              <form action="/categories" role="search" className="ds_site-search__form" method="GET">
+              <form action={`/category/${group.name}`} role="search" className="ds_site-search__form" method="GET">
                 <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
                 <div className="ds_input__wrapper ds_input__wrapper--has-icon">
                   <input
@@ -151,18 +145,18 @@ const Categories = () => {
           <div className="ds_layout__list">
             <div className="ds_search-results">
               <h2 aria-live="polite" className="ds_search-results__title">
-                {groups.length} categor{groups.length !== 1 ? 'ies' : 'y'} found
+                {group.package_count} dataset{group.package_count !== 1 ? 's' : ''} found
               </h2>
-              <ol className="ds_search-results__list" data-total={groups.length} start="1">
-                {groups.map((group) => (
-                  <li key={group.id} className="ds_search-result">
+              <ol className="ds_search-results__list" data-total={group.package_count} start="1">
+                {group.packages.map((dataset) => (
+                  <li key={dataset.id} className="ds_search-result">
                     <h3 className="ds_search-result__title">
-                    <Link to={`/category/${group.name}`} className="ds_search-result__link">
-  {group.display_name}
-</Link>
+                      <a href={`/dataset/${dataset.name}`} className="ds_search-result__link">
+                        {dataset.title}
+                      </a>
                     </h3>
                     <p className="ds_search-result__summary">
-                      {group.description || 'No description available'}
+                      {dataset.notes || 'No description available'}
                     </p>
                   </li>
                 ))}
@@ -175,4 +169,4 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+export default Category;

@@ -260,22 +260,23 @@ const Dataset = () => {
 
       {/* Buttons container */}
       <div className="ds_button-group">
-        <a 
-          href={resource.url} 
-          className="ds_button ds_button--download"
-          download
-        >
-          Download
-        </a>
-        {resource.format.toLowerCase() === 'xls' && (
-          <a 
-            href={`/dataset/${dataset.id}/explore`} 
-            className="ds_button ds_button--secondary"
-          >
-            Explore
-          </a>
-        )}
-      </div>
+  <a 
+    href={resource.url} 
+    className="ds_button ds_button--download"
+    download
+  >
+    Download
+  </a>
+  {['csv', 'xls'].includes(resource.format.toLowerCase()) && (
+    <a 
+      href={`/dataset/${dataset.id}/explore`} 
+      className="ds_button ds_button--secondary"
+    >
+      Explore
+    </a>
+  )}
+</div>
+
     </div>
   ))}
 </div>

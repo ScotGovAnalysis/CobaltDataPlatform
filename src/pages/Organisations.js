@@ -186,9 +186,9 @@ const Organisations = () => {
                 {organisations.map((org) => (
                   <li key={org.id} className="ds_search-result">
                     <h3 className="ds_search-result__title">
-                      <Link to={`/organisation/${org.name}`} className="ds_search-result__link">
-                        {org.title || org.name}
-                      </Link>
+                    <Link to={`/organisation/${org.name}`} className="ds_search-result__link">
+  {org.title || org.name}
+</Link>
                     </h3>
                     <p className="ds_search-result__summary">
                       {org.description || 'No description available'}
@@ -196,11 +196,7 @@ const Organisations = () => {
                     <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
                       <div className="ds_metadata__item">
                         <dt className="ds_metadata__key">Datasets</dt>
-                        <dd className="ds_metadata__value">{org.package_count || 0}</dd>
-                      </div>
-                      <div className="ds_metadata__item">
-                        <dt className="ds_metadata__key">Members</dt>
-                        <dd className="ds_metadata__value">{org.users ? org.users.length : 0}</dd>
+                        <dd className="ds_metadata__value">{org.package_count || 0} Datasets Loaded </dd>
                       </div>
                     </dl>
                   </li>
