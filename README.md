@@ -22,7 +22,7 @@ A React-based frontend for CKAN, designed to provide a user-friendly interface f
 
 ## Overview
 
-The **Cobalt Open Data Portal** is a modern, responsive frontend built with **React** that interacts with a **CKAN** backend via its RESTful API. It provides an intuitive interface for users to search, explore, and download datasets, as well as for administrators to manage data resources.
+The **Cobalt Open Data Portal** is a frontend built with React that interacts with a CKAN backend via its RESTful API. 
 
 This project is currently in **alpha testing** and is being evaluated alongside other open data portal tools.
 
@@ -32,9 +32,7 @@ This project is currently in **alpha testing** and is being evaluated alongside 
 
 - **Search and Filter**: Easily search and filter datasets by keywords, organizations, and resource types.
 - **Dataset Details**: View detailed information about datasets, including metadata, resources, and download links.
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices.
 - **CKAN API Integration**: Seamlessly communicates with a CKAN instance using its RESTful API.
-- **Alpha Testing Tools**: Includes features for alpha testers to provide feedback and report issues.
 
 ---
 
@@ -98,6 +96,6 @@ Package Search: /api/3/action/package_search
 
 Package Show: /api/3/action/package_show
 
-Organization List: /api/3/action/organization_list
+Organisation List: /api/3/action/organization_list
 
 For more information, refer to the CKAN API Documentation.
