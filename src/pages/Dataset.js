@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { format } from 'date-fns';
-// Import the CSS file
-import '../index.css'; // Adjust the path if necessary
+import '../index.css';
 
 const Dataset = () => {
   const { id } = useParams();
@@ -58,7 +57,6 @@ const Dataset = () => {
   };
 
   const getOrganizationCounts = () => {
-    // Example: Replace this with actual logic to count organizations
     return [
       { name: 'Organization A', count: 5 },
       { name: 'Organization B', count: 3 },
@@ -107,57 +105,7 @@ const Dataset = () => {
       </div>
 
       <div className="ds_wrapper">
-        <div className="ds_layout">
-          {/* Sidebar for Filters */}
-          <div className="ds_layout__sidebar">
-            <div className="ds_search-filters">
-              <h2 className="ds_search-filters__title">Filters</h2>
-
-              {/* Organization Filter */}
-              <div className="ds_accordion ds_accordion--small">
-                <div className="ds_accordion-item">
-                  <input
-                    type="checkbox"
-                    className="visually-hidden ds_accordion-item__control"
-                    id="organization-panel"
-                  />
-                  <div className="ds_accordion-item__header">
-                    <h3 className="ds_accordion-item__title">Organization</h3>
-                    <span className="ds_accordion-item__indicator"></span>
-                    <label
-                      className="ds_accordion-item__label"
-                      htmlFor="organization-panel"
-                    >
-                      <span className="visually-hidden">Show this section</span>
-                    </label>
-                  </div>
-                  <div className="ds_accordion-item__body">
-                    <div className="ds_search-filters__checkboxes">
-                      {getOrganizationCounts().map((org) => (
-                        <div key={org.name} className="ds_checkbox ds_checkbox--small">
-                          <input
-                            id={`org-${org.name}`}
-                            type="checkbox"
-                            className="ds_checkbox__input"
-                            checked={selectedOrganizations.includes(org.name)}
-                            onChange={() => handleOrganizationFilter(org.name)}
-                          />
-                          <label
-                            htmlFor={`org-${org.name}`}
-                            className="ds_checkbox__label"
-                          >
-                            {org.name}
-                            <span className="badge ml-2"> ({org.count})</span>
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+        <div className="ds_layout gov_layout--publication--no-sidebar">
           {/* Main Content */}
           <div className="ds_layout__content">
             <main id="main-content">
@@ -202,87 +150,83 @@ const Dataset = () => {
 
               <hr />
 
-              <div className="ds_layout gov_layout--publication--no-sidebar">
-                <div className="ds_layout__content">
-                  <div className="ds_content">
-                    {dataset.notes && (
-                      <p className="ds_leader ds_no-margin--bottom">{dataset.notes}</p>
-                    )}
+              {/* Description and Resources section */}
+              <section>
+                <h2>Description</h2>
+                <p>{dataset.notes || 'No description available'}</p>
+              </section>
 
-                    <h2 className="ds_heading">Resources</h2>
-                    <div className="ds_file-download-list">
-  {dataset.resources.map((resource, index) => (
-    <div key={index} className="ds_file-download">
-      <div className="ds_file-download__thumbnail">
-        <a
-          className="ds_file-download__thumbnail-link"
-          aria-hidden="true"
-          tabIndex="-1"
-          href={resource.url}
-        >
-          <span className="visually-hidden">Document cover image</span>
-          <img
-            className="ds_file-download__thumbnail-image"
-            src={getThumbnailImage(resource.format)}
-            alt=""
-          />
-        </a>
-      </div>
+              <section>
+                <h2 className="ds_heading">Resources</h2>
+                <div className="ds_file-download-list">
+                  {dataset.resources.map((resource, index) => (
+                    <div key={index} className="ds_file-download">
+                      <div className="ds_file-download__thumbnail">
+                        <a
+                          className="ds_file-download__thumbnail-link"
+                          aria-hidden="true"
+                          tabIndex="-1"
+                          href={resource.url}
+                        >
+                          <span className="visually-hidden">Document cover image</span>
+                          <img
+                            className="ds_file-download__thumbnail-image"
+                            src={getThumbnailImage(resource.format)}
+                            alt=""
+                          />
+                        </a>
+                      </div>
 
-      <div className="ds_file-download__content">
-        <a
-          href={resource.url}
-          className="ds_file-download__title"
-          aria-describedby={`file-download-${index}`}
-        >
-          {resource.name || `Resource ${index + 1}`}
-        </a>
+                      <div className="ds_file-download__content">
+                        <a
+                          href={resource.url}
+                          className="ds_file-download__title"
+                          aria-describedby={`file-download-${index}`}
+                        >
+                          {resource.name || `Resource ${index + 1}`}
+                        </a>
 
-        <div id={`file-download-${index}`} className="ds_file-download__details">
-          <dl className="ds_metadata ds_metadata--inline">
-            <div className="ds_metadata__item">
-              <dt className="ds_metadata__key visually-hidden">File type</dt>
-              <dd className="ds_metadata__value">
-                {resource.format || 'Unknown format'}
-                <span className="visually-hidden">,</span>
-              </dd>
-            </div>
+                        <div id={`file-download-${index}`} className="ds_file-download__details">
+                          <dl className="ds_metadata ds_metadata--inline">
+                            <div className="ds_metadata__item">
+                              <dt className="ds_metadata__key visually-hidden">File type</dt>
+                              <dd className="ds_metadata__value">
+                                {resource.format || 'Unknown format'}
+                                <span className="visually-hidden">,</span>
+                              </dd>
+                            </div>
 
-            <div className="ds_metadata__item">
-              <dt className="ds_metadata__key visually-hidden">File size</dt>
-              <dd className="ds_metadata__value">
-                {(resource.size / 1024).toFixed(2)} KB
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </div>
+                            <div className="ds_metadata__item">
+                              <dt className="ds_metadata__key visually-hidden">File size</dt>
+                              <dd className="ds_metadata__value">
+                                {(resource.size / 1024).toFixed(2)} KB
+                              </dd>
+                            </div>
+                          </dl>
+                        </div>
+                      </div>
 
-      {/* Buttons container */}
-      <div className="ds_button-group">
-  <a 
-    href={resource.url} 
-    className="ds_button ds_button--download"
-    download
-  >
-    Download
-  </a>
-  {['csv', 'xls'].includes(resource.format.toLowerCase()) && (
-    <a 
-      href={`/dataset/${dataset.id}/explore`} 
-      className="ds_button ds_button--secondary"
-    >
-      Explore
-    </a>
-  )}
-</div>
-
-    </div>
-  ))}
-</div>
-                  </div>
+                      <div className="ds_button-group">
+                        <a 
+                          href={resource.url} 
+                          className="ds_button ds_button--download"
+                          download
+                        >
+                          Download
+                        </a>
+                        {['csv', 'xls'].includes(resource.format.toLowerCase()) && (
+                          <a 
+                            href={`/dataset/${dataset.id}/explore`} 
+                            className="ds_button ds_button--secondary"
+                          >
+                            Explore
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
+              </section>
             </main>
           </div>
         </div>
