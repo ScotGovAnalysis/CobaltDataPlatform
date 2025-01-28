@@ -375,7 +375,11 @@ const Datasets = () => {
                       </Link>
                     </h3>
                     <p className="ds_search-result__summary">
-                      {dataset.notes || 'No description available'}
+                      {(() => {
+                        const text = dataset.notes || 'No description available';
+                        const words = text.split(' ');
+                        return words.length > 250 ? words.slice(0, 250).join(' ') + '...' : text;
+                      })()}
                     </p>
                     <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
                       <div className="ds_metadata__item">
