@@ -3,16 +3,11 @@ import { useParams } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import Papa from 'papaparse';
 import Select from 'react-select';
-import Plot from 'react-plotly.js';
-import DatasetAnalysis from './DatasetAnalysis'
-import { parseDataset } from '../components/Utils'
+import DatasetAnalysis from './DatasetAnalysis';
 import MapViewer from '../components/MapViewer';
 
-import { get } from 'lodash'; // Change flattenObject to get
-
-
 const DatasetExplorer = () => {
-  const { id, resourceId } = useParams(); // Add resourceId parameter
+  const { id, resourceId } = useParams();
   const [dataset, setDataset] = useState(null);
   const [csvData, setCsvData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,15 +16,13 @@ const DatasetExplorer = () => {
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [resourceData, setResourceData] = useState([]);
   const [resourceFormat, setResourceFormat] = useState(null);
-  
-  // States for filtering, sorting, and column selection
+
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [hiddenColumns, setHiddenColumns] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [filterQueries, setFilterQueries] = useState({});
   const [filteredData, setFilteredData] = useState([]);
 
-  // Pagination States
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
@@ -41,16 +34,13 @@ const DatasetExplorer = () => {
         const datasetResult = metadataResult.result;
         setDataset(datasetResult);
 
-        // Find the specific resource by ID
         const resource = datasetResult.resources.find(r => r.id === resourceId);
-        
         if (!resource) {
           throw new Error('Resource not found');
         }
 
         setResourceFormat(resource.format.toLowerCase());
 
-        // Handle different formats
         switch (resource.format.toLowerCase()) {
           case 'csv': {
             const response = await fetch(resource.url);
@@ -65,30 +55,22 @@ const DatasetExplorer = () => {
             });
             break;
           }
-          
           case 'geojson': {
             const response = await fetch(resource.url);
             const geojsonData = await response.json();
-            
-            // Extract properties from features for tabular view
             const features = geojsonData.features || [];
             const flattenedData = features.map(feature => ({
               ...feature.properties,
               geometry_type: feature.geometry?.type,
               coordinates: JSON.stringify(feature.geometry?.coordinates)
             }));
-            
-            const columns = Array.from(
-              new Set(flattenedData.flatMap(item => Object.keys(item)))
-            );
-            
+            const columns = Array.from(new Set(flattenedData.flatMap(item => Object.keys(item))));
             setResourceData(flattenedData);
             setFilteredData(flattenedData);
             setSelectedColumns(columns);
             setGeoJsonData(geojsonData);
             break;
           }
-          
           default:
             throw new Error(`Unsupported format: ${resource.format}`);
         }
@@ -106,34 +88,13 @@ const DatasetExplorer = () => {
     }
   }, [id, resourceId]);
 
-// Add a new tab for map view when GeoJSON data is present
-{geoJsonData && (
-  <li className="ds_tabs__tab">
-    <a
-      className={`ds_tabs__tab-link ${activeTab === 'map' ? 'ds_tabs__tab-link--current' : ''}`}
-      href="#map"
-      onClick={() => setActiveTab('map')}
-    >
-      Map View
-    </a>
-  </li>
-)}
+  useEffect(() => {
+    setCsvData(filteredData);
+  }, [filteredData]);
 
-// Add the map view tab content
-{activeTab === 'map' && geoJsonData && (
-  <div className="ds_tabs__content ds_tabs__content--bordered" id="map">
-    <MapViewer 
-      data={geoJsonData} 
-      properties={selectedColumns.filter(col => col !== 'geometry_type' && col !== 'coordinates')}
-    />
-  </div>
-)}
-
-  // Apply Filters and Sorting
   const applyFiltersAndSorting = () => {
-    let data = [...csvData];
+    let data = [...resourceData];
 
-    // Apply Filters
     if (Object.keys(filterQueries).length > 0) {
       data = data.filter(row =>
         Object.keys(filterQueries).every(key =>
@@ -142,7 +103,6 @@ const DatasetExplorer = () => {
       );
     }
 
-    // Apply Sorting
     if (sortConfig.key) {
       data.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -156,10 +116,9 @@ const DatasetExplorer = () => {
     }
 
     setFilteredData(data);
-    setCurrentPage(1); // Reset to first page after applying filters
+    setCurrentPage(1);
   };
 
-  // Sorting Handler
   const handleSort = (key) => {
     let direction = 'ascending';
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
@@ -168,14 +127,12 @@ const DatasetExplorer = () => {
     setSortConfig({ key, direction });
   };
 
-  // Pagination
   const paginatedData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * rowsPerPage;
     const lastPageIndex = firstPageIndex + rowsPerPage;
     return filteredData.slice(firstPageIndex, lastPageIndex);
   }, [filteredData, currentPage]);
 
-  // Download CSV
   const downloadCSV = () => {
     const csv = Papa.unparse(filteredData);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -185,15 +142,13 @@ const DatasetExplorer = () => {
     link.click();
   };
 
-  // Clear Filters
   const clearFilters = () => {
     setFilterQueries({});
-    setSelectedColumns(csvData.length > 0 ? Object.keys(csvData[0]) : []);
+    setSelectedColumns(resourceData.length > 0 ? Object.keys(resourceData[0]) : []);
     setHiddenColumns([]);
     applyFiltersAndSorting();
   };
 
-  // Handle Filter Removal
   const handleFilterRemoval = (column) => {
     setFilterQueries(prev => {
       const { [column]: _, ...rest } = prev;
@@ -222,7 +177,6 @@ const DatasetExplorer = () => {
   return (
     <div className="ds_page__middle">
       <div className="ds_wrapper">
-        {/* Breadcrumbs */}
         <nav aria-label="Breadcrumb">
           <ol className="ds_breadcrumbs">
             <li className="ds_breadcrumbs__item">
@@ -239,66 +193,66 @@ const DatasetExplorer = () => {
           </ol>
         </nav>
 
-        {/* Tabs Section */}
         <div className="ds_tabs" data-module="ds-tabs">
-        <nav className="ds_tabs__navigation" aria-labelledby="ds_tabs__title">
-          <h2 id="ds_tabs__title" className="ds_tabs__title">Dataset Contents</h2>
-          <ul className="ds_tabs__list" id="tablist">
-            <li className="ds_tabs__tab">
-              <a
-                className={`ds_tabs__tab-link ${activeTab === 'overview' ? 'ds_tabs__tab-link--current' : ''}`}
-                href="#overview"
-                onClick={() => setActiveTab('overview')}
-              >
-                Overview
-              </a>
-            </li>
-            
-            {resourceFormat === 'csv' && (
-              <>
-                <li className="ds_tabs__tab">
-                  <a
-                    className={`ds_tabs__tab-link ${activeTab === 'data' ? 'ds_tabs__tab-link--current' : ''}`}
-                    href="#data"
-                    onClick={() => setActiveTab('data')}
-                  >
-                    Data
-                  </a>
-                </li>
-                <li className="ds_tabs__tab">
-                  <a
-                    className={`ds_tabs__tab-link ${activeTab === 'analyse' ? 'ds_tabs__tab-link--current' : ''}`}
-                    href="#analyse"
-                    onClick={() => setActiveTab('analyse')}
-                  >
-                    Analyse
-                  </a>
-                </li>
-              </>
-            )}
-            
-            {resourceFormat === 'geojson' && (
+          <nav className="ds_tabs__navigation" aria-labelledby="ds_tabs__title">
+            <h2 id="ds_tabs__title" className="ds_tabs__title">Dataset Contents</h2>
+            <ul className="ds_tabs__list" id="tablist">
               <li className="ds_tabs__tab">
                 <a
-                  className={`ds_tabs__tab-link ${activeTab === 'map' ? 'ds_tabs__tab-link--current' : ''}`}
-                  href="#map"
-                  onClick={() => setActiveTab('map')}
+                  className={`ds_tabs__tab-link ${activeTab === 'overview' ? 'ds_tabs__tab-link--current' : ''}`}
+                  href="#overview"
+                  onClick={() => setActiveTab('overview')}
                 >
-                  Map View
+                  Overview
                 </a>
               </li>
-            )}
-          </ul>
-        </nav>
-      </div>
+              {resourceFormat === 'csv' && (
+                <>
+                  <li className="ds_tabs__tab">
+                    <a
+                      className={`ds_tabs__tab-link ${activeTab === 'data' ? 'ds_tabs__tab-link--current' : ''}`}
+                      href="#data"
+                      onClick={() => setActiveTab('data')}
+                    >
+                      Data
+                    </a>
+                  </li>
+                  <li className="ds_tabs__tab">
+                    <a
+                      className={`ds_tabs__tab-link ${activeTab === 'analyse' ? 'ds_tabs__tab-link--current' : ''}`}
+                      href="#analyse"
+                      onClick={() => setActiveTab('analyse')}
+                    >
+                      Analyse
+                    </a>
+                  </li>
+                </>
+              )}
+              {resourceFormat === 'geojson' && (
+                <li className="ds_tabs__tab">
+                  <a
+                    className={`ds_tabs__tab-link ${activeTab === 'map' ? 'ds_tabs__tab-link--current' : ''}`}
+                    href="#map"
+                    onClick={() => setActiveTab('map')}
+                  >
+                    Map View
+                  </a>
+                </li>
+              )}
+            </ul>
+          </nav>
+        </div>
 
-        {/* Tab Content */}
         <div className="ds_tabs__content ds_tabs__content--bordered" id="overview">
           {activeTab === 'overview' && (
             <div>
               <h2>Description</h2>
-              <p>{dataset.notes || 'No description available'}</p>
-
+              <p>{dataset.notes
+  ? dataset.notes.split('\n').map((paragraph, index) => (
+      <p key={index}>{paragraph}</p>
+    ))
+  : 'No description available'}
+</p>
               {/* Filters and Column Selection */}
               <div className="ds_search-filters">
                 <h3>Filters</h3>
@@ -388,16 +342,16 @@ const DatasetExplorer = () => {
                     </div>
                     <div className="ds_accordion-item__body">
                       {selectedColumns.map(column => {
-                        const distinctValues = [...new Set(csvData.map(row => row[column]))];
+                        const distinctValues = [...new Set(resourceData.map(row => row[column]))];
                         return (
                           <div key={column} className="ds_search-filters__filter">
                             <label>{column}</label>
                             <Select
                               isMulti
-                              options={distinctValues.map(value => ({ value, label : value }))}
+                              options={distinctValues.map(value => ({ value, label: value }))}
                               onChange={(selectedOptions) => setFilterQueries({
                                 ...filterQueries,
-                                [column] : selectedOptions.map(option => option.value).join(', ')
+                                [column]: selectedOptions.map(option => option.value).join(', ')
                               })}
                             />
                           </div>
@@ -445,16 +399,12 @@ const DatasetExplorer = () => {
           )}
         </div>
 
-        {/* Data Tab */}
         <div className="ds_tabs__content ds_tabs__content--bordered" id="data">
           {activeTab === 'data' && (
             <div>
-              {/* Download Button */}
               <button className="ds_button" onClick={downloadCSV}>
                 Download CSV
               </button>
-
-              {/* Data Table */}
               <table className="ds_table">
                 <thead>
                   <tr>
@@ -478,11 +428,8 @@ const DatasetExplorer = () => {
                   ))}
                 </tbody>
               </table>
-
-              {/* Pagination */}
               <nav className="ds_pagination" aria-label="Search result pages">
                 <ul className="ds_pagination__list">
-                  {/* Previous Button */}
                   <li className="ds_pagination__item">
                     <button
                       aria-label="Previous page"
@@ -496,8 +443,6 @@ const DatasetExplorer = () => {
                       </svg>
                     </button>
                   </li>
-
-                  {/* First Page */}
                   {currentPage > 3 && (
                     <li className="ds_pagination__item">
                       <button
@@ -509,23 +454,19 @@ const DatasetExplorer = () => {
                       </button>
                     </li>
                   )}
-
-                  {/* Ellipsis Before Current Page */}
                   {currentPage > 4 && (
                     <li className="ds_pagination__item" aria-hidden="true">
                       <span className="ds_pagination__link ds_pagination__link--ellipsis">&hellip;</span>
                     </li>
                   )}
-
-                  {/* Visible Pages Around Current Page */}
                   {Array.from({ length: Math.ceil(filteredData.length / rowsPerPage) }, (_, i) => i + 1)
                     .filter(page => {
                       if (currentPage <= 3) {
-                        return page <= 5; // Show first 5 pages
+                        return page <= 5;
                       } else if (currentPage >= Math.ceil(filteredData.length / rowsPerPage) - 2) {
-                        return page >= Math.ceil(filteredData.length / rowsPerPage) - 4; // Show last 5 pages
+                        return page >= Math.ceil(filteredData.length / rowsPerPage) - 4;
                       } else {
-                        return page >= currentPage - 2 && page <= currentPage + 2; // Show 5 pages around current page
+                        return page >= currentPage - 2 && page <= currentPage + 2;
                       }
                     })
                     .map(page => (
@@ -539,15 +480,11 @@ const DatasetExplorer = () => {
                         </button>
                       </li>
                     ))}
-
-                  {/* Ellipsis After Current Page */}
                   {currentPage < Math.ceil(filteredData.length / rowsPerPage) - 3 && (
                     <li className="ds_pagination__item" aria-hidden="true">
                       <span className="ds_pagination__link ds_pagination__link--ellipsis">&hellip;</span>
                     </li>
                   )}
-
-                  {/* Last Page */}
                   {currentPage < Math.ceil(filteredData.length / rowsPerPage) - 2 && (
                     <li className="ds_pagination__item">
                       <button
@@ -559,8 +496,6 @@ const DatasetExplorer = () => {
                       </button>
                     </li>
                   )}
-
-                  {/* Next Button */}
                   <li className="ds_pagination__item">
                     <button
                       aria-label="Next page"
@@ -580,10 +515,53 @@ const DatasetExplorer = () => {
           )}
         </div>
 
-        {/* Analyse this Dataset Tab */}
         <div className="ds_tabs__content ds_tabs__content--bordered" id="analyse">
           {activeTab === 'analyse' && (
             <DatasetAnalysis data={csvData} columns={selectedColumns} />
+          )}
+        </div>
+
+        <div className="ds_tabs__content ds_tabs__content--bordered" id="map">
+          {activeTab === 'map' && resourceFormat === 'geojson' && (
+            <div>
+              <h3>Geographic Data Visualization</h3>
+              {geoJsonData ? (
+                <MapViewer
+                  data={geoJsonData}
+                  properties={selectedColumns.filter(col =>
+                    col !== 'geometry_type' &&
+                    col !== 'coordinates'
+                  )}
+                />
+              ) : (
+                <p>Loading map data...</p>
+              )}
+              <div style={{ marginTop: '20px' }}>
+                <h3>Feature Properties</h3>
+                <table className="ds_table">
+                  <thead>
+                    <tr>
+                      {selectedColumns
+                        .filter(col => col !== 'geometry_type' && col !== 'coordinates')
+                        .map(header => (
+                          <th key={header}>{header}</th>
+                        ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredData.slice(0, 10).map((row, index) => (
+                      <tr key={index}>
+                        {selectedColumns
+                          .filter(col => col !== 'geometry_type' && col !== 'coordinates')
+                          .map(col => (
+                            <td key={col}>{row[col]}</td>
+                          ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           )}
         </div>
       </div>

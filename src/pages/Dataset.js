@@ -19,6 +19,8 @@ const Dataset = () => {
         return '/documents/pdf.svg';
       case 'xls':
         return '/documents/excel.svg';
+      case 'geojson':
+        return '/documents/geodata.svg';
       default:
         return '/documents/generic.svg';
     }
@@ -181,7 +183,6 @@ const Dataset = () => {
                           />
                         </a>
                       </div>
-
                       <div className="ds_file-download__content">
                         <a
                           href={resource.url}
