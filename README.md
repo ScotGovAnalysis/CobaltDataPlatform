@@ -50,8 +50,8 @@ Before you begin, ensure you have the following installed:
 
 1. Clone the repository:
 ```bash
-   git clone https://github.com/your-username/cobalt-open-data-portal.git
-   cd cobalt-open-data-portal
+   git clone https://github.com/seanjnugent/CobaltData.git
+   cd CobaltData
 ```
 
 2. Install dependencies:
@@ -66,14 +66,13 @@ Before you begin, ensure you have the following installed:
 ```
 
 ### Configuration
-To connect the frontend to your CKAN instance, update the API endpoint in the configuration file:
+To connect the frontend to your CKAN instance, update the proxy in the package.json file.
+Open package.json.
 
-Open src/config.js.
-
-Replace the CKAN_API_URL with your CKAN instance's API endpoint:
+Replace the server with your CKAN instance's URL/IP and port combination (or localhost):
 
 ```javascript
-export const CKAN_API_URL = 'https://your-ckan-instance/api/3/action';
+  "proxy": "http://localhost:5000"
 ```
 
 ## Usage
@@ -84,10 +83,19 @@ Explore Datasets: Click on a dataset to view its details, including metadata and
 
 Download Resources: Download datasets in various formats (e.g., CSV, PDF).
 
+CSV resources have an "Explore" feature to allow visualisations and data slicing.
+
 ### For Alpha Testers
-Provide Feedback: Use the feedback form (accessible via the footer) to share your thoughts and report issues.
+Provide Feedback: Submit feedback to the mailbox in the header banner.
 
 Test Features: Explore all features and provide feedback on usability, performance, and functionality.
+
+Any bugs please follow the following convention:
+
+Bug Description (including screenshots)
+Expected Behaviour
+Actual Behaviour
+Steps to Reproduce
 
 ## API Integration
 The frontend interacts with CKAN using its RESTful API. Key API endpoints used include:
