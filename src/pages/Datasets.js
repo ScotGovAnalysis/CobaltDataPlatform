@@ -378,7 +378,7 @@ const Datasets = () => {
                       {(() => {
                         const text = dataset.notes || 'No description available';
                         const words = text.split(' ');
-                        return words.length > 250 ? words.slice(0, 250).join(' ') + '...' : text;
+                        return words.length > 65 ? words.slice(0, 65).join(' ') + '...' : text;
                       })()}
                     </p>
                     <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">

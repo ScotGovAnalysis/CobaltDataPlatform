@@ -381,7 +381,11 @@ const Results = () => {
                       </Link>
                     </h3>
                     <p className="ds_search-result__summary">
-                      {result.notes || 'No description available'}
+                      {(() => {
+                        const text = result.notes || 'No description available';
+                        const words = text.split(' ');
+                        return words.length > 65 ? words.slice(0, 65).join(' ') + '...' : text;
+                      })()}
                     </p>
                     <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
                       <div className="ds_metadata__item">
