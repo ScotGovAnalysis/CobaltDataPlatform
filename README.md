@@ -50,8 +50,8 @@ Before you begin, ensure you have the following installed:
 
 1. Clone the repository:
 ```bash
-   git clone https://github.com/your-username/cobalt-open-data-portal.git
-   cd cobalt-open-data-portal
+   git clone https://github.com/seanjnugent/CobaltData.git
+   cd CobaltData
 ```
 
 2. Install dependencies:
