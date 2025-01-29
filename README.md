@@ -2,6 +2,8 @@
 
 A React-based frontend for CKAN, designed to provide a user-friendly interface for exploring and managing open data. This project is part of an alpha testing phase to evaluate its effectiveness among a range of open data portal tools.
 
+
+
 ---
 
 ## Table of Contents

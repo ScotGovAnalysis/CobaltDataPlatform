@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Bar, Line, Scatter, Pie, Doughnut } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const ChartRenderer = ({ chartType, data, xAxis, yAxis, chartRef }) => {
+  const chartInstance = useRef(null);
+
   const generateChartData = () => {
     const dataMap = data.reduce((acc, row) => {
       const xValue = row[xAxis];
@@ -56,6 +72,16 @@ const ChartRenderer = ({ chartType, data, xAxis, yAxis, chartRef }) => {
       }
     }
   };
+
+  // Destroy the chart instance when the component unmounts or when the chart type changes
+  useEffect(() => {
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+        chartInstance.current = null;
+      }
+    };
+  }, [chartType]);
 
   switch (chartType) {
     case 'bar': return <Bar {...chartProps} />;

@@ -5,15 +5,23 @@ import Papa from 'papaparse';
 import Select from 'react-select';
 import Plot from 'react-plotly.js';
 import DatasetAnalysis from './DatasetAnalysis'
+import { parseDataset } from '../components/Utils'
+import MapViewer from '../components/MapViewer';
+
+import { get } from 'lodash'; // Change flattenObject to get
+
 
 const DatasetExplorer = () => {
-  const { id } = useParams();
+  const { id, resourceId } = useParams(); // Add resourceId parameter
   const [dataset, setDataset] = useState(null);
   const [csvData, setCsvData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
-
+  const [geoJsonData, setGeoJsonData] = useState(null);
+  const [resourceData, setResourceData] = useState([]);
+  const [resourceFormat, setResourceFormat] = useState(null);
+  
   // States for filtering, sorting, and column selection
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [hiddenColumns, setHiddenColumns] = useState([]);
@@ -33,27 +41,56 @@ const DatasetExplorer = () => {
         const datasetResult = metadataResult.result;
         setDataset(datasetResult);
 
-        const csvResource = datasetResult.resources.find(
-          r => r.format.toLowerCase() === 'csv'
-        );
+        // Find the specific resource by ID
+        const resource = datasetResult.resources.find(r => r.id === resourceId);
+        
+        if (!resource) {
+          throw new Error('Resource not found');
+        }
 
-        if (csvResource) {
-          const csvResponse = await fetch(`/dataset/${datasetResult.id}/resource/${csvResource.id}/download/${csvResource.name}`);
+        setResourceFormat(resource.format.toLowerCase());
 
-          if (!csvResponse.ok) {
-            throw new Error(`HTTP error! status: ${csvResponse.status}`);
+        // Handle different formats
+        switch (resource.format.toLowerCase()) {
+          case 'csv': {
+            const response = await fetch(resource.url);
+            const csvText = await response.text();
+            Papa.parse(csvText, {
+              header: true,
+              complete: (results) => {
+                setResourceData(results.data);
+                setFilteredData(results.data);
+                setSelectedColumns(results.meta.fields);
+              }
+            });
+            break;
           }
-
-          const csvText = await csvResponse.text();
-
-          Papa.parse(csvText, {
-            header: true,
-            complete: (results) => {
-              setCsvData(results.data);
-              setFilteredData(results.data); // Initialize filtered data
-              setSelectedColumns(results.meta.fields); // Set all columns as selected by default
-            }
-          });
+          
+          case 'geojson': {
+            const response = await fetch(resource.url);
+            const geojsonData = await response.json();
+            
+            // Extract properties from features for tabular view
+            const features = geojsonData.features || [];
+            const flattenedData = features.map(feature => ({
+              ...feature.properties,
+              geometry_type: feature.geometry?.type,
+              coordinates: JSON.stringify(feature.geometry?.coordinates)
+            }));
+            
+            const columns = Array.from(
+              new Set(flattenedData.flatMap(item => Object.keys(item)))
+            );
+            
+            setResourceData(flattenedData);
+            setFilteredData(flattenedData);
+            setSelectedColumns(columns);
+            setGeoJsonData(geojsonData);
+            break;
+          }
+          
+          default:
+            throw new Error(`Unsupported format: ${resource.format}`);
         }
 
         setLoading(false);
@@ -64,10 +101,33 @@ const DatasetExplorer = () => {
       }
     };
 
-    if (id) {
+    if (id && resourceId) {
       fetchDataset();
     }
-  }, [id]);
+  }, [id, resourceId]);
+
+// Add a new tab for map view when GeoJSON data is present
+{geoJsonData && (
+  <li className="ds_tabs__tab">
+    <a
+      className={`ds_tabs__tab-link ${activeTab === 'map' ? 'ds_tabs__tab-link--current' : ''}`}
+      href="#map"
+      onClick={() => setActiveTab('map')}
+    >
+      Map View
+    </a>
+  </li>
+)}
+
+// Add the map view tab content
+{activeTab === 'map' && geoJsonData && (
+  <div className="ds_tabs__content ds_tabs__content--bordered" id="map">
+    <MapViewer 
+      data={geoJsonData} 
+      properties={selectedColumns.filter(col => col !== 'geometry_type' && col !== 'coordinates')}
+    />
+  </div>
+)}
 
   // Apply Filters and Sorting
   const applyFiltersAndSorting = () => {
@@ -181,39 +241,56 @@ const DatasetExplorer = () => {
 
         {/* Tabs Section */}
         <div className="ds_tabs" data-module="ds-tabs">
-          <nav className="ds_tabs__navigation" aria-labelledby="ds_tabs__title">
-            <h2 id="ds_tabs__title" className="ds_tabs__title">Dataset Contents</h2>
-            <ul className="ds_tabs__list" id="tablist">
+        <nav className="ds_tabs__navigation" aria-labelledby="ds_tabs__title">
+          <h2 id="ds_tabs__title" className="ds_tabs__title">Dataset Contents</h2>
+          <ul className="ds_tabs__list" id="tablist">
+            <li className="ds_tabs__tab">
+              <a
+                className={`ds_tabs__tab-link ${activeTab === 'overview' ? 'ds_tabs__tab-link--current' : ''}`}
+                href="#overview"
+                onClick={() => setActiveTab('overview')}
+              >
+                Overview
+              </a>
+            </li>
+            
+            {resourceFormat === 'csv' && (
+              <>
+                <li className="ds_tabs__tab">
+                  <a
+                    className={`ds_tabs__tab-link ${activeTab === 'data' ? 'ds_tabs__tab-link--current' : ''}`}
+                    href="#data"
+                    onClick={() => setActiveTab('data')}
+                  >
+                    Data
+                  </a>
+                </li>
+                <li className="ds_tabs__tab">
+                  <a
+                    className={`ds_tabs__tab-link ${activeTab === 'analyse' ? 'ds_tabs__tab-link--current' : ''}`}
+                    href="#analyse"
+                    onClick={() => setActiveTab('analyse')}
+                  >
+                    Analyse
+                  </a>
+                </li>
+              </>
+            )}
+            
+            {resourceFormat === 'geojson' && (
               <li className="ds_tabs__tab">
                 <a
-                  className={`ds_tabs__tab-link ${activeTab === 'overview' ? 'ds_tabs__tab-link--current' : ''}`}
-                  href="#overview"
-                  onClick={() => setActiveTab('overview')}
+                  className={`ds_tabs__tab-link ${activeTab === 'map' ? 'ds_tabs__tab-link--current' : ''}`}
+                  href="#map"
+                  onClick={() => setActiveTab('map')}
                 >
-                  Overview
+                  Map View
                 </a>
               </li>
-              <li className="ds_tabs__tab">
-                <a
-                  className={`ds_tabs__tab-link ${activeTab === 'data' ? 'ds_tabs__tab-link--current' : ''}`}
-                  href="#data"
-                  onClick={() => setActiveTab('data')}
-                >
-                  Data
-                </a>
-              </li>
-              <li className="ds_tabs__tab">
-                <a
-                  className={`ds_tabs__tab-link ${activeTab === 'analyse' ? 'ds_tabs__tab-link--current' : ''}`}
-                  href="#analyse"
-                  onClick={() => setActiveTab('analyse')}
-                >
-                  Analyse this Dataset
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
+            )}
+          </ul>
+        </nav>
+      </div>
 
         {/* Tab Content */}
         <div className="ds_tabs__content ds_tabs__content--bordered" id="overview">

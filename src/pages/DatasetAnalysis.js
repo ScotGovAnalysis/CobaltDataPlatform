@@ -11,9 +11,7 @@ import {
   DialogContent,
   DialogActions,
   Snackbar,
-  Alert,
-  Menu,
-  MenuItem
+  Alert
 } from '@mui/material';
 import { Bar, Line, Scatter, Pie, Doughnut } from 'react-chartjs-2';
 import {
@@ -29,7 +27,6 @@ import {
 import * as htmlToImage from 'html-to-image';
 import * as XLSX from 'xlsx';
 import { jStat } from 'jstat';
-import ChartJS from '../components/ChartConfig';
 import { calculateMode } from '../components/Utils';
 import ChartRenderer from '../components/ChartRenderer';
 import ColumnStatisticsModal from '../components/ColumnStatisticsModal';

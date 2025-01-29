@@ -19,7 +19,7 @@ const routes = [
   { path: '/home', element: <Home /> },
   { path: '/results', element: <Results /> },
   { path: '/dataset/:id', element: <Dataset /> },
-  { path: '/dataset/:id/explore', element: <DatasetExplorer /> },
+  { path: '/dataset/:id/explore/:resourceId', element: <DatasetExplorer /> },
   { path: '/datasets', element: <Datasets /> },
   { path: '/organisations', element: <Organisations /> },
   { path: '/organisation/:organisationName', element: <Organisation /> },

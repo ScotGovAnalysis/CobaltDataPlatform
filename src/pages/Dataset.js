@@ -153,7 +153,12 @@ const Dataset = () => {
               {/* Description and Resources section */}
               <section>
                 <h2>Description</h2>
-                <p>{dataset.notes || 'No description available'}</p>
+                <p>{dataset.notes
+  ? dataset.notes.split('\n').map((paragraph, index) => (
+      <p key={index}>{paragraph}</p>
+    ))
+  : 'No description available'}
+</p>
               </section>
 
               <section>
@@ -214,12 +219,12 @@ const Dataset = () => {
                         >
                           Download
                         </a>
-                        {['csv', 'xls'].includes(resource.format.toLowerCase()) && (
-                          <a 
-                            href={`/dataset/${dataset.id}/explore`} 
+                        {['csv', 'geojson'].includes(resource.format.toLowerCase()) && (
+                          <a
+                            href={`/dataset/${dataset.id}/explore/${resource.id}`} // Add resource ID to URL
                             className="ds_button ds_button--secondary"
                           >
-                            Explore
+                            {resource.format.toUpperCase() === 'GEOJSON' ? 'Explore Data' : 'Explore Data'}
                           </a>
                         )}
                       </div>
