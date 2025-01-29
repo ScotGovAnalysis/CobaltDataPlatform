@@ -5,6 +5,11 @@ import Papa from 'papaparse';
 import Select from 'react-select';
 import DatasetAnalysis from './DatasetAnalysis';
 import MapViewer from '../components/MapViewer';
+import Breadcrumbs from '../components/Breadcrumbs';
+import Tabs from '../components/Tabs';
+import Filters from '../components/Filters';
+import DataTable from '../components/DataTable';
+import Pagination from '../components/Pagination';
 
 const DatasetExplorer = () => {
   const { id, resourceId } = useParams();
@@ -177,224 +182,31 @@ const DatasetExplorer = () => {
   return (
     <div className="ds_page__middle">
       <div className="ds_wrapper">
-        <nav aria-label="Breadcrumb">
-          <ol className="ds_breadcrumbs">
-            <li className="ds_breadcrumbs__item">
-              <a href="/" className="ds_breadcrumbs__link">Home</a>
-            </li>
-            <li className="ds_breadcrumbs__item">
-              <a href="/datasets" className="ds_breadcrumbs__link">Datasets</a>
-            </li>
-            <li className="ds_breadcrumbs__item">
-              <span className="ds_breadcrumbs__link ds_breadcrumbs__link--current">
-                {dataset.title}
-              </span>
-            </li>
-          </ol>
-        </nav>
-
-        <div className="ds_tabs" data-module="ds-tabs">
-          <nav className="ds_tabs__navigation" aria-labelledby="ds_tabs__title">
-            <h2 id="ds_tabs__title" className="ds_tabs__title">Dataset Contents</h2>
-            <ul className="ds_tabs__list" id="tablist">
-              <li className="ds_tabs__tab">
-                <a
-                  className={`ds_tabs__tab-link ${activeTab === 'overview' ? 'ds_tabs__tab-link--current' : ''}`}
-                  href="#overview"
-                  onClick={() => setActiveTab('overview')}
-                >
-                  Overview
-                </a>
-              </li>
-              {resourceFormat === 'csv' && (
-                <>
-                  <li className="ds_tabs__tab">
-                    <a
-                      className={`ds_tabs__tab-link ${activeTab === 'data' ? 'ds_tabs__tab-link--current' : ''}`}
-                      href="#data"
-                      onClick={() => setActiveTab('data')}
-                    >
-                      Data
-                    </a>
-                  </li>
-                  <li className="ds_tabs__tab">
-                    <a
-                      className={`ds_tabs__tab-link ${activeTab === 'analyse' ? 'ds_tabs__tab-link--current' : ''}`}
-                      href="#analyse"
-                      onClick={() => setActiveTab('analyse')}
-                    >
-                      Analyse
-                    </a>
-                  </li>
-                </>
-              )}
-              {resourceFormat === 'geojson' && (
-                <li className="ds_tabs__tab">
-                  <a
-                    className={`ds_tabs__tab-link ${activeTab === 'map' ? 'ds_tabs__tab-link--current' : ''}`}
-                    href="#map"
-                    onClick={() => setActiveTab('map')}
-                  >
-                    Map View
-                  </a>
-                </li>
-              )}
-            </ul>
-          </nav>
-        </div>
+        <Breadcrumbs dataset={dataset} />
+        <Tabs activeTab={activeTab} setActiveTab={setActiveTab} resourceFormat={resourceFormat} />
 
         <div className="ds_tabs__content ds_tabs__content--bordered" id="overview">
           {activeTab === 'overview' && (
             <div>
               <h2>Description</h2>
               <p>{dataset.notes
-  ? dataset.notes.split('\n').map((paragraph, index) => (
-      <p key={index}>{paragraph}</p>
-    ))
-  : 'No description available'}
-</p>
-              {/* Filters and Column Selection */}
-              <div className="ds_search-filters">
-                <h3>Filters</h3>
-
-                {/* Fields to Include */}
-                <div className="ds_accordion" data-module="ds-accordion">
-                  <div className="ds_accordion-item">
-                    <input type="checkbox" className="visually-hidden ds_accordion-item__control" id="panel-1" />
-                    <div className="ds_accordion-item__header">
-                      <h3 className="ds_accordion-item__title">Fields to Include</h3>
-                      <span className="ds_accordion-item__indicator"></span>
-                      <label className="ds_accordion-item__label" htmlFor="panel-1">
-                        <span className="visually-hidden">Show this section</span>
-                      </label>
-                    </div>
-                    <div className="ds_accordion-item__body">
-                      <div className="ds_facet-group">
-                        {selectedColumns.map(column => (
-                          <dd key={column} className="ds_facet-wrapper">
-                            <span className="ds_facet">
-                              {column}
-                              <button
-                                type="button"
-                                aria-label={`Remove '${column}' filter`}
-                                className="ds_facet__button"
-                                onClick={() => {
-                                  setSelectedColumns(prev => prev.filter(c => c !== column));
-                                  setHiddenColumns(prev => [...prev, column]);
-                                }}
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
-                              </button>
-                            </span>
-                          </dd>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Fields Hidden */}
-                <div className="ds_accordion" data-module="ds-accordion">
-                  <div className="ds_accordion-item">
-                    <input type="checkbox" className="visually-hidden ds_accordion-item__control" id="panel-2" />
-                    <div className="ds_accordion-item__header">
-                      <h3 className="ds_accordion-item__title">Fields Hidden</h3>
-                      <span className="ds_accordion-item__indicator"></span>
-                      <label className="ds_accordion-item__label" htmlFor="panel-2">
-                        <span className="visually-hidden">Show this section</span>
-                      </label>
-                    </div>
-                    <div className="ds_accordion-item__body">
-                      <div className="ds_facet-group">
-                        {hiddenColumns.map(column => (
-                          <dd key={column} className="ds_facet-wrapper">
-                            <span className="ds_facet">
-                              {column}
-                              <button
-                                type="button"
-                                aria-label={`Add '${column}' filter`}
-                                className="ds_facet__button"
-                                onClick={() => {
-                                  setHiddenColumns(prev => prev.filter(c => c !== column));
-                                  setSelectedColumns(prev => [...prev, column]);
-                                }}
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
-                              </button>
-                            </span>
-                          </dd>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Filters */}
-                <div className="ds_accordion" data-module="ds-accordion">
-                  <div className="ds_accordion-item">
-                    <input type="checkbox" className="visually-hidden ds_accordion-item__control" id="panel-3" />
-                    <div className="ds_accordion-item__header">
-                      <h3 className="ds_accordion-item__title">Filters</h3>
-                      <span className="ds_accordion-item__indicator"></span>
-                      <label className="ds_accordion-item__label" htmlFor="panel-3">
-                        <span className="visually-hidden">Show this section</span>
-                      </label>
-                    </div>
-                    <div className="ds_accordion-item__body">
-                      {selectedColumns.map(column => {
-                        const distinctValues = [...new Set(resourceData.map(row => row[column]))];
-                        return (
-                          <div key={column} className="ds_search-filters__filter">
-                            <label>{column}</label>
-                            <Select
-                              isMulti
-                              options={distinctValues.map(value => ({ value, label: value }))}
-                              onChange={(selectedOptions) => setFilterQueries({
-                                ...filterQueries,
-                                [column]: selectedOptions.map(option => option.value).join(', ')
-                              })}
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Applied Filters */}
-                {Object.keys(filterQueries).length > 0 && (
-                  <div className="ds_facet-group">
-                    <dt className="ds_facet__group-title">Applied Filters:</dt>
-                    {Object.keys(filterQueries).map(column => (
-                      <dd key={column} className="ds_facet-wrapper">
-                        <span className="ds_facet">
-                          {filterQueries[column]}
-                          <button
-                            type="button"
-                            aria-label={`Remove '${filterQueries[column]}' filter`}
-                            className="ds_facet__button"
-                            onClick={() => handleFilterRemoval(column)}
-                          >
-                            <svg className="ds_facet__button-icon" aria-hidden="true" role="img" focusable="false">
-                              <use href="/assets/images/icons/icons.stack.svg#cancel"></use>
-                            </svg>
-                          </button>
-                        </span>
-                      </dd>
-                    ))}
-                  </div>
-                )}
-
-                {/* Generate and Clear Filters Buttons */}
-                <div className="ds_button-group">
-                  <button className="ds_button" onClick={applyFiltersAndSorting}>
-                    Generate
-                  </button>
-                  <button className="ds_button ds_button--cancel" onClick={clearFilters}>
-                    Clear All Filters
-                  </button>
-                </div>
-              </div>
+                ? dataset.notes.split('\n').map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))
+                : 'No description available'}
+              </p>
+              <Filters
+                selectedColumns={selectedColumns}
+                setSelectedColumns={setSelectedColumns}
+                hiddenColumns={hiddenColumns}
+                setHiddenColumns={setHiddenColumns}
+                resourceData={resourceData}
+                filterQueries={filterQueries}
+                setFilterQueries={setFilterQueries}
+                applyFiltersAndSorting={applyFiltersAndSorting}
+                clearFilters={clearFilters}
+                handleFilterRemoval={handleFilterRemoval}
+              />
             </div>
           )}
         </div>
@@ -405,112 +217,18 @@ const DatasetExplorer = () => {
               <button className="ds_button" onClick={downloadCSV}>
                 Download CSV
               </button>
-              <table className="ds_table">
-                <thead>
-                  <tr>
-                    {selectedColumns.map(header => (
-                      <th key={header} onClick={() => handleSort(header)} style={{ cursor: 'pointer' }}>
-                        {header}
-                        {sortConfig.key === header && (
-                          <span>{sortConfig.direction === 'ascending' ? ' ▲' : ' ▼'}</span>
-                        )}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedData.map((row, index) => (
-                    <tr key={index}>
-                      {selectedColumns.map(col => (
-                        <td key={col}>{row[col]}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <nav className="ds_pagination" aria-label="Search result pages">
-                <ul className="ds_pagination__list">
-                  <li className="ds_pagination__item">
-                    <button
-                      aria-label="Previous page"
-                      className="ds_pagination__link ds_pagination__link--text ds_pagination__link--icon"
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                    >
-                      <span className="ds_pagination__link-label">Previous</span>
-                      <svg className="ds_icon" aria-hidden="true" role="img">
-                        <use href="/assets/images/icons/icons.stack.svg#chevron_left"></use>
-                      </svg>
-                    </button>
-                  </li>
-                  {currentPage > 3 && (
-                    <li className="ds_pagination__item">
-                      <button
-                        aria-label="Page 1"
-                        className="ds_pagination__link"
-                        onClick={() => setCurrentPage(1)}
-                      >
-                        <span className="ds_pagination__link-label">1</span>
-                      </button>
-                    </li>
-                  )}
-                  {currentPage > 4 && (
-                    <li className="ds_pagination__item" aria-hidden="true">
-                      <span className="ds_pagination__link ds_pagination__link--ellipsis">&hellip;</span>
-                    </li>
-                  )}
-                  {Array.from({ length: Math.ceil(filteredData.length / rowsPerPage) }, (_, i) => i + 1)
-                    .filter(page => {
-                      if (currentPage <= 3) {
-                        return page <= 5;
-                      } else if (currentPage >= Math.ceil(filteredData.length / rowsPerPage) - 2) {
-                        return page >= Math.ceil(filteredData.length / rowsPerPage) - 4;
-                      } else {
-                        return page >= currentPage - 2 && page <= currentPage + 2;
-                      }
-                    })
-                    .map(page => (
-                      <li key={page} className="ds_pagination__item">
-                        <button
-                          aria-label={`Page ${page}`}
-                          className={`ds_pagination__link ${currentPage === page ? 'ds_current' : ''}`}
-                          onClick={() => setCurrentPage(page)}
-                        >
-                          <span className="ds_pagination__link-label">{page}</span>
-                        </button>
-                      </li>
-                    ))}
-                  {currentPage < Math.ceil(filteredData.length / rowsPerPage) - 3 && (
-                    <li className="ds_pagination__item" aria-hidden="true">
-                      <span className="ds_pagination__link ds_pagination__link--ellipsis">&hellip;</span>
-                    </li>
-                  )}
-                  {currentPage < Math.ceil(filteredData.length / rowsPerPage) - 2 && (
-                    <li className="ds_pagination__item">
-                      <button
-                        aria-label={`Page ${Math.ceil(filteredData.length / rowsPerPage)}`}
-                        className="ds_pagination__link"
-                        onClick={() => setCurrentPage(Math.ceil(filteredData.length / rowsPerPage))}
-                      >
-                        <span className="ds_pagination__link-label">{Math.ceil(filteredData.length / rowsPerPage)}</span>
-                      </button>
-                    </li>
-                  )}
-                  <li className="ds_pagination__item">
-                    <button
-                      aria-label="Next page"
-                      className="ds_pagination__link ds_pagination__link--text ds_pagination__link--icon"
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredData.length / rowsPerPage)))}
-                      disabled={currentPage === Math.ceil(filteredData.length / rowsPerPage)}
-                    >
-                      <span className="ds_pagination__link-label">Next</span>
-                      <svg className="ds_icon" aria-hidden="true" role="img">
-                        <use href="/assets/images/icons/icons.stack.svg#chevron_right"></use>
-                      </svg>
-                    </button>
-                  </li>
-                </ul>
-              </nav>
+              <DataTable
+                selectedColumns={selectedColumns}
+                paginatedData={paginatedData}
+                sortConfig={sortConfig}
+                handleSort={handleSort}
+              />
+              <Pagination
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                filteredData={filteredData}
+                rowsPerPage={rowsPerPage}
+              />
             </div>
           )}
         </div>
