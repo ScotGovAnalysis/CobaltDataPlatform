@@ -60,5 +60,5 @@
     "@scottish-government/design-system": "^2.3.2",
     "sass": "^1.83.4"
   },
-  "proxy": "http://35.177.24.156:5000"
+  "proxy": "http://localhost:5000"
 }
