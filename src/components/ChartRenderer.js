@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Bar, Line, Scatter, Pie, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
 // Register Chart.js components
 ChartJS.register(
@@ -12,7 +13,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  zoomPlugin // Register the zoom plugin
 );
 
 const ChartRenderer = ({ chartType, data, xAxis, yAxis, chartRef }) => {

@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { format } from 'date-fns';
 import '../index.css';
 
 const Dataset = () => {
   const { id } = useParams();
+  const location = useLocation();
   const [dataset, setDataset] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedOrganizations, setSelectedOrganizations] = useState([]);
+
+  // Determine if the user came from the Results page
+  const isFromResultsPage = location.state?.fromResults || false;
+  const searchQuery = location.state?.searchQuery || '';
 
   const getThumbnailImage = (format) => {
     switch (format.toLowerCase()) {
@@ -50,21 +54,6 @@ const Dataset = () => {
     }
   }, [id]);
 
-  const handleOrganizationFilter = (orgName) => {
-    setSelectedOrganizations((prev) =>
-      prev.includes(orgName)
-        ? prev.filter((org) => org !== orgName)
-        : [...prev, orgName]
-    );
-  };
-
-  const getOrganizationCounts = () => {
-    return [
-      { name: 'Organization A', count: 5 },
-      { name: 'Organization B', count: 3 },
-    ];
-  };
-
   if (loading) {
     return (
       <div className="ds_page__middle">
@@ -97,18 +86,34 @@ const Dataset = () => {
         <nav aria-label="Breadcrumb">
           <ol className="ds_breadcrumbs">
             <li className="ds_breadcrumbs__item">
-              <a className="ds_breadcrumbs__link" href="/">Home</a>
+              <Link className="ds_breadcrumbs__link" to="/">Home</Link>
             </li>
-            <li className="ds_breadcrumbs__item">
-              <a className="ds_breadcrumbs__link" href="/datasets">Datasets</a>
-            </li>
+            {isFromResultsPage ? (
+              <>
+                <li className="ds_breadcrumbs__item">
+                  <Link className="ds_breadcrumbs__link" to={`/results?q=${searchQuery}`}>Results</Link>
+                </li>
+                <li className="ds_breadcrumbs__item">
+                  <span className="ds_breadcrumbs__current">Dataset: {dataset.title}</span>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="ds_breadcrumbs__item">
+                  <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
+                </li>
+                <li className="ds_breadcrumbs__item">
+                  <span className="ds_breadcrumbs__current">{dataset.title}</span>
+                </li>
+              </>
+            )}
           </ol>
         </nav>
       </div>
 
+      {/* Rest of the Dataset component */}
       <div className="ds_wrapper">
         <div className="ds_layout gov_layout--publication--no-sidebar">
-          {/* Main Content */}
           <div className="ds_layout__content">
             <main id="main-content">
               <header className="ds_page-header gov_sublayout gov_sublayout--publication-header">
@@ -156,11 +161,11 @@ const Dataset = () => {
               <section>
                 <h2>Description</h2>
                 <p>{dataset.notes
-  ? dataset.notes.split('\n').map((paragraph, index) => (
-      <p key={index}>{paragraph}</p>
-    ))
-  : 'No description available'}
-</p>
+                  ? dataset.notes.split('\n').map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))
+                  : 'No description available'}
+                </p>
               </section>
 
               <section>

@@ -1,8 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
 import '@scottish-government/design-system/dist/css/design-system.min.css'; // Ensure Design System is properly imported
 
 const Home = () => {
+  const [popularTags, setPopularTags] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Fetch popular tags from the CKAN API
+    const fetchPopularTags = async () => {
+      try {
+        const response = await fetch('/api/action/tag_list'); // Replace with your CKAN API URL
+        if (!response.ok) {
+          throw new Error('Failed to fetch popular tags');
+        }
+        const data = await response.json();
+        setPopularTags(data.result);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPopularTags();
+  }, []);
+
   return (
     <div className="ds_page__middle">
       <main id="main-content">
@@ -26,7 +50,7 @@ const Home = () => {
         </div>
 
         {/* Search Bar Section */}
-        <div className="ds_wrapper" style={{ marginTop: '2rem' }}>
+        <div className="ds_wrapper" style={{ marginTop: '-1.5rem' }}>
           <div className="ds_cb__inner">
             <div className="ds_site-search ds_site-search--large" style={{ width: '100%' }}>
               <form action="/results" role="search" className="ds_site-search__form" method="GET">
@@ -51,16 +75,38 @@ const Home = () => {
                 </div>
               </form>
             </div>
-            <p className="ds_hint-text" style={{ marginTop: '1rem', fontSize: '0.875rem' }}>
-              For example, "population estimates" or "economy".
-            </p>
+            {loading ? (
+              <p className="ds_hint-text" style={{ marginTop: '1rem', fontSize: '0.875rem' }}>
+                Loading popular tags...
+              </p>
+            ) : error ? (
+              <p className="ds_hint-text" style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'red' }}>
+                Error: {error}
+              </p>
+            ) : (
+            <div style={{ marginTop: '1rem' }}>
+              <h3 className="ds_h3">Popular Tags</h3>
+              <div className="ds_tag-list" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {popularTags.slice(0, 6).map((tag, index) => ( // Limit to 5 tags
+                  <Link
+                    key={index}
+                    to={`/results?q=${encodeURIComponent(tag)}`} // Navigate to Results page with the tag as a query parameter
+                    className="ds_button ds_button--secondary" // Use the secondary button style
+                    style={{ marginBottom: '0.5rem' }} // Add some spacing between buttons
+                  >
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            )}
           </div>
         </div>
 
         {/* Browse by Category Section */}
-        <div className="ds_wrapper" style={{ marginTop: '0.5rem' }}> {/* Added more space below the search bar */}
+        <div className="ds_wrapper" style={{ marginTop: '2.5rem' }}> {/* Added more space below the search bar */}
           <div className="ds_cb__inner">
-            <h2 className="ds_h2">Browse by Category</h2>
+            <h2 className="ds_h3">Browse by Category</h2>
             <p className="ds_lead">
               Explore datasets by themes such as health, education, and economy.
             </p>

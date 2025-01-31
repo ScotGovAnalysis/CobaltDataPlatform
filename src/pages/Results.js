@@ -376,9 +376,15 @@ const Results = () => {
                 {filteredResults.map((result) => (
                   <li key={result.id} className="ds_search-result">
                     <h3 className="ds_search-result__title">
-                      <Link to={`/dataset/${result.name}`} className="ds_search-result__link">
-                        {result.title}
-                      </Link>
+                    <Link 
+  to={{
+    pathname: `/dataset/${result.name}`,
+    state: { fromResults: true, searchQuery: searchQuery }
+  }} 
+  className="ds_search-result__link"
+>
+  {result.title}
+</Link>
                     </h3>
                     <p className="ds_search-result__summary">
                       {(() => {
