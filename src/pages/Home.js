@@ -50,7 +50,7 @@ const Home = () => {
         </div>
 
         {/* Search Bar Section */}
-        <div className="ds_wrapper" style={{ marginTop: '-1.5rem' }}>
+        <div className="ds_wrapper" style={{ marginTop: '1.25rem' }}>
           <div className="ds_cb__inner">
             <div className="ds_site-search ds_site-search--large" style={{ width: '100%' }}>
               <form action="/results" role="search" className="ds_site-search__form" method="GET">

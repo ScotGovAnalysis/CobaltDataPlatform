@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 
 const Datasets = () => {
-  const [datasets, setDatasets] = useState([]);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const searchQuery = queryParams.get('q');
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('relevance'); // Default sort by relevance
 
   // Dynamic filter states
   const [selectedOrganizations, setSelectedOrganizations] = useState([]);
@@ -16,30 +20,30 @@ const Datasets = () => {
   const [resourceTypeOptions, setResourceTypeOptions] = useState([]);
 
   useEffect(() => {
-    const fetchDatasets = async () => {
+    const fetchResults = async () => {
       try {
-        const response = await fetch(`/api/3/action/package_search?q=&rows=1000`);
+        const response = await fetch(`/api/3/action/package_search?q=${searchQuery || ''}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        const fetchedDatasets = data.result.results;
-        setDatasets(fetchedDatasets);
+        const fetchedResults = data.result.results;
+        setResults(fetchedResults);
 
         // Dynamically extract unique organizations
         const uniqueOrgs = Array.from(new Set(
-          fetchedDatasets
-            .map(dataset => dataset.organization?.title)
+          fetchedResults
+            .map(result => result.organization?.title)
             .filter(org => org)
         ));
         setOrganizationOptions(uniqueOrgs);
 
         // Dynamically extract unique resource formats
         const uniqueFormats = Array.from(new Set(
-          fetchedDatasets
-            .flatMap(dataset =>
-              dataset.resources
-                ? dataset.resources.map(resource => resource.format)
+          fetchedResults
+            .flatMap(result =>
+              result.resources
+                ? result.resources.map(resource => resource.format)
                 : []
             )
             .filter(format => format)
@@ -53,8 +57,28 @@ const Datasets = () => {
       }
     };
 
-    fetchDatasets();
-  }, []);
+    fetchResults();
+  }, [searchQuery]);
+
+  // Handle sorting
+  const handleSortChange = (e) => {
+    const selectedSort = e.target.value;
+    setSortBy(selectedSort);
+
+    let sortedResults = [...results];
+    if (selectedSort === 'date') {
+      // Sort by most recent update
+      sortedResults.sort((a, b) => new Date(b.metadata_modified) - new Date(a.metadata_modified));
+    } else if (selectedSort === 'adate') {
+      // Sort by oldest update
+      sortedResults.sort((a, b) => new Date(a.metadata_modified) - new Date(b.metadata_modified));
+    } else {
+      // Default: Sort by relevance (as returned by the API)
+      sortedResults = results;
+    }
+
+    setResults(sortedResults);
+  };
 
   const handleOrganizationFilter = (org) => {
     setSelectedOrganizations(prev =>
@@ -72,13 +96,13 @@ const Datasets = () => {
     );
   };
 
-  const filteredDatasets = datasets.filter(dataset => {
+  const filteredResults = results.filter(result => {
     const orgMatch = selectedOrganizations.length === 0 ||
-      selectedOrganizations.includes(dataset.organization?.title);
+      selectedOrganizations.includes(result.organization?.title);
 
     const resourceMatch = selectedResourceTypes.length === 0 ||
-      (dataset.resources &&
-       dataset.resources.some(resource =>
+      (result.resources &&
+       result.resources.some(resource =>
          selectedResourceTypes.includes(resource.format)
        ));
 
@@ -89,16 +113,16 @@ const Datasets = () => {
   const getOrganizationCounts = () => {
     return organizationOptions.map(org => ({
       name: org,
-      count: datasets.filter(dataset => dataset.organization?.title === org).length
+      count: results.filter(result => result.organization?.title === org).length
     }));
   };
 
   const getResourceTypeCounts = () => {
     return resourceTypeOptions.map(format => ({
       name: format,
-      count: datasets.filter(dataset =>
-        dataset.resources &&
-        dataset.resources.some(resource => resource.format === format)
+      count: results.filter(result =>
+        result.resources &&
+        result.resources.some(resource => resource.format === format)
       ).length
     }));
   };
@@ -109,7 +133,7 @@ const Datasets = () => {
         <div className="ds_wrapper">
           <div className="ds_loading">
             <div className="ds_loading__spinner"></div>
-            <p>Loading datasets...</p>
+            <p>Loading results...</p>
           </div>
         </div>
       </div>
@@ -134,7 +158,9 @@ const Datasets = () => {
         <main className="ds_layout ds_layout--search-results--filters">
           <div className="ds_layout__header">
             <header className="ds_page-header">
-              <h1 className="ds_page-header__title">Datasets</h1>
+              <h1 className="ds_page-header__title">
+                {searchQuery ? `Search results for "${searchQuery}"` : 'Datasets'}
+              </h1>
             </header>
           </div>
           <div className="ds_layout__content">
@@ -286,9 +312,9 @@ const Datasets = () => {
             </div>
           </div>
           <div className="ds_layout__list">
-            <div className="ds_search-results">
+            <div className="ds_search-results">   
               <h2 aria-live="polite" className="ds_search-results__title">
-                {filteredDatasets.length} dataset{filteredDatasets.length !== 1 ? 's' : ''} found
+                {filteredResults.length} result{filteredResults.length !== 1 ? 's' : ''} {searchQuery ? `for "${searchQuery}"` : ''}
               </h2>
               <div className="ds_search-controls">
                 <div className="ds_skip-links ds_skip-links--static">
@@ -356,7 +382,7 @@ const Datasets = () => {
                 <div className="ds_sort-options">
                   <label className="ds_label" htmlFor="sort-by">Sort by</label>
                   <span className="ds_select-wrapper">
-                    <select className="ds_select" id="sort-by">
+                    <select className="ds_select" id="sort-by" value={sortBy} onChange={handleSortChange}>
                       <option value="relevance">Most relevant</option>
                       <option value="date">Updated (newest)</option>
                       <option value="adate">Updated (oldest)</option>
@@ -366,17 +392,23 @@ const Datasets = () => {
                   <button className="ds_button ds_button--secondary ds_button--small" type="submit">Apply sort</button>
                 </div>
               </div>
-              <ol className="ds_search-results__list" data-total={filteredDatasets.length} start="1">
-                {filteredDatasets.map((dataset) => (
-                  <li key={dataset.id} className="ds_search-result">
+              <ol className="ds_search-results__list" data-total={filteredResults.length} start="1">
+                {filteredResults.map((result) => (
+                  <li key={result.id} className="ds_search-result">
                     <h3 className="ds_search-result__title">
-                      <Link to={`/dataset/${dataset.name}`} className="ds_search-result__link">
-                        {dataset.title}
+                      <Link 
+                        to={{
+                          pathname: `/dataset/${result.name}`,
+                          state: { fromResults: true, searchQuery: searchQuery }
+                        }} 
+                        className="ds_search-result__link"
+                      >
+                        {result.title}
                       </Link>
                     </h3>
                     <p className="ds_search-result__summary">
                       {(() => {
-                        const text = dataset.notes || 'No description available';
+                        const text = result.notes || 'No description available';
                         const words = text.split(' ');
                         return words.length > 65 ? words.slice(0, 65).join(' ') + '...' : text;
                       })()}
@@ -385,17 +417,25 @@ const Datasets = () => {
                       <div className="ds_metadata__item">
                         <dt className="ds_metadata__key">Organization</dt>
                         <dd className="ds_metadata__value">
-                          {dataset.organization?.title || 'Unknown'}
+                          {result.organization?.title || 'Unknown'}
                         </dd>
                       </div>
-                      {dataset.resources && dataset.resources.length > 0 && (
+                      {result.resources && result.resources.length > 0 && (
                         <div className="ds_metadata__item">
                           <dt className="ds_metadata__key">Resource Types</dt>
                           <dd className="ds_metadata__value">
-                            {dataset.resources.map(resource => resource.format).join(', ')}
+                            {result.resources.map(resource => resource.format).join(', ')}
                           </dd>
                         </div>
                       )}
+                      </dl>
+                      <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Last Updated</dt>
+                        <dd className="ds_metadata__value">
+                          Last updated: {new Date(result.metadata_modified).toLocaleDateString()}
+                        </dd>
+                      </div>
                     </dl>
                   </li>
                 ))}

@@ -151,6 +151,39 @@ const Dataset = () => {
                         {format(new Date(dataset.metadata_modified), ' dd MMMM yyyy')}
                       </dd>
                     </div>
+
+                    {/* Additional metadata fields from the API */}
+                    {dataset.frequency && (
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Update Frequency</dt>
+                        <dd className="ds_metadata__value">{dataset.frequency}</dd>
+                      </div>
+                    )}
+
+                    {dataset.spatial && (
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Geographic Coverage</dt>
+                        <dd className="ds_metadata__value">{dataset.spatial}</dd>
+                      </div>
+                    )}
+
+                    {dataset.temporal_coverage && (
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Temporal Coverage</dt>
+                        <dd className="ds_metadata__value">{dataset.temporal_coverage}</dd>
+                      </div>
+                    )}
+
+                    {dataset.contact_email && (
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Contact</dt>
+                        <dd className="ds_metadata__value">
+                          <a href={`mailto:${dataset.contact_email}`} className="ds_link">
+                            {dataset.contact_email}
+                          </a>
+                        </dd>
+                      </div>
+                    )}
                   </dl>
                 </div>
               </header>
@@ -166,6 +199,27 @@ const Dataset = () => {
                     ))
                   : 'No description available'}
                 </p>
+                                    {/* New Tags section */}
+                                    {dataset.tags && dataset.tags.length > 0 && (
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Tags</dt>
+                        <dd className="ds_metadata__value">
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                            {dataset.tags.map((tag, index) => (
+                              <Link
+                                key={index}
+                                to={`/results?q=${encodeURIComponent(tag.name)}`}
+                                className="ds_button ds_button--secondary"
+                                style={{ marginBottom: '0.5rem' }}
+                              >
+                                {tag.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </dd>
+                      </div>
+                    )}
+
               </section>
 
               <section>

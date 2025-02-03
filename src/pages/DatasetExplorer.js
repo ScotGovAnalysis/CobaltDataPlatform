@@ -27,6 +27,7 @@ const DatasetExplorer = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [filterQueries, setFilterQueries] = useState({});
   const [filteredData, setFilteredData] = useState([]);
+  const [dataDictionary, setDataDictionary] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
@@ -38,14 +39,28 @@ const DatasetExplorer = () => {
         const metadataResult = await metadataResponse.json();
         const datasetResult = metadataResult.result;
         setDataset(datasetResult);
-
+  
         const resource = datasetResult.resources.find(r => r.id === resourceId);
         if (!resource) {
           throw new Error('Resource not found');
         }
-
+  
+        // Fetch the data dictionary using datastore_search
+        const datastoreResponse = await fetch(`/api/3/action/datastore_search?id=${resourceId}`);
+        const datastoreResult = await datastoreResponse.json();
+        console.log('Datastore Result:', datastoreResult); // Debugging line
+  
+        // Extract fields from the datastore response
+        const fields = datastoreResult.result?.fields || [];
+        const dictionary = fields.map(field => ({
+          name: field.id, // Field name
+          type: field.type || 'unknown', // Field type
+          description: field.info?.notes || 'No description available.', // Field description
+        }));
+        setDataDictionary(dictionary);
+  
         setResourceFormat(resource.format.toLowerCase());
-
+        
         switch (resource.format.toLowerCase()) {
           case 'csv': {
             const response = await fetch(resource.url);
@@ -185,31 +200,97 @@ const DatasetExplorer = () => {
         <Breadcrumbs dataset={dataset} />
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} resourceFormat={resourceFormat} />
 
-        <div className="ds_tabs__content ds_tabs__content--bordered" id="overview">
-          {activeTab === 'overview' && (
-            <div>
-              <h2>Description</h2>
-              <p>{dataset.notes
-                ? dataset.notes.split('\n').map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>
-                  ))
-                : 'No description available'}
-              </p>
-              <Filters
-                selectedColumns={selectedColumns}
-                setSelectedColumns={setSelectedColumns}
-                hiddenColumns={hiddenColumns}
-                setHiddenColumns={setHiddenColumns}
-                resourceData={resourceData}
-                filterQueries={filterQueries}
-                setFilterQueries={setFilterQueries}
-                applyFiltersAndSorting={applyFiltersAndSorting}
-                clearFilters={clearFilters}
-                handleFilterRemoval={handleFilterRemoval}
-              />
-            </div>
-          )}
-        </div>
+            <div className="ds_tabs__content ds_tabs__content--bordered" id="overview">
+            {activeTab === 'overview' && (
+              <div>
+                {/* Description Accordion */}
+                <div className="ds_accordion">
+                <div className="ds_accordion-item">
+                  <input
+                    type="checkbox"
+                    id="description-accordion"
+                    className="visually-hidden ds_accordion-item__control"
+                  />
+                  <div className="ds_accordion-item__header">
+                    <h3 className="ds_accordion-item__title">Description</h3>
+                    <span className="ds_accordion-item__indicator"></span>
+                    <label className="ds_accordion-item__label" htmlFor="description-accordion">
+                      <span className="visually-hidden">Show this section</span>
+                      </label>
+                    </div>
+                    <div className="ds_accordion-item__body">
+                      {dataset.notes ? (
+                        dataset.notes.split('\n').map((paragraph, index) => (
+                          <p key={index}>{paragraph}</p>
+                        ))
+                      ) : (
+                        <p>No description available.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+          
+                {/* Data Dictionary Accordion */}
+                <div className="ds_accordion">
+  <div className="ds_accordion-item">
+    <input
+      type="checkbox"
+      id="data-dictionary-accordion"
+      className="visually-hidden ds_accordion-item__control"
+    />
+    <div className="ds_accordion-item__header">
+      <h3 className="ds_accordion-item__title">Data Dictionary</h3>
+      <span className="ds_accordion-item__indicator"></span>
+      <label className="ds_accordion-item__label" htmlFor="data-dictionary-accordion">
+        <span className="visually-hidden">Show this section</span>
+      </label>
+    </div>
+    <div className="ds_accordion-item__body">
+  {dataDictionary.length > 0 ? (
+    <table className="ds_table">
+      <thead>
+        <tr>
+          <th>Field Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {dataDictionary
+          .filter(field => field.name !== '_id') // Filter out rows where name is '_id'
+          .map((field, index) => (
+            <tr key={index}>
+              <td>{field.name}</td>
+              <td>{field.type}</td>
+              <td>{field.description}</td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  ) : (
+    <p>No data dictionary available.</p>
+  )}
+</div>
+  </div>
+</div>
+          
+                {/* Filters Section */}
+                <Filters
+                  selectedColumns={selectedColumns}
+                  setSelectedColumns={setSelectedColumns}
+                  hiddenColumns={hiddenColumns}
+                  setHiddenColumns={setHiddenColumns}
+                  resourceData={resourceData}
+                  filterQueries={filterQueries}
+                  setFilterQueries={setFilterQueries}
+                  applyFiltersAndSorting={applyFiltersAndSorting}
+                  clearFilters={clearFilters}
+                  handleFilterRemoval={handleFilterRemoval}
+                />
+              </div>
+            )}
+          </div>
+
 
         <div className="ds_tabs__content ds_tabs__content--bordered" id="data">
           {activeTab === 'data' && (
