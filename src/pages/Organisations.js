@@ -11,7 +11,7 @@ const Organisations = () => {
   useEffect(() => {
     const fetchOrganisations = async () => {
       try {
-        const response = await fetch('${config.apiBaseUrl}/api/3/action/organization_list', {
+        const response = await fetch(`${config.apiBaseUrl}/api/3/action/organization_list`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -17,7 +17,7 @@ const Categories = () => {
         }
         const data = await response.json();
         const detailedGroups = await Promise.all(data.result.map(async (groupId) => {
-          const groupResponse = await fetch(`/api/3/action/group_show?id=${groupId}`);
+          const groupResponse = await fetch(`${config.apiBaseUrl}/api/3/action/group_show?id=${groupId}`);
           if (!groupResponse.ok) {
             throw new Error(`Failed to fetch details for group ${groupId}`);
           }
