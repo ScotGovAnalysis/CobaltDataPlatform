@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
+import config from '../config';
 
 const Organisations = () => {
   const [organisations, setOrganisations] = useState([]);
@@ -10,7 +11,7 @@ const Organisations = () => {
   useEffect(() => {
     const fetchOrganisations = async () => {
       try {
-        const response = await fetch('/api/3/action/organization_list', {
+        const response = await fetch('${config.apiBaseUrl}/api/3/action/organization_list', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

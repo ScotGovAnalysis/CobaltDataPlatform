@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
+import config from '../config';
 
 const Organisation = () => {
   const { organisationName } = useParams();
@@ -11,7 +12,7 @@ const Organisation = () => {
   useEffect(() => {
     const fetchOrganisationDetails = async () => {
       try {
-        const response = await fetch(`/api/3/action/organization_show?id=${organisationName}&include_datasets=true&include_users=true&include_extras=true`);
+        const response = await fetch(`${config.apiBaseUrl}/api/3/action/organization_show?id=${organisationName}&include_datasets=true&include_users=true&include_extras=true`);
         if (!response.ok) {
           throw new Error('Failed to fetch organisation details');
         }

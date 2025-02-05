@@ -10,6 +10,7 @@ import Tabs from '../components/Tabs';
 import Filters from '../components/Filters';
 import DataTable from '../components/DataTable';
 import Pagination from '../components/Pagination';
+import config from '../config';
 
 const DatasetExplorer = () => {
   const { id, resourceId } = useParams();
@@ -35,7 +36,7 @@ const DatasetExplorer = () => {
   useEffect(() => {
     const fetchDataset = async () => {
       try {
-        const metadataResponse = await fetch(`/api/3/action/package_show?id=${id}`);
+        const metadataResponse = await fetch(`${config.apiBaseUrl}/api/3/action/package_show?id=${id}`);
         const metadataResult = await metadataResponse.json();
         const datasetResult = metadataResult.result;
         setDataset(datasetResult);
@@ -46,7 +47,7 @@ const DatasetExplorer = () => {
         }
   
         // Fetch the data dictionary using datastore_search
-        const datastoreResponse = await fetch(`/api/3/action/datastore_search?id=${resourceId}`);
+        const datastoreResponse = await fetch(`${config.apiBaseUrl}/api/3/action/datastore_search?id=${resourceId}`);
         const datastoreResult = await datastoreResponse.json();
         console.log('Datastore Result:', datastoreResult); // Debugging line
   

@@ -33,8 +33,10 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "HOST=0.0.0.0 WDS_SOCKET_HOST=0.0.0.0 WDS_SOCKET_PORT=0 WDS_SOCKET_PATH=/sockjs-node SKIP_PREFLIGHT_CHECK=true react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:dev": "env-cmd -f .env.development react-scripts build",
+    "build:release": "env-cmd -f .env.release react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -58,7 +60,7 @@
   },
   "devDependencies": {
     "@scottish-government/design-system": "^2.3.2",
+    "env-cmd": "^10.1.0",
     "sass": "^1.83.4"
-  },
-  "proxy": "http://localhost:5000"
+  }
 }

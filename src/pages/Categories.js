@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
+import config from '../config';
 
 const Categories = () => {
   const [groups, setGroups] = useState([]);
@@ -10,7 +11,7 @@ const Categories = () => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await fetch(`/api/3/action/group_list`);
+        const response = await fetch(`${config.apiBaseUrl}/api/3/action/group_list`);
         if (!response.ok) {
           throw new Error('Failed to fetch groups');
         }

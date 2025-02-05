@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
 import '@scottish-government/design-system/dist/css/design-system.min.css'; // Ensure Design System is properly imported
+import config from '../config.js' 
 
 const Home = () => {
   const [popularTags, setPopularTags] = useState([]);
@@ -11,7 +12,7 @@ const Home = () => {
     // Fetch popular tags from the CKAN API
     const fetchPopularTags = async () => {
       try {
-        const response = await fetch('/api/action/tag_list'); // Replace with your CKAN API URL
+        const response = await fetch(`${config.apiBaseUrl}/api/action/tag_list`); // Replace with your CKAN API URL
         if (!response.ok) {
           throw new Error('Failed to fetch popular tags');
         }
