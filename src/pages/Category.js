@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
+import config from '../config';
 
 const Category = () => {
   const { categoryName } = useParams();
@@ -11,7 +12,7 @@ const Category = () => {
   useEffect(() => {
     const fetchGroupDetails = async () => {
       try {
-        const response = await fetch(`/api/3/action/group_show?id=${categoryName}&include_datasets=true&include_dataset_count=true&include_extras=true&include_users=true&include_groups=true&include_tags=true&include_followers=true`);
+        const response = await fetch(`${config.apiBaseUrl}/api/3/action/group_show?id=${categoryName}&include_datasets=true&include_dataset_count=true&include_extras=true&include_users=true&include_groups=true&include_tags=true&include_followers=true`);
         if (!response.ok) {
           throw new Error('Failed to fetch group details');
         }

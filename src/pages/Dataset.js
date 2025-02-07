@@ -3,6 +3,7 @@ import { useParams, useLocation, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { format } from 'date-fns';
 import '../index.css';
+import config from '../config';
 
 const Dataset = () => {
   const { id } = useParams();
@@ -33,7 +34,7 @@ const Dataset = () => {
   useEffect(() => {
     const fetchDatasetDetails = async () => {
       try {
-        const response = await fetch(`/api/3/action/package_show?id=${id}`);
+        const response = await fetch(`${config.apiBaseUrl}/api/3/action/package_show?id=${id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch dataset details');
         }

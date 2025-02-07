@@ -25,3 +25,7 @@ yarn-error.log*
 # automation
 config.ini
 datastore_loader.log
+
+# env files
+.env.development
+.env.release

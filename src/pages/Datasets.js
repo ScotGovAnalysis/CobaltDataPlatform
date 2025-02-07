@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
+import config from '../config';
 
 const Datasets = () => {
   const location = useLocation();
@@ -22,7 +23,7 @@ const Datasets = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await fetch(`/api/3/action/package_search?q=${searchQuery || ''}`);
+        const response = await fetch(`${config.apiBaseUrl}/api/3/action/package_search?q=${searchQuery || ''}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -214,7 +215,7 @@ const Datasets = () => {
                         />
                         <div className="ds_accordion-item__header">
                           <h3 className="ds_accordion-item__title">
-                            Organization
+                            Organisation
                             <div className="ds_search-filters__filter-count">({selectedOrganizations.length} selected)</div>
                           </h3>
                           <span className="ds_accordion-item__indicator"></span>
