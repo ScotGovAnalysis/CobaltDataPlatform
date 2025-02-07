@@ -6,6 +6,7 @@ import csv
 import os
 from datetime import datetime
 import shutil
+import pandas as pd
 
 class CKANManager:
     def __init__(self, api_url, api_key):
@@ -14,6 +15,17 @@ class CKANManager:
         self.logger = logging.getLogger(__name__)
         self.report_data = []
         
+    def infer_postgres_type(self, dtype):
+        """Map pandas data types to PostgreSQL types."""
+        type_mapping = {
+            'int64': 'BIGINT',
+            'float64': 'FLOAT',
+            'object': 'TEXT',
+            'datetime64[ns]': 'TIMESTAMP',
+            'bool': 'BOOLEAN'
+        }
+        return type_mapping.get(str(dtype), 'TEXT')
+
     def _make_request(self, endpoint, method='get', **kwargs):
         """Make HTTP request to CKAN API with proper headers."""
         headers = {"Authorization": self.api_key}
@@ -199,7 +211,7 @@ class CKANManager:
             if not resource_check or not resource_check.get("success"):
                 self.logger.error(f"Resource ID {resource_id} does not exist. Cannot update schema.")
                 return False
-            
+
             # Fetch the current schema from the Datastore
             response = requests.post(
                 f"{self.api_url}/datastore_search",
@@ -228,7 +240,15 @@ class CKANManager:
                     }
                     updated_fields.append(matching_field)
                 else:
-                    self.logger.warning(f"Field '{field_id}' not found in current schema. Skipping.")
+                    self.logger.warning(f"Field '{field_id}' not found in current schema. Adding as new field.")
+                    updated_fields.append({
+                        "id": field_id,
+                        "type": "text",  # Default type, adjust as needed
+                        "info": {
+                            "label": field.get("id", ""),
+                            "notes": field.get("description", "")
+                        }
+                    })
 
             # Prepare payload for datastore_create
             update_payload = {
@@ -254,6 +274,48 @@ class CKANManager:
             if hasattr(e, "response"):
                 self.logger.error(f"Response content: {e.response.text}")
             return False
+
+    def create_or_update_resource(self, dataset_id, resource_payload, file_path):
+        """Create or update a resource, with schema update capability."""
+        try:
+            existing_resource = self.get_resource_by_name(dataset_id, resource_payload["name"])
+
+            # Prepare the multipart form data
+            data = resource_payload.copy()
+            files = {"upload": (resource_payload["name"], open(file_path, "rb"))}
+            schema_fields = data.pop("schema", {}).get("fields", []) if "schema" in data else []
+
+            if existing_resource:
+                # Update existing resource
+                data["id"] = existing_resource["id"]
+                data["package_id"] = dataset_id
+                result = self._make_request('resource_update', method='post', data=data, files=files)
+                action = "updated"
+            else:
+                # Create new resource
+                data["package_id"] = dataset_id
+                result = self._make_request('resource_create', method='post', data=data, files=files)
+                action = "created"
+
+            if result and result.get("success"):
+                resource_id = result["result"]["id"]
+                self.logger.info(f"{action.capitalize()} resource: {resource_payload['name']} (ID: {resource_id})")
+
+                # Push data to DataStore
+                df = pd.read_csv(file_path) if file_path.endswith('.csv') else pd.read_excel(file_path)
+                self.push_to_datastore(resource_id, df)
+
+                # Apply schema (data dictionary) if provided
+                if schema_fields:
+                    self.update_schema_dictionary(resource_id, schema_fields)
+                return True
+            else:
+                self.logger.error(f"Failed to {action} resource: {resource_payload['name']}")
+                return False
+        except Exception as e:
+            self.logger.error(f"Failed to handle resource: {str(e)}")
+            return False
+
 
     def push_to_datastore(self, resource_id, df):
         """
