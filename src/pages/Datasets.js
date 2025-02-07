@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
+import styles from '../styles/Accordian.module.css'
 
 const Datasets = () => {
   const location = useLocation();
@@ -210,15 +211,15 @@ const Datasets = () => {
                       <div className="ds_accordion-item">
                         <input
                           type="checkbox"
-                          className="visually-hidden ds_accordion-item__control"
+                          className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
                           id="organization-panel"
                         />
-                        <div className="ds_accordion-item__header">
+                         <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
                           <h3 className="ds_accordion-item__title">
                             Organisation
                             <div className="ds_search-filters__filter-count">({selectedOrganizations.length} selected)</div>
                           </h3>
-                          <span className="ds_accordion-item__indicator"></span>
+                          <span className={styles.accordionIndicator}></span>
                           <label
                             className="ds_accordion-item__label"
                             htmlFor="organization-panel"
@@ -259,15 +260,15 @@ const Datasets = () => {
                       <div className="ds_accordion-item">
                         <input
                           type="checkbox"
-                          className="visually-hidden ds_accordion-item__control"
+                          className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
                           id="resource-panel"
                         />
-                        <div className="ds_accordion-item__header">
-                          <h3 className="ds_accordion-item__title">
+                         <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
+                         <h3 className="ds_accordion-item__title">
                             Data Format
                             <div className="ds_search-filters__filter-count">({selectedResourceTypes.length} selected)</div>
                           </h3>
-                          <span className="ds_accordion-item__indicator"></span>
+                          <span className={styles.accordionIndicator}></span>
                           <label
                             className="ds_accordion-item__label"
                             htmlFor="resource-panel"

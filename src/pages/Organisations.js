@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
+import styles from '../styles/Accordian.module.css'
 
 const Organisations = () => {
   const [organisations, setOrganisations] = useState([]);
@@ -124,14 +125,14 @@ const Organisations = () => {
                       <div className="ds_accordion-item">
                         <input
                           type="checkbox"
-                          className="visually-hidden ds_accordion-item__control"
+                          className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
                           id="organisation-type-panel"
                         />
-                        <div className="ds_accordion-item__header">
-                          <h3 className="ds_accordion-item__title">
+                         <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
+                         <h3 className="ds_accordion-item__title">
                             Organisation Type
                           </h3>
-                          <span className="ds_accordion-item__indicator"></span>
+                          <span className={styles.accordionIndicator}></span>
                           <label
                             className="ds_accordion-item__label"
                             htmlFor="organisation-type-panel"

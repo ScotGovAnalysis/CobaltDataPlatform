@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import Papa from 'papaparse';
-import Select from 'react-select';
+import styles from '../styles/Accordian.module.css'
 import DatasetAnalysis from './DatasetAnalysis';
 import MapViewer from '../components/MapViewer';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -210,12 +210,12 @@ const DatasetExplorer = () => {
                   <input
                     type="checkbox"
                     id="description-accordion"
-                    className="visually-hidden ds_accordion-item__control"
-                  />
-                  <div className="ds_accordion-item__header">
-                    <h3 className="ds_accordion-item__title">Description</h3>
-                    <span className="ds_accordion-item__indicator"></span>
-                    <label className="ds_accordion-item__label" htmlFor="description-accordion">
+                    className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
+                    />
+                         <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
+                         <h3 className="ds_accordion-item__title">Description</h3>
+                         <span className={styles.accordionIndicator}></span>
+                         <label className="ds_accordion-item__label" htmlFor="description-accordion">
                       <span className="visually-hidden">Show this section</span>
                       </label>
                     </div>
@@ -229,19 +229,15 @@ const DatasetExplorer = () => {
                       )}
                     </div>
                   </div>
-                </div>
           
-                {/* Data Dictionary Accordion */}
-                <div className="ds_accordion">
   <div className="ds_accordion-item">
     <input
       type="checkbox"
       id="data-dictionary-accordion"
-      className="visually-hidden ds_accordion-item__control"
-    />
-    <div className="ds_accordion-item__header">
+      className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}/>
+      <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
       <h3 className="ds_accordion-item__title">Data Dictionary</h3>
-      <span className="ds_accordion-item__indicator"></span>
+      <span className={styles.accordionIndicator}></span>
       <label className="ds_accordion-item__label" htmlFor="data-dictionary-accordion">
         <span className="visually-hidden">Show this section</span>
       </label>

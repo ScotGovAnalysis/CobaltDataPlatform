@@ -29,3 +29,10 @@ datastore_loader.log
 # env files
 .env.development
 .env.release
+
+/automation/Completed/files/*
+/automation/Completed/metadata/*
+/automation/Completed/report/*
+/automation/Pending/files/*
+/automation/Pending/metadata/*
+/automation/__pycache__

@@ -1,4 +1,5 @@
 import Select from 'react-select';
+import styles from '../styles/Accordian.module.css'
 
 const Filters = ({
   selectedColumns,
@@ -17,11 +18,11 @@ const Filters = ({
 
     <div className="ds_accordion" data-module="ds-accordion">
       <div className="ds_accordion-item">
-        <input type="checkbox" className="visually-hidden ds_accordion-item__control" id="panel-1" />
-        <div className="ds_accordion-item__header">
-          <h3 className="ds_accordion-item__title">Fields to Include</h3>
-          <span className="ds_accordion-item__indicator"></span>
-          <label className="ds_accordion-item__label" htmlFor="panel-1">
+        <input type="checkbox" className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`} id="panel-1" />
+        <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
+        <h3 className="ds_accordion-item__title">Fields to Include</h3>
+        <span className={styles.accordionIndicator}></span>
+        <label className="ds_accordion-item__label" htmlFor="panel-1">
             <span className="visually-hidden">Show this section</span>
           </label>
         </div>
@@ -48,14 +49,13 @@ const Filters = ({
           </div>
         </div>
       </div>
-    </div>
 
-    <div className="ds_accordion" data-module="ds-accordion">
+
       <div className="ds_accordion-item">
-        <input type="checkbox" className="visually-hidden ds_accordion-item__control" id="panel-2" />
+        <input type="checkbox" className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`} id="panel-2" />
         <div className="ds_accordion-item__header">
           <h3 className="ds_accordion-item__title">Fields Hidden</h3>
-          <span className="ds_accordion-item__indicator"></span>
+          <span className={styles.accordionIndicator}></span>
           <label className="ds_accordion-item__label" htmlFor="panel-2">
             <span className="visually-hidden">Show this section</span>
           </label>
@@ -83,14 +83,12 @@ const Filters = ({
           </div>
         </div>
       </div>
-    </div>
 
-    <div className="ds_accordion" data-module="ds-accordion">
       <div className="ds_accordion-item">
-        <input type="checkbox" className="visually-hidden ds_accordion-item__control" id="panel-3" />
+        <input type="checkbox" className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`} id="panel-3" />
         <div className="ds_accordion-item__header">
           <h3 className="ds_accordion-item__title">Filters</h3>
-          <span className="ds_accordion-item__indicator"></span>
+          <span className={styles.accordionIndicator}></span>
           <label className="ds_accordion-item__label" htmlFor="panel-3">
             <span className="visually-hidden">Show this section</span>
           </label>
