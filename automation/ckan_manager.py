@@ -278,6 +278,7 @@ class CKANManager:
     def create_or_update_resource(self, dataset_id, resource_payload, file_path):
         """Create or update a resource, with schema update capability."""
         try:
+            # Check if a resource with the same name already exists
             existing_resource = self.get_resource_by_name(dataset_id, resource_payload["name"])
 
             # Prepare the multipart form data
@@ -315,6 +316,8 @@ class CKANManager:
         except Exception as e:
             self.logger.error(f"Failed to handle resource: {str(e)}")
             return False
+
+
 
 
     def push_to_datastore(self, resource_id, df):
