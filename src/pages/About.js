@@ -85,7 +85,7 @@ const About = () => {
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin euismod, nisl nec tincidunt aliquet, nunc
                 nisi aliquet nunc, nec aliquet nunc nisi nec nunc.
               </p>
-              <a href="mailto:auren.clark@gov.scot" className="ds_button ds_button--primary">
+              <a href="mailto:TBC" className="ds_button ds_button--primary">
                 Email Us
               </a>
             </div>
