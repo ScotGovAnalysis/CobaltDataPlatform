@@ -2,7 +2,7 @@
 // Updated Help.jsx component
 import React from 'react';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
-import styles from '../styles/Accordian.module.css'
+import styles from '../styles/Design_Style.module.css'
 
 const Help = () => {
   return (

@@ -3,11 +3,13 @@ import logging
 import configparser
 from typing import Dict, Any
 import chardet
+import json
+import csv
 
 def sanitize_name(name: str) -> str:
     """Sanitize names for CKAN/PostgreSQL compatibility."""
     return (
-        ''.join(c if c.isalnum() or c == '_' else '_' 
+        ''.join(c if c.isalnum() or c == '_' else '_'
         for c in name.strip())
         .strip('_')
         .lower()
@@ -15,96 +17,75 @@ def sanitize_name(name: str) -> str:
     )
 
 class ConfigLoader:
-    def __init__(self, config_path: str = 'config.ini'):
+    def __init__(self, config_path='config.ini'):
         self.config = configparser.ConfigParser()
-        if not self.config.read(config_path):
-            raise FileNotFoundError(f"Config file not found: {config_path}")
-        
-        self._validate_config()
+        self.config.read(config_path)
         self._initialize_paths()
 
-    def _validate_config(self) -> None:
-        """Validate required configuration sections and keys."""
-        required_sections = {
-            'Paths': ['pending_dir', 'completed_dir'],
-            'Database': ['dbname', 'user', 'password', 'host'],
-            'CKAN': ['api_url', 'api_key']
-        }
-        
-        for section, keys in required_sections.items():
-            if not self.config.has_section(section):
-                raise ValueError(f"Missing config section: {section}")
-            for key in keys:
-                if not self.config.has_option(section, key):
-                    raise ValueError(f"Missing key '{key}' in section '{section}'")
-
-    def _initialize_paths(self) -> None:
-        """Initialize all directory paths."""
+    def _initialize_paths(self):
+        """Initialize directory paths."""
         self.pending_root_dir = self.config.get('Paths', 'pending_dir')
         self.completed_root_dir = self.config.get('Paths', 'completed_dir')
-        
-        # Subdirectories
         self.pending_file_dir = os.path.join(self.pending_root_dir, 'files')
         self.pending_metadata_dir = os.path.join(self.pending_root_dir, 'metadata')
         self.completed_file_dir = os.path.join(self.completed_root_dir, 'files')
         self.completed_metadata_dir = os.path.join(self.completed_root_dir, 'metadata')
         self.completed_report_dir = os.path.join(self.completed_root_dir, 'report')
-        
-        # Ensure directories exist
+
         for path in [
-            self.pending_root_dir,
-            self.pending_file_dir,
-            self.pending_metadata_dir,
-            self.completed_root_dir,
-            self.completed_file_dir,
-            self.completed_metadata_dir,
-            self.completed_report_dir
+            self.pending_root_dir, self.pending_file_dir, self.pending_metadata_dir,
+            self.completed_root_dir, self.completed_file_dir, self.completed_metadata_dir, self.completed_report_dir
         ]:
             os.makedirs(path, exist_ok=True)
 
     @property
     def db_params(self) -> Dict[str, str]:
-        """Get database connection parameters."""
         return {
-            'dbname': self.config.get('Database', 'dbname'),
-            'user': self.config.get('Database', 'user'),
-            'password': self.config.get('Database', 'password'),
-            'host': self.config.get('Database', 'host')
+            "dbname": self.config.get('Database', 'dbname'),
+            "user": self.config.get('Database', 'user'),
+            "password": self.config.get('Database', 'password'),
+            "host": self.config.get('Database', 'host')
         }
 
     @property
     def ckan_api_url(self) -> str:
-        """Get CKAN API URL."""
         return self.config.get('CKAN', 'api_url')
 
     @property
     def ckan_api_key(self) -> str:
-        """Get CKAN API key."""
         return self.config.get('CKAN', 'api_key')
 
 def setup_logging() -> logging.Logger:
-    """Configure structured logging with rotation."""
+    """Configure logging."""
     logger = logging.getLogger('ckan_loader')
     logger.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-
-    # Rotating file handler (10MB x 5 backups)
-    file_handler = logging.handlers.RotatingFileHandler(
-        'datastore_loader.log',
-        maxBytes=10*1024*1024,
-        backupCount=5,
-        encoding='utf-8'
-    )
+    file_handler = logging.FileHandler('datastore_loader.log', encoding='utf-8')
     file_handler.setFormatter(formatter)
 
-    # Console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
 
     logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
-    
+    logger.addHandler(stream_handler)
     return logger
+
+def load_metadata(self, filename: str) -> Dict:
+    """Load and validate metadata file."""
+    metadata_matches = [
+        f for f in os.listdir(self.config.pending_metadata_dir)
+        if f.startswith(f"metadata_{os.path.splitext(filename)[0]}")
+    ]
+    if not metadata_matches:
+        raise ValueError("No matching metadata file found")
+    latest_metadata = max(metadata_matches)
+    metadata_path = os.path.join(self.config.pending_metadata_dir, latest_metadata)
+    try:
+        with open(metadata_path, 'r', encoding='utf-8') as f:
+            metadata = json.load(f)
+            if not isinstance(metadata, dict):
+                raise ValueError("Metadata is not a dictionary")
+            return metadata
+    except Exception as e:
+        raise ValueError(f"Metadata load failed: {str(e)}")

@@ -1,5 +1,5 @@
 import Select from 'react-select';
-import styles from '../styles/Accordian.module.css'
+import styles from '../styles/Design_Style.module.css'
 
 const Filters = ({
   selectedColumns,

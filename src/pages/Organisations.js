@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
-import styles from '../styles/Accordian.module.css'
+import styles from '../styles/Design_Style.module.css'
 
 const Organisations = () => {
   const [organisations, setOrganisations] = useState([]);
