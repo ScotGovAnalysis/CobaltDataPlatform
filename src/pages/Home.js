@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
 import '@scottish-government/design-system/dist/css/design-system.min.css'; // Ensure Design System is properly imported
-import config from '../config.js' 
+import config from '../config.js'
 
 const Home = () => {
   const [popularTags, setPopularTags] = useState([]);
@@ -88,7 +88,7 @@ const Home = () => {
             <div style={{ marginTop: '1rem' }}>
               <h3 className="ds_h3">Popular Tags</h3>
               <div className="ds_tag-list" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {popularTags.slice(0, 6).map((tag, index) => ( // Limit to 5 tags
+                {popularTags.slice(0, 6).map((tag, index) => ( // Limit to 6 tags
                   <Link
                     key={index}
                     to={`/results?q=${encodeURIComponent(tag)}`} // Navigate to Results page with the tag as a query parameter
@@ -104,16 +104,50 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Browse by Category Section */}
-        <div className="ds_wrapper" style={{ marginTop: '2.5rem' }}> {/* Added more space below the search bar */}
+        {/* Navigation Buttons Section */}
+        
+        <div className="ds_wrapper" style={{ marginTop: '2.5rem' }}>
           <div className="ds_cb__inner">
-            <h2 className="ds_h3">Browse by Category</h2>
-            <p className="ds_lead">
-              Explore datasets by themes such as health, education, and economy.
-            </p>
-            <Link to="/categories" className="ds_button ds_button--primary">
-              Browse Categories
-            </Link>
+            <nav aria-label="Category navigation">
+              <ul className="ds_category-list ds_category-list--grid ds_category-list--narrow">
+                <li className="ds_card ds_card--has-hover">
+                  <article className="ds_category-item ds_category-item--card">
+                    <h2 className="ds_category-item__title">
+                      <Link to="/datasets" className="ds_category-item__link">
+                        Datasets
+                      </Link>
+                    </h2>
+                    <p className="ds_category-item__summary">
+                      Explore a wide range of datasets available for public use.
+                    </p>
+                  </article>
+                </li>
+                <li className="ds_card ds_card--has-hover">
+                  <article className="ds_category-item ds_category-item--card">
+                    <h2 className="ds_category-item__title">
+                      <Link to="/organisations" className="ds_category-item__link">
+                        Organisations
+                      </Link>
+                    </h2>
+                    <p className="ds_category-item__summary">
+                      Browse organisations publishing Scotland's official statistics.
+                    </p>
+                  </article>
+                </li>
+                <li className="ds_card ds_card--has-hover">
+                  <article className="ds_category-item ds_category-item--card">
+                    <h2 className="ds_category-item__title">
+                      <Link to="/categories" className="ds_category-item__link">
+                        Categories
+                      </Link>
+                    </h2>
+                    <p className="ds_category-item__summary">
+                      Browse datasets by themes such as health, education and economy.
+                    </p>
+                  </article>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </main>
