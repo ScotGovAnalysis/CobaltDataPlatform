@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Box,
   Container,
@@ -14,7 +14,6 @@ import {
   StackedLineChart as LineChartIcon,
   PieChart as PieChartIcon,
   ScatterPlot as ScatterPlotIcon,
-  ArrowDropDown as DropDownIcon,
   Download as DownloadIcon,
   Compare as CompareIcon,
   Analytics as AnalyticsIcon
@@ -30,9 +29,8 @@ import AxisSelector from '../components/AxisSelector';
 import ChartTypeSelector from '../components/ChartTypeSelector';
 
 const AdvancedDataExplorer = ({ data, columns }) => {
-  // State Management
   const [xAxis, setXAxis] = useState(columns[0]);
-  const [yAxis, setYAxis] = useState('count'); // Default Y-axis is "Count"
+  const [yAxis, setYAxis] = useState('count');
   const [chartType, setChartType] = useState('bar');
   const [comparisonModalOpen, setComparisonModalOpen] = useState(false);
   const [statisticsModalOpen, setStatisticsModalOpen] = useState(false);
@@ -42,10 +40,8 @@ const AdvancedDataExplorer = ({ data, columns }) => {
   const safeColumns = columns || [];
   const safeData = data || [];
 
-  // Chart Reference for Interactions
   const chartRef = useRef(null);
 
-  // Chart Type Configuration
   const chartTypes = [
     { type: 'bar', icon: <BarChartIcon /> },
     { type: 'line', icon: <LineChartIcon /> },
@@ -53,12 +49,13 @@ const AdvancedDataExplorer = ({ data, columns }) => {
     { type: 'pie', icon: <PieChartIcon /> },
     { type: 'doughnut', icon: <PieChartIcon /> }
   ];
+
   useEffect(() => {
     if (safeColumns.length > 0) {
       setXAxis(safeColumns[0]);
     }
   }, [safeColumns]);
-  // Advanced Statistical Analysis
+
   const computeStatistics = useCallback((column) => {
     if (!safeData.length) return null;
 
@@ -82,8 +79,6 @@ const AdvancedDataExplorer = ({ data, columns }) => {
     };
   }, [data]);
 
-  
-  // Export Functionality
   const exportChartAsPNG = useCallback(() => {
     if (chartRef.current) {
       htmlToImage.toPng(chartRef.current)
@@ -112,7 +107,6 @@ const AdvancedDataExplorer = ({ data, columns }) => {
     setSnackbarOpen(true);
   }, [data]);
 
-  // Comparative Analysis
   const compareColumns = useCallback(() => {
     if (comparisonColumns.length < 2) {
       setSnackbarMessage('Select at least two columns to compare');
@@ -129,12 +123,11 @@ const AdvancedDataExplorer = ({ data, columns }) => {
   }, [comparisonColumns, computeStatistics]);
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="xl" sx={{ padding: 0 }}>
       <Typography variant="h4" sx={{ mb: 3 }}>
         Advanced Data Explorer
       </Typography>
 
-      {/* Export and Analysis Buttons */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Box>
           <Button
@@ -172,7 +165,6 @@ const AdvancedDataExplorer = ({ data, columns }) => {
         </Box>
       </Box>
 
-      {/* Axis and Chart Type Selection */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
         <AxisSelector
           axis={xAxis}
@@ -187,7 +179,7 @@ const AdvancedDataExplorer = ({ data, columns }) => {
           columns={columns}
           label="Y-Axis"
           disabledAxis={xAxis}
-          includeCount // Add "Count" option for Y-axis
+          includeCount
         />
         <ChartTypeSelector
           chartType={chartType}
@@ -196,18 +188,17 @@ const AdvancedDataExplorer = ({ data, columns }) => {
         />
       </Box>
 
-      {/* Main Chart Area */}
-      <Paper sx={{ p: 3, height: 500 }}>
+      <Paper sx={{ p: 3, height: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <ChartRenderer
           chartType={chartType}
           data={data}
           xAxis={xAxis}
           yAxis={yAxis}
           chartRef={chartRef}
+          style={{ width: '100%', height: '100%', maxHeight: '600px' }}
         />
       </Paper>
 
-      {/* Comparison Modal */}
       <ComparisonModal
         open={comparisonModalOpen}
         onClose={() => setComparisonModalOpen(false)}
@@ -217,7 +208,6 @@ const AdvancedDataExplorer = ({ data, columns }) => {
         compareColumns={compareColumns}
       />
 
-      {/* Statistics Modal */}
       <ColumnStatisticsModal
         open={statisticsModalOpen}
         onClose={() => setStatisticsModalOpen(false)}
@@ -225,7 +215,6 @@ const AdvancedDataExplorer = ({ data, columns }) => {
         computeStatistics={computeStatistics}
       />
 
-      {/* Snackbar for Notifications */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}

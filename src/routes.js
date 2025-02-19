@@ -10,7 +10,6 @@ import Organisation from './pages/Organisation';
 import Resource from './pages/Resource';
 import Category from './pages/Category';
 import Contact from './pages/Contact';
-import DatasetAnalysis from './pages/DatasetAnalysis';
 
 const routes = [
   { path: '/about', element: <About /> },
@@ -26,7 +25,6 @@ const routes = [
   { path: '/organisation/:organisationName', element: <Organisation /> },
   { path: '/privacy', element: <Privacy /> },
   { path: '/help', element: <Help /> },
-  { path: '/analyse-dataset', element: <DatasetAnalysis /> }, 
 ];
 
 export default routes;

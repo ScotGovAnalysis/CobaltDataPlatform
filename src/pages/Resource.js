@@ -3,10 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { format } from 'date-fns';
 import styles from '../styles/Design_Style.module.css';
-import DatasetAnalysis from './DatasetAnalysis';
+import DatasetAnalysis from '../components/DatasetAnalysis';
 import MapViewer from '../components/MapViewer';
 import ApiModal from '../components/ApiModal';
-import DataViewerModal from '../components/DataViewerModal'; // Import the new modal
+import DataViewerModal from '../components/DataViewerModal';
+import AnalysisModal from '../components/AnalysisModal'; // Import the new modal
 import config from '../config';
 
 const Resource = () => {
@@ -18,7 +19,8 @@ const Resource = () => {
   const [hasMap, setHasMap] = useState(false);
   const [selectedView, setSelectedView] = useState(null);
   const [showApiModal, setShowApiModal] = useState(false);
-  const [showDataViewerModal, setShowDataViewerModal] = useState(false); // State for data viewer modal
+  const [showDataViewerModal, setShowDataViewerModal] = useState(false);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false); // State for analysis modal
   const [dataDictionary, setDataDictionary] = useState([]);
   const [resourceViewId, setResourceViewId] = useState(null);
   const [csvData, setCsvData] = useState([]);
@@ -279,7 +281,7 @@ const Resource = () => {
                     <article className="ds_category-item ds_category-item--card">
                       <h2 className="ds_category-item__title">
                         <button
-                          onClick={() => setShowDataViewerModal(true)} // Open modal instead of setting view
+                          onClick={() => setShowDataViewerModal(true)}
                           className="ds_category-item__link ds_category-item__link--button"
                         >
                           View Data
@@ -294,7 +296,7 @@ const Resource = () => {
                     <article className="ds_category-item ds_category-item--card">
                       <h2 className="ds_category-item__title">
                         <button
-                          onClick={() => setSelectedView('analysis')}
+                          onClick={() => setShowAnalysisModal(true)} // Open analysis modal
                           className="ds_category-item__link ds_category-item__link--button"
                         >
                           Analyze Data
@@ -368,9 +370,6 @@ const Resource = () => {
               </nav>
             ) : (
               <div className="ds_search-results">
-                {selectedView === 'analysis' && (
-                  <DatasetAnalysis resourceId={resourceId} data={csvData} columns={Object.keys(csvData[0] || {})} />
-                )}
                 {selectedView === 'map' && hasMap && (
                   <MapViewer data={geoJsonData} />
                 )}
@@ -398,6 +397,13 @@ const Resource = () => {
         onClose={() => setShowDataViewerModal(false)}
         src={getDataViewerUrl()}
       />
+
+      <AnalysisModal
+        isOpen={showAnalysisModal}
+        onClose={() => setShowAnalysisModal(false)}
+      >
+        <DatasetAnalysis resourceId={resourceId} data={csvData} columns={Object.keys(csvData[0] || {})} />
+      </AnalysisModal>
     </div>
   );
 };
