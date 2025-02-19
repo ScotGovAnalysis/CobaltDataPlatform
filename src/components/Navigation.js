@@ -3,8 +3,8 @@ import React from 'react';
 const navItems = [
   { href: '/home', label: 'Home' },
   { href: '/datasets', label: 'Datasets' },
-  { href: '/categories', label: 'Categories' },
   { href: '/organisations', label: 'Organisations' },
+  { href: '/categories', label: 'Categories' },
   { href: '/about', label: 'About' },
   { href: '/help', label: 'Help' }
 ];
