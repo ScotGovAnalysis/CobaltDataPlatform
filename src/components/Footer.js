@@ -13,7 +13,7 @@ const Footer = () => {
               <a href="/accessibility">Accessibility statement</a>
             </li>
             <li className="ds_site-items__item">
-              <a href="/cookies">Cookies</a>
+              <a href="/contact">Contact</a>
             </li>
           </ul>
           <div className="ds_site-footer__copyright">

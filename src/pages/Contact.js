@@ -1,21 +1,17 @@
 import React from 'react';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 
-const About = () => {
+const Contact = () => {
   return (
     <div className="ds_page__middle">
       <div className="ds_wrapper">
         <main id="main-content">
-        <img
-                width="300"
-                height="300"
-                src="https://upload.wikimedia.org/wikipedia/commons/f/f1/2ChocolateChipCookies.jpg"
-                alt="Cookies"
-              />
+        <label class="ds_label" for="description">Description</label>
+        <textarea class="ds_input" rows="3" id="description" name="description"></textarea>
         </main>
       </div>
     </div>
   );
 };
 
-export default About;
+export default Contact;

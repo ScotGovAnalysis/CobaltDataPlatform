@@ -83,148 +83,139 @@ const Dataset = () => {
   return (
     <div className="ds_page__middle">
       <div className="ds_wrapper">
-        {/* Breadcrumbs */}
-        <nav aria-label="Breadcrumb">
-          <ol className="ds_breadcrumbs">
-            <li className="ds_breadcrumbs__item">
-              <Link className="ds_breadcrumbs__link" to="/">Home</Link>
-            </li>
-            {isFromResultsPage ? (
-              <>
-                <li className="ds_breadcrumbs__item">
-                  <Link className="ds_breadcrumbs__link" to={`/results?q=${searchQuery}`}>Results</Link>
-                </li>
-                <li className="ds_breadcrumbs__item">
-                  <span className="ds_breadcrumbs__current">Dataset: {dataset.title}</span>
-                </li>
-              </>
-            ) : (
-              <>
-                <li className="ds_breadcrumbs__item">
-                  <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
-                </li>
-                <li className="ds_breadcrumbs__item">
-                  <span className="ds_breadcrumbs__current">{dataset.title}</span>
-                </li>
-              </>
-            )}
-          </ol>
-        </nav>
-      </div>
+        <div className="ds_layout gov_layout--publication">
+          {/* Sidebar Metadata Section */}
+          <aside className="ds_layout__sidebar">
+            <div className="ds_metadata__panel">
+              <h2 className="ds_metadata__panel-title">Metadata</h2>
+              <dl className="ds_metadata">
+                <div className="ds_metadata__item">
+                  <dt className="ds_metadata__key">Author</dt>
+                  <dd className="ds_metadata__value">{dataset.author}</dd>
+                </div>
+                <div className="ds_metadata__item">
+                  <dt className="ds_metadata__key">Organisation</dt>
+                  <dd className="ds_metadata__value">{dataset.organization?.title || 'Not specified'}</dd>
+                </div>
+                <div className="ds_metadata__item">
+                  <dt className="ds_metadata__key">License</dt>
+                  <dd className="ds_metadata__value">{dataset.license_title || 'Not specified'}</dd>
+                </div>
+                <div className="ds_metadata__item">
+                  <dt className="ds_metadata__key">Published</dt>
+                  <dd className="ds_metadata__value">{format(new Date(dataset.metadata_created), 'dd MMMM yyyy')}</dd>
+                </div>
+                <div className="ds_metadata__item">
+                  <dt className="ds_metadata__key">Last Modified</dt>
+                  <dd className="ds_metadata__value">{format(new Date(dataset.metadata_modified), 'dd MMMM yyyy')}</dd>
+                </div>
+                {dataset.frequency && (
+                  <div className="ds_metadata__item">
+                    <dt className="ds_metadata__key">Update Frequency</dt>
+                    <dd className="ds_metadata__value">{dataset.frequency}</dd>
+                  </div>
+                )}
+                {dataset.spatial && (
+                  <div className="ds_metadata__item">
+                    <dt className="ds_metadata__key">Geographic Coverage</dt>
+                    <dd className="ds_metadata__value">{dataset.spatial}</dd>
+                  </div>
+                )}
+                {dataset.temporal_coverage && (
+                  <div className="ds_metadata__item">
+                    <dt className="ds_metadata__key">Temporal Coverage</dt>
+                    <dd className="ds_metadata__value">{dataset.temporal_coverage}</dd>
+                  </div>
+                )}
+                {dataset.contact_email && (
+                  <div className="ds_metadata__item">
+                    <dt className="ds_metadata__key">Contact</dt>
+                    <dd className="ds_metadata__value">
+                      <a href={`mailto:${dataset.contact_email}`} className="ds_link">
+                        {dataset.contact_email}
+                      </a>
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+          </aside>
 
-      {/* Rest of the Dataset component */}
-      <div className="ds_wrapper">
-        <div className="ds_layout gov_layout--publication--no-sidebar">
+          {/* Main Content Section */}
           <div className="ds_layout__content">
             <main id="main-content">
+              {/* Header Section */}
               <header className="ds_page-header gov_sublayout gov_sublayout--publication-header">
                 <div className="gov_sublayout__title">
                   <span className="ds_page-header__label ds_content-label">Dataset</span>
                   <h1 className="ds_page-header__title">{dataset.title}</h1>
                 </div>
-
-                <div className="gov_sublayout__metadata">
-                  <dl className="ds_page-header__metadata ds_metadata">
-                    <div className="ds_metadata__item">
-                      <dt className="ds_metadata__key">Published</dt>
-                      <dd className="ds_metadata__value">
-                        <strong> {format(new Date(dataset.metadata_created), 'dd MMMM yyyy')}</strong>
-                      </dd>
-                    </div>
-
-                    <div className="ds_metadata__item">
-                      <dt className="ds_metadata__key">Organisation</dt>
-                      <dd className="ds_metadata__value"> &nbsp;
-                        <a href="#" className="ds_link">
-                           {dataset.organization?.title || 'Not specified'}
-                        </a>
-                      </dd>
-                    </div>
-
-                    <div className="ds_metadata__item">
-                      <dt className="ds_metadata__key">License</dt>
-                      <dd className="ds_metadata__value"> {dataset.license_title || 'Not specified'}</dd>
-                    </div>
-
-                    <div className="ds_metadata__item">
-                      <dt className="ds_metadata__key">Last Modified</dt>
-                      <dd className="ds_metadata__value">
-                        {format(new Date(dataset.metadata_modified), ' dd MMMM yyyy')}
-                      </dd>
-                    </div>
-
-                    {/* Additional metadata fields from the API */}
-                    {dataset.frequency && (
-                      <div className="ds_metadata__item">
-                        <dt className="ds_metadata__key">Update Frequency</dt>
-                        <dd className="ds_metadata__value">{dataset.frequency}</dd>
-                      </div>
-                    )}
-
-                    {dataset.spatial && (
-                      <div className="ds_metadata__item">
-                        <dt className="ds_metadata__key">Geographic Coverage</dt>
-                        <dd className="ds_metadata__value">{dataset.spatial}</dd>
-                      </div>
-                    )}
-
-                    {dataset.temporal_coverage && (
-                      <div className="ds_metadata__item">
-                        <dt className="ds_metadata__key">Temporal Coverage</dt>
-                        <dd className="ds_metadata__value">{dataset.temporal_coverage}</dd>
-                      </div>
-                    )}
-
-                    {dataset.contact_email && (
-                      <div className="ds_metadata__item">
-                        <dt className="ds_metadata__key">Contact</dt>
-                        <dd className="ds_metadata__value">
-                          <a href={`mailto:${dataset.contact_email}`} className="ds_link">
-                            {dataset.contact_email}
-                          </a>
-                        </dd>
-                      </div>
-                    )}
-                  </dl>
-                </div>
               </header>
+
+              {/* Breadcrumbs */}
+              <nav aria-label="Breadcrumb">
+                <ol className="ds_breadcrumbs">
+                  <li className="ds_breadcrumbs__item">
+                    <Link className="ds_breadcrumbs__link" to="/">Home</Link>
+                  </li>
+                  {isFromResultsPage ? (
+                    <>
+                      <li className="ds_breadcrumbs__item">
+                        <Link className="ds_breadcrumbs__link" to={`/results?q=${searchQuery}`}>Results</Link>
+                      </li>
+                      <li className="ds_breadcrumbs__item">
+                        <span className="ds_breadcrumbs__current">Dataset: {dataset.title}</span>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li className="ds_breadcrumbs__item">
+                        <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
+                      </li>
+                      <li className="ds_breadcrumbs__item">
+                        <span className="ds_breadcrumbs__current">{dataset.title}</span>
+                      </li>
+                    </>
+                  )}
+                </ol>
+              </nav>
 
               <hr />
 
-              {/* Description and Resources section */}
+              {/* Description Section */}
               <section>
-                <h2>Description</h2>
-                <p>{dataset.notes
-                  ? dataset.notes.split('\n').map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                    ))
-                  : 'No description available'}
-                </p>
-                                    {/* New Tags section */}
-                                    {dataset.tags && dataset.tags.length > 0 && (
-                      <div className="ds_metadata__item">
-                        <dt className="ds_metadata__key">Tags</dt>
-                        <dd className="ds_metadata__value">
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                            {dataset.tags.map((tag, index) => (
-                              <Link
-                                key={index}
-                                to={`/results?q=${encodeURIComponent(tag.name)}`}
-                                className="ds_button ds_button--secondary"
-                                style={{ marginBottom: '0.5rem' }}
-                              >
-                                {tag.name}
-                              </Link>
-                            ))}
-                          </div>
-                        </dd>
-                      </div>
-                    )}
-
+                <h2 className="ds_h3">Description</h2>
+                {dataset.notes ? (
+                  dataset.notes.split('\n').map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))
+                ) : (
+                  <p>No description available</p>
+                )}
               </section>
 
+              {/* Tags Section */}
+              {dataset.tags && dataset.tags.length > 0 && (
+                <section>
+                  <h2 className="ds_h3">Tags</h2>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {dataset.tags.map((tag, index) => (
+                      <Link
+                        key={index}
+                        to={`/results?q=${encodeURIComponent(tag.name)}`}
+                        className="ds_button ds_button--secondary"
+                        style={{ marginBottom: '0.5rem' }}
+                      >
+                        {tag.name}
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Resources Section */}
               <section>
-                <h2 className="ds_heading">Resources</h2>
+                <h2 className="ds_h3">Resources</h2>
                 <div className="ds_file-download-list">
                   {dataset.resources.map((resource, index) => (
                     <div key={index} className="ds_file-download">
@@ -268,13 +259,20 @@ const Dataset = () => {
                                 {(resource.size / 1024).toFixed(2)} KB
                               </dd>
                             </div>
+
+                            <div className="ds_metadata__item">
+                              <dt className="ds_metadata__key visually-hidden">Date Created</dt>
+                              <dd className="ds_metadata__value">
+                                {format(new Date(resource.created), 'dd MMMM yyyy')}
+                              </dd>
+                            </div>
                           </dl>
                         </div>
                       </div>
 
                       <div className="ds_button-group">
-                        <a 
-                          href={resource.url} 
+                        <a
+                          href={resource.url}
                           className="ds_button ds_button--download"
                           download
                         >

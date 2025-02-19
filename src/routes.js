@@ -9,12 +9,14 @@ import Help from './pages/Help';
 import Organisation from './pages/Organisation';
 import DatasetExplorer from './pages/DatasetExplorer';
 import Category from './pages/Category';
+import Contact from './pages/Contact';
 import DatasetAnalysis from './pages/DatasetAnalysis';
 
 const routes = [
   { path: '/about', element: <About /> },
   { path: '/categories', element: <Categories /> },
   { path: '/category/:categoryName', element: <Category /> },
+  { path: '/contact', element: <Contact /> },
   { path: '/home', element: <Home /> },
   { path: '/results', element: <Datasets /> },
   { path: '/dataset/:id', element: <Dataset /> },

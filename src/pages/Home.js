@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom'; // Import Link for routing
-import '@scottish-government/design-system/dist/css/design-system.min.css'; // Ensure Design System is properly imported
+import { Link } from 'react-router-dom';
+import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config.js'
 
 const Home = () => {
   const [popularTags, setPopularTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [introText, setIntroText] = useState('');
 
   useEffect(() => {
     // Fetch popular tags from the CKAN API
     const fetchPopularTags = async () => {
       try {
-        const response = await fetch(`${config.apiBaseUrl}/api/action/tag_list`); // Replace with your CKAN API URL
+        const response = await fetch(`${config.apiBaseUrl}/api/action/tag_list`);
         if (!response.ok) {
           throw new Error('Failed to fetch popular tags');
         }
@@ -25,9 +26,41 @@ const Home = () => {
       }
     };
 
+    // Fetch intro text from CKAN API
+    const fetchIntroText = async () => {
+      try {
+        const response = await fetch(`${config.apiBaseUrl}/api/3/action/config_option_show`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': config.apiToken
+          },
+          body: JSON.stringify({
+            key: 'ckan.site_intro_text'
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch intro text');
+        }
+        
+        const data = await response.json();
+        if (data.success) {
+          setIntroText(data.result || 'Find and access data from the Scottish Government and its agencies');
+        } else {
+          throw new Error(data.error?.message || 'Failed to fetch intro text');
+        }
+      } catch (error) {
+        console.error('Error fetching intro text:', error);
+        setIntroText('Find and access data from the Scottish Government and its agencies');
+      }
+    };
+
     fetchPopularTags();
+    fetchIntroText();
   }, []);
 
+  // Rest of the component remains exactly the same
   return (
     <div className="ds_page__middle">
       <main id="main-content">
@@ -42,7 +75,7 @@ const Home = () => {
                     Open access to Scotland's official statistics
                   </h1>
                   <p className="ds_lead" style={{ color: '#FFFFFF' }}>
-                    Explore, visualise and download over 250 datasets from a range of producers. Start browsing by theme, organisation, or geography.
+                    {introText}
                   </p>
                 </div>
               </div>
@@ -63,9 +96,9 @@ const Home = () => {
                     id="site-search"
                     className="ds_input ds_site-search__input"
                     type="search"
-                    placeholder="Search"
+                    placeholder="Search our data"
                     autoComplete="off"
-                    style={{ width: '60%' }} // Make the search bar wider
+                    style={{ width: '60%' }}
                   />
                   <button type="submit" className="ds_button js-site-search-button">
                     <span className="visually-hidden">Search</span>
@@ -88,12 +121,12 @@ const Home = () => {
             <div style={{ marginTop: '1rem' }}>
               <h3 className="ds_h3">Popular Tags</h3>
               <div className="ds_tag-list" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {popularTags.slice(0, 6).map((tag, index) => ( // Limit to 6 tags
+                {popularTags.slice(0, 6).map((tag, index) => (
                   <Link
                     key={index}
-                    to={`/results?q=${encodeURIComponent(tag)}`} // Navigate to Results page with the tag as a query parameter
-                    className="ds_button ds_button--secondary" // Use the secondary button style
-                    style={{ marginBottom: '0.5rem' }} // Add some spacing between buttons
+                    to={`/results?q=${encodeURIComponent(tag)}`}
+                    className="ds_button ds_button--secondary"
+                    style={{ marginBottom: '0.5rem' }}
                   >
                     {tag}
                   </Link>
@@ -105,7 +138,6 @@ const Home = () => {
         </div>
 
         {/* Navigation Buttons Section */}
-        
         <div className="ds_wrapper" style={{ marginTop: '2.5rem' }}>
           <div className="ds_cb__inner">
             <nav aria-label="Category navigation">
