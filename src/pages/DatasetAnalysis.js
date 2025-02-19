@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect , useCallback, useRef } from 'react';
 import {
   Box,
   Container,
@@ -33,6 +33,7 @@ import ColumnStatisticsModal from '../components/ColumnStatisticsModal';
 import ComparisonModal from '../components/ComparisonModal';
 import AxisSelector from '../components/AxisSelector';
 import ChartTypeSelector from '../components/ChartTypeSelector';
+
 const AdvancedDataExplorer = ({ data, columns }) => {
   // State Management
   const [xAxis, setXAxis] = useState(columns[0]);
@@ -43,6 +44,8 @@ const AdvancedDataExplorer = ({ data, columns }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [comparisonColumns, setComparisonColumns] = useState([]);
+  const safeColumns = columns || [];
+  const safeData = data || [];
 
   // Chart Reference for Interactions
   const chartRef = useRef(null);
@@ -55,10 +58,16 @@ const AdvancedDataExplorer = ({ data, columns }) => {
     { type: 'pie', icon: <PieChartIcon /> },
     { type: 'doughnut', icon: <PieChartIcon /> }
   ];
-
+  useEffect(() => {
+    if (safeColumns.length > 0) {
+      setXAxis(safeColumns[0]);
+    }
+  }, [safeColumns]);
   // Advanced Statistical Analysis
   const computeStatistics = useCallback((column) => {
-    const numericValues = data
+    if (!safeData.length) return null;
+
+    const numericValues = safeData
       .map(row => Number(row[column]))
       .filter(val => !isNaN(val));
 
@@ -78,6 +87,7 @@ const AdvancedDataExplorer = ({ data, columns }) => {
     };
   }, [data]);
 
+  
   // Export Functionality
   const exportChartAsPNG = useCallback(() => {
     if (chartRef.current) {

@@ -59,3 +59,13 @@ code {
   gap: 8px;
   flex-shrink: 0;
 }
+
+/* Add to your CSS */
+.ds_category-item__link--button {
+  font-family: "GDS Transport", Arial, sans-serif;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}

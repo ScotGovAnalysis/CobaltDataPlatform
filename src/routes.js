@@ -7,7 +7,7 @@ import About from './pages/About';
 import Categories from './pages/Categories';
 import Help from './pages/Help';
 import Organisation from './pages/Organisation';
-import DatasetExplorer from './pages/DatasetExplorer';
+import Resource from './pages/Resource';
 import Category from './pages/Category';
 import Contact from './pages/Contact';
 import DatasetAnalysis from './pages/DatasetAnalysis';
@@ -20,7 +20,7 @@ const routes = [
   { path: '/home', element: <Home /> },
   { path: '/results', element: <Datasets /> },
   { path: '/dataset/:id', element: <Dataset /> },
-  { path: '/dataset/:id/explore/:resourceId', element: <DatasetExplorer /> },
+  { path: '/dataset/:id/explore/:resourceId', element: <Resource /> },
   { path: '/datasets', element: <Datasets /> },
   { path: '/organisations', element: <Organisations /> },
   { path: '/organisation/:organisationName', element: <Organisation /> },
