@@ -1,7 +1,7 @@
 import React from 'react';
-import styles from '../styles/Embedded_Modal.module.css';
+import styles from '../styles/Embedded_Modal.module.css'; // Create a CSS module for styling
 
-const ApiModal = ({ resourceId, isOpen, onClose }) => {
+const DataViewerModal = ({ isOpen, onClose, src }) => {
   if (!isOpen) return null;
 
   return (
@@ -9,10 +9,9 @@ const ApiModal = ({ resourceId, isOpen, onClose }) => {
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
           <div className={styles.titleContainer}>
-            <span className={styles.apiTitle}>CKAN Data API</span>
-            <span className={styles.apiVersion}>v1.0</span>
+            <span className={styles.viewerTitle}>Data Viewer</span>
           </div>
-          <button 
+          <button
             className={styles.closeButton}
             onClick={onClose}
             aria-label="Close modal"
@@ -25,9 +24,12 @@ const ApiModal = ({ resourceId, isOpen, onClose }) => {
         </div>
         <div className={styles.modalBody}>
           <iframe
-            title="API Information"
-            src={`https://cobaltadmin.sgdatacatalogue.net/api/1/util/snippet/api_info.html?resource_id=${resourceId}`}
-            className={styles.apiFrame}
+            title="Data Viewer"
+            src={src}
+            className={styles.viewerFrame}
+            width="100%"
+            height="100%"
+            frameBorder="0"
           />
         </div>
       </div>
@@ -35,4 +37,4 @@ const ApiModal = ({ resourceId, isOpen, onClose }) => {
   );
 };
 
-export default ApiModal;
+export default DataViewerModal;

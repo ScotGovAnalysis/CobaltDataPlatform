@@ -6,6 +6,7 @@ import styles from '../styles/Design_Style.module.css';
 import DatasetAnalysis from './DatasetAnalysis';
 import MapViewer from '../components/MapViewer';
 import ApiModal from '../components/ApiModal';
+import DataViewerModal from '../components/DataViewerModal'; // Import the new modal
 import config from '../config';
 
 const Resource = () => {
@@ -17,14 +18,14 @@ const Resource = () => {
   const [hasMap, setHasMap] = useState(false);
   const [selectedView, setSelectedView] = useState(null);
   const [showApiModal, setShowApiModal] = useState(false);
+  const [showDataViewerModal, setShowDataViewerModal] = useState(false); // State for data viewer modal
   const [dataDictionary, setDataDictionary] = useState([]);
   const [resourceViewId, setResourceViewId] = useState(null);
-  const [csvData, setCsvData] = useState([]); // Add CSV data state
+  const [csvData, setCsvData] = useState([]);
 
   useEffect(() => {
     const fetchDataset = async () => {
       try {
-        // Fetch dataset metadata
         const metadataResponse = await fetch(`${config.apiBaseUrl}/api/3/action/package_show?id=${id}`);
         const metadataResult = await metadataResponse.json();
         const datasetResult = metadataResult.result;
@@ -35,7 +36,6 @@ const Resource = () => {
           throw new Error('Resource not found');
         }
 
-        // Fetch CSV data for analysis
         if (resource.format.toLowerCase() === 'csv') {
           const response = await fetch(resource.url);
           const text = await response.text();
@@ -51,7 +51,6 @@ const Resource = () => {
           setCsvData(data);
         }
 
-        // Fetch resource views
         const viewsResponse = await fetch(
           `${config.apiBaseUrl}/api/3/action/resource_view_list?id=${resourceId}`
         );
@@ -59,7 +58,7 @@ const Resource = () => {
 
         let viewId;
         if (viewsResult.success && viewsResult.result.length > 0) {
-          viewId = viewsResult.result.find(v => v.view_type === 'datatables_view')?.id || 
+          viewId = viewsResult.result.find(v => v.view_type === 'datatables_view')?.id ||
                   viewsResult.result[0].id;
         } else {
           const createViewResponse = await fetch(
@@ -73,7 +72,7 @@ const Resource = () => {
               body: JSON.stringify({
                 resource_id: resourceId,
                 title: 'Data Preview',
-                view_type: 'datatables_view' // Changed to datatables_view
+                view_type: 'datatables_view'
               })
             }
           );
@@ -82,8 +81,8 @@ const Resource = () => {
         }
 
         setResourceViewId(viewId);
-        // Fetch the data dictionary
-        const datastoreResponse = await fetch(`${config.apiBaseUrl}/api/3/action/datastore_search?resource_id=${resourceId}&limit=0`);
+
+        const datastoreResponse = await fetch(`${config.apiBaseUrl}/api/3/action/datastore_search?resource_id=${resourceId}&limit=10`);
         const datastoreResult = await datastoreResponse.json();
 
         const fields = datastoreResult.result?.fields || [];
@@ -94,7 +93,6 @@ const Resource = () => {
         }));
         setDataDictionary(dictionary);
 
-        // Check for map data
         if (resource.format.toLowerCase() === 'geojson') {
           const response = await fetch(resource.url);
           const geojsonData = await response.json();
@@ -124,11 +122,10 @@ const Resource = () => {
 
   const getDataViewerUrl = () => {
     if (!dataset || !resourceViewId) return null;
-    
-    // Use dataset name instead of UUID
     const datasetName = dataset.name.replace(/_/g, '_');
     return `${config.apiBaseUrl}/dataset/${datasetName}/resource/${resourceId}/view/${resourceViewId}`;
   };
+
   if (loading) {
     return (
       <div className="ds_page__middle">
@@ -158,7 +155,6 @@ const Resource = () => {
     <div className="ds_page__middle">
       <div className="ds_wrapper">
         <main className="ds_layout ds_layout--search-results--filters">
-          {/* Header Section */}
           <div className="ds_layout__header w-full">
             <nav aria-label="Breadcrumb">
               <ol className="ds_breadcrumbs">
@@ -179,7 +175,6 @@ const Resource = () => {
             </div>
           </div>
 
-          {/* Metadata Sidebar */}
           <div className="ds_layout__sidebar">
             <div className="ds_metadata__panel">
               <h3 className="ds_metadata__panel-title">Metadata</h3>
@@ -254,9 +249,7 @@ const Resource = () => {
             </div>
           </div>
 
-          {/* Main Content Area */}
           <div className="ds_layout__list">
-            {/* Description Section */}
             <section className={styles.section}>
               {dataset.notes ? (
                 dataset.notes.split('\n').map((paragraph, index) => (
@@ -270,8 +263,8 @@ const Resource = () => {
               <button className="ds_button" onClick={handleDownload}>
                 Download
               </button>
-              <button 
-                className="ds_button ds_button--secondary" 
+              <button
+                className="ds_button ds_button--secondary"
                 onClick={() => setShowApiModal(true)}
               >
                 API
@@ -286,7 +279,7 @@ const Resource = () => {
                     <article className="ds_category-item ds_category-item--card">
                       <h2 className="ds_category-item__title">
                         <button
-                          onClick={() => setSelectedView('data')}
+                          onClick={() => setShowDataViewerModal(true)} // Open modal instead of setting view
                           className="ds_category-item__link ds_category-item__link--button"
                         >
                           View Data
@@ -328,7 +321,6 @@ const Resource = () => {
                   )}
                 </ul>
 
-                {/* Data Dictionary Accordion */}
                 <div className="ds_accordion" style={{ width: '100%', marginTop: '2rem' }}>
                   <div className="ds_accordion-item">
                     <input
@@ -376,20 +368,9 @@ const Resource = () => {
               </nav>
             ) : (
               <div className="ds_search-results">
-                {selectedView === 'data' && (
-                  <div style={{ width: '100%', height: '600px' }}>
-                    <iframe 
-                      title="Data viewer" 
-                      width="100%" 
-                      height="100%" 
-                      src={getDataViewerUrl()}
-                      frameBorder="0"
-                    />
-                  </div>
-                )}
                 {selectedView === 'analysis' && (
-      <DatasetAnalysis resourceId={resourceId} data={csvData} columns={Object.keys(csvData[0] || {})} />
-    )}
+                  <DatasetAnalysis resourceId={resourceId} data={csvData} columns={Object.keys(csvData[0] || {})} />
+                )}
                 {selectedView === 'map' && hasMap && (
                   <MapViewer data={geoJsonData} />
                 )}
@@ -406,11 +387,16 @@ const Resource = () => {
         </main>
       </div>
 
-      {/* API Modal */}
-      <ApiModal 
+      <ApiModal
         resourceId={resourceId}
         isOpen={showApiModal}
         onClose={() => setShowApiModal(false)}
+      />
+
+      <DataViewerModal
+        isOpen={showDataViewerModal}
+        onClose={() => setShowDataViewerModal(false)}
+        src={getDataViewerUrl()}
       />
     </div>
   );
