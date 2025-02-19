@@ -44,15 +44,7 @@ const Home = () => {
                   <p className="ds_lead" style={{ color: '#FFFFFF' }}>
                     Explore, visualise and download over 250 datasets from a range of producers. Start browsing by theme, organisation, or geography.
                   </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Search Bar Section */}
-        <div className="ds_wrapper" style={{ marginTop: '1.25rem' }}>
-          <div className="ds_cb__inner">
+                  <div className="ds_cb__inner">
             <div className="ds_site-search ds_site-search--large" style={{ width: '100%' }}>
               <form action="/results" role="search" className="ds_site-search__form" method="GET">
                 <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
@@ -63,9 +55,9 @@ const Home = () => {
                     id="site-search"
                     className="ds_input ds_site-search__input"
                     type="search"
-                    placeholder="Search"
+                    placeholder="Search our data"
                     autoComplete="off"
-                    style={{ width: '60%' }} // Make the search bar wider
+                    style={{ width: '60%' }} 
                   />
                   <button type="submit" className="ds_button js-site-search-button">
                     <span className="visually-hidden">Search</span>
@@ -76,6 +68,15 @@ const Home = () => {
                 </div>
               </form>
             </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search Bar Section */}
+        <div className="ds_wrapper" style={{ marginTop: '1.5rem' }}>
+     
             {loading ? (
               <p className="ds_hint-text" style={{ marginTop: '1rem', fontSize: '0.875rem' }}>
                 Loading popular tags...
@@ -108,6 +109,7 @@ const Home = () => {
         
         <div className="ds_wrapper" style={{ marginTop: '2.5rem' }}>
           <div className="ds_cb__inner">
+          <h3 className="ds_h3">Get Started</h3>
             <nav aria-label="Category navigation">
               <ul className="ds_category-list ds_category-list--grid ds_category-list--narrow">
                 <li className="ds_card ds_card--has-hover">
