@@ -9,7 +9,7 @@ const AnalysisModal = ({ isOpen, onClose, children }) => {
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
           <div className={styles.titleContainer}>
-            <span className={styles.analysisTitle}>Dataset Analysis</span>
+            <span className={styles.viewerTitle}>Dataset Analysis</span>
           </div>
           <button
             className={styles.closeButton}
