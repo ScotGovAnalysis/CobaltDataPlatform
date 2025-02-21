@@ -1,6 +1,5 @@
 import React from 'react';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
-import { Link } from 'react-router-dom'; // Import Link for routing
 
 const About = () => {
   return (
@@ -93,9 +92,9 @@ const About = () => {
               <p>
                 If you'd like to get in contact, please reach out through the contact form below.
               </p>
-              <Link to="/contact" className="ds_button ds_button--primary">
-              Contact us
-            </Link>
+              <a href="mailto:statistics.opendata@gov.scot" className="ds_button ds_button--primary">
+                Contact us
+              </a>
             </div>
           </section>
         </main>

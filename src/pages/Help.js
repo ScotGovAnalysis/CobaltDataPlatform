@@ -170,7 +170,7 @@ const Help = () => {
               If you can't find the answer to your question, please contact our support team. We're here to help!
             </p>
             <Link to="/contact" className="ds_button ds_button--primary">
-              Contact Support
+              Contact us
             </Link>
           </div>
         </section>
