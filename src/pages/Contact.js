@@ -14,12 +14,13 @@ const Contact = () => {
   return (
     <div className="ds_page">
       <div className="ds_page__top">
-        <header className="ds_!bg-sky-400 ds_!text-white ds_py-12">
           <div className="ds_wrapper">
-            <h1 className="ds_h1 ds_!text-white ds_!mb-2">Contact us</h1>
-            <p className="ds_!text-white ds_!text-lg">The Open Data team values your feedback, questions or comments. We are always happy to hear from you.</p>
-          </div>
+          <header className="ds_page-header">
+          <h1 className="ds_page-header__title">Contact us</h1>
+          <p className="ds_!text-white ds_!text-lg">The Open Data team values your feedback, questions or comments. We are always happy to hear from you.</p>
         </header>
+        </div>
+
       </div>
 
       <div className="ds_page__middle">
@@ -47,7 +48,7 @@ const Contact = () => {
                       <a href="mailto:statistics.opendata@gov.scot" className="ds_link">statistics.opendata@gov.scot</a>
                     </div>
                   </div>
-
+                  <hr></hr>
                   <div className="ds_!flex ds_!items-center ds_!mb-6">
                     <Phone className="ds_!text-sky-400 ds_!mr-3" size={24} />
                     <div>
@@ -56,6 +57,7 @@ const Contact = () => {
                       <p className="ds_!text-sm ds_!text-gray-600 ds_!mt-1">Mon-Fri, 9am-5pm</p>
                     </div>
                   </div>
+                  <hr></hr>
 
                   <div className="ds_!flex ds_!items-center ds_!mb-6">
                     <MapPin className="ds_!text-sky-400 ds_!mr-3" size={24} />
@@ -100,7 +102,7 @@ const Contact = () => {
 
                     <div className="ds_form-group">
                       <label className="ds_label" htmlFor="query-type">Type of Query</label>
-                      <select className="ds_select" id="query-type" name="query-type" required>
+                      <select className="ds_input" id="query-type" name="query-type" required>
                         <option value="">Please select...</option>
                         <option value="question">Open Data Question</option>
                         <option value="support">Technical Support</option>

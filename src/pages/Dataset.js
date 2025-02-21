@@ -292,12 +292,12 @@ const Dataset = () => {
                           <input
                             type="checkbox"
                             className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
-                            id={`detail-${index}`}
+                            id={`quality-detail-${index}`}
                           />
                           <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
                             <h3 className="ds_accordion-item__title">{key}</h3>
                             <span className={styles.accordionIndicator}></span>
-                            <label className="ds_accordion-item__label" htmlFor={`detail-${index}`}>
+                            <label className="ds_accordion-item__label" htmlFor={`quality-detail-${index}`}>
                               <span className="visually-hidden">Show this section</span>
                             </label>
                           </div>
@@ -327,12 +327,12 @@ const Dataset = () => {
                           <input
                             type="checkbox"
                             className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
-                            id={`detail-${index}`}
+                            id={`additional-detail-${index}`}
                           />
                           <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
                             <h3 className="ds_accordion-item__title">{key}</h3>
                             <span className={styles.accordionIndicator}></span>
-                            <label className="ds_accordion-item__label" htmlFor={`detail-${index}`}>
+                            <label className="ds_accordion-item__label" htmlFor={`additional-detail-${index}`}>
                               <span className="visually-hidden">Show this section</span>
                             </label>
                           </div>

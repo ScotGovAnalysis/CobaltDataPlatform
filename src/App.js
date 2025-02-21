@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import './App.css';
 import routes from './routes';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
@@ -32,6 +33,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
+      <ScrollToTop />
         <div className="ds_page">
           <Header />
           <main className="flex-1 p-6 overflow-auto">
