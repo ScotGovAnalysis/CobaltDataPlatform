@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
 import styles from '../styles/Design_Style.module.css'
+import BackToTop from '../components/BackToTop';
 
 const Datasets = () => {
   const location = useLocation();
@@ -215,10 +216,14 @@ const Datasets = () => {
                           id="organization-panel"
                         />
                          <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
-                          <h3 className="ds_accordion-item__title">
-                            Organisation
-                            <div className="ds_search-filters__filter-count">({selectedOrganizations.length} selected)</div>
-                          </h3>
+                         <h3 className="ds_accordion-item__title">
+                          Organisation
+                          {selectedOrganizations.length > 0 && (
+                            <div className="ds_search-filters__filter-count">
+                              ({selectedOrganizations.length} selected)
+                            </div>
+                          )}
+                        </h3>
                           <span className={styles.accordionIndicator}></span>
                           <label
                             className="ds_accordion-item__label"
@@ -264,10 +269,14 @@ const Datasets = () => {
                           id="resource-panel"
                         />
                          <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
-                         <h3 className="ds_accordion-item__title">
-                            Data Format
-                            <div className="ds_search-filters__filter-count">({selectedResourceTypes.length} selected)</div>
-                          </h3>
+                          <h3 className="ds_accordion-item__title">
+                          Data Format
+                          {selectedResourceTypes.length > 0 && (
+                            <div className="ds_search-filters__filter-count">
+                              ({selectedResourceTypes.length} selected)
+                            </div>
+                          )}
+                        </h3>
                           <span className={styles.accordionIndicator}></span>
                           <label
                             className="ds_accordion-item__label"
@@ -318,6 +327,8 @@ const Datasets = () => {
               <h2 aria-live="polite" className="ds_search-results__title">
                 {filteredResults.length} result{filteredResults.length !== 1 ? 's' : ''} {searchQuery ? `for "${searchQuery}"` : ''}
               </h2>
+              <hr className="ds_search-results__divider" />
+
               <div className="ds_search-controls">
                 <div className="ds_skip-links ds_skip-links--static">
                   <ul className="ds_skip-links__list">
@@ -380,7 +391,6 @@ const Datasets = () => {
                     </button>
                   )}
                 </div>
-                <hr className="ds_search-results__divider" />
                 <div className="ds_sort-options">
                   <label className="ds_label" htmlFor="sort-by">Sort by</label>
                   <span className="ds_select-wrapper">
@@ -423,12 +433,16 @@ const Datasets = () => {
                         </dd>
                       </div>
                       {result.resources && result.resources.length > 0 && (
-                        <div className="ds_metadata__item">
-                          <dt className="ds_metadata__key">Resource Types</dt>
-                          <dd className="ds_metadata__value">
-                            {result.resources.map(resource => resource.format).join(', ')}
-                          </dd>
-                        </div>
+                    <div className="ds_metadata__item">
+                    <dt className="ds_metadata__key">Resource Types</dt>
+                    <dd className="ds_metadata__value">
+                      {
+                        [...new Set(result.resources.map(resource => resource.format))]
+                        .join(', ')
+                      }
+                    </dd>
+                  </div>
+                  
                       )}
                       </dl>
                       <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
@@ -455,6 +469,7 @@ const Datasets = () => {
           </div>
         </main>
       </div>
+      <BackToTop />
     </div>
   );
 };

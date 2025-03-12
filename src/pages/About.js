@@ -1,6 +1,7 @@
 import React from 'react';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { Link } from 'react-router-dom'; // Import Link for routing
+import BackToTop from '../components/BackToTop';
 
 const About = () => {
   return (
@@ -100,6 +101,8 @@ const About = () => {
           </section>
         </main>
       </div>
+      <BackToTop />
+
     </div>
   );
 };

@@ -1,11 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navigation from './Navigation';
+import '../App.css';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showHeader, setShowHeader] = useState(true);
+  const lastScrollY = useRef(0);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        // Scroll down past 100px threshold
+        setShowHeader(false);
+      } else if (currentScrollY < lastScrollY.current) {
+        // Scroll up
+        setShowHeader(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    // Throttle scroll handler
+    let throttleTimeout;
+    const throttledHandleScroll = () => {
+      if (!throttleTimeout) {
+        throttleTimeout = setTimeout(() => {
+          handleScroll();
+          throttleTimeout = null;
+        }, 100);
+      }
+    };
+
+    window.addEventListener('scroll', throttledHandleScroll);
+    return () => {
+      window.removeEventListener('scroll', throttledHandleScroll);
+      if (throttleTimeout) clearTimeout(throttleTimeout);
+    };
+  }, []);
+
+  useEffect(() => {
+    const header = document.querySelector('.ds_site-header');
+    if (header) {
+      const height = header.offsetHeight;
+      document.documentElement.style.setProperty('--header-height', `${height}px`);
+    }
+  }, []);
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -17,8 +61,10 @@ const Header = () => {
   };
 
   return (
-    <header className="ds_site-header" role="banner">
-      <div className="ds_wrapper">
+    <header 
+      className={`ds_site-header ${!showHeader ? 'header-hidden' : ''}`} 
+      role="banner"
+    >      <div className="ds_wrapper">
         <div className="ds_site-header__content">
           <div className="ds_site-branding">
             <a className="ds_site-branding__logo ds_site-branding__link" href="/">

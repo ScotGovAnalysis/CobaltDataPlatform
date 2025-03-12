@@ -9,6 +9,7 @@ import ApiModal from '../components/ApiModal';
 import DataViewerModal from '../components/DataViewerModal';
 import AnalysisModal from '../components/AnalysisModal'; // Import the new modal
 import config from '../config';
+import BackToTop from '../components/BackToTop';
 
 const Resource = () => {
   const { id, resourceId } = useParams();
@@ -299,7 +300,7 @@ const Resource = () => {
                           onClick={() => setShowAnalysisModal(true)} // Open analysis modal
                           className="ds_category-item__link ds_category-item__link--button"
                         >
-                          Analyze Data
+                          Analyse Data
                         </button>
                       </h2>
                       <p className="ds_category-item__summary">
@@ -404,6 +405,8 @@ const Resource = () => {
       >
         <DatasetAnalysis resourceId={resourceId} data={csvData} columns={Object.keys(csvData[0] || {})} />
       </AnalysisModal>
+      <BackToTop />
+
     </div>
   );
 };

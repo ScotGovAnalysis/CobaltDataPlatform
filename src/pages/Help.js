@@ -3,6 +3,7 @@ import React from 'react';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import styles from '../styles/Design_Style.module.css';
 import { Link } from 'react-router-dom'; // Import Link for routing
+import BackToTop from '../components/BackToTop';
 
 const Help = () => {
   return (
@@ -174,9 +175,12 @@ const Help = () => {
             </Link>
           </div>
         </section>
+        <BackToTop />
 
         </main>
+        
       </div>
+
     </div>
   );
 };

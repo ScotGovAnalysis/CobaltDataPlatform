@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
 import styles from '../styles/Design_Style.module.css'
+import BackToTop from '../components/BackToTop';
 
 const Categories = () => {
   const [groups, setGroups] = useState([]);
@@ -173,6 +174,8 @@ const Categories = () => {
           </div>
         </main>
       </div>
+      <BackToTop />
+
     </div>
   );
 };

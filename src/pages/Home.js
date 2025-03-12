@@ -65,7 +65,7 @@ const Home = () => {
     <div className="ds_page__middle">
       <main id="main-content">
         {/* Blue Background Block */}
-        <div className="ds_cb ds_cb--blue" style={{ backgroundColor: '#005EB8', padding: '2rem 0' }}>
+        <div className="ds_cb ds_cb--blue" style={{ backgroundColor: '#005EB8', padding: '2rem' }}>
           <div className="ds_wrapper">
             <div className="ds_cb__inner ds_cb__inner--spacious">
               <div className="ds_layout">
@@ -78,7 +78,7 @@ const Home = () => {
                     {introText}
                   </p>
                   <div className="ds_cb__inner">
-                  <div className="ds_site-search ds_site-search--large">
+                  <div className="ds_site-search ds_site-search--large" style={{ marginBottom: '-5px' }}>
   <form action="/results" role="search" className="ds_site-search__form" method="GET">
     <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
     <div className="ds_input__wrapper ds_input__wrapper--has-icon" 
@@ -134,11 +134,11 @@ const Home = () => {
 
         {/* Search Bar Section */}
         </div>
-        <div className="ds_wrapper" style={{ marginTop: '2.5rem' }}>
+        <div className="ds_wrapper" style={{ marginTop: '1.5rem' }}>
           <div className="ds_cb__inner">
           <h3 className="ds_h3">Get Started</h3>
             <nav aria-label="Category navigation">
-              <ul className="ds_category-list ds_category-list--grid ds_category-list--narrow">
+              <ul className="ds_category-list ds_category-list--grid ds_category-list--narrow" style={{ marginTop: '-0.5rem' }}>
                 <li className="ds_card ds_card--has-hover">
                   <article className="ds_category-item ds_category-item--card">
                     <h2 className="ds_category-item__title">
@@ -191,9 +191,9 @@ const Home = () => {
          Error: {error}
        </p>
      ) : (
-     <div style={{ marginTop: '1rem' }}>
+     <div style={{ marginTop: '0.5rem' }}>
        <h3 className="ds_h3">Popular Tags</h3>
-       <div className="ds_tag-list" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+       <div className="ds_tag-list" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '-0.5rem' }}>
          {popularTags.slice(0, 6).map((tag, index) => (
            <Link
              key={index}

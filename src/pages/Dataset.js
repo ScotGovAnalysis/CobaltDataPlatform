@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import '../index.css';
 import config from '../config';
 import styles from '../styles/Design_Style.module.css';
+import BackToTop from '../components/BackToTop';
 
 const Dataset = () => {
   const { id } = useParams();
@@ -140,51 +141,60 @@ const Dataset = () => {
               <dl className="ds_metadata">
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Author</dt>
-                  <dd className="ds_metadata__value">{dataset.author}</dd>
+                  <dd className="ds_metadata__value"> {dataset.author}</dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Organisation</dt>
-                  <dd className="ds_metadata__value">{dataset.organization?.title || 'Not specified'}</dd>
+                  <dd className="ds_metadata__value"> {dataset.organization?.title || 'Not specified'}</dd>
                 </div>
                 <div className="ds_metadata__item">
-                  <dt className="ds_metadata__key">License</dt>
-                  <dd className="ds_metadata__value">{dataset.license_title || 'Not specified'}</dd>
-                </div>
+  <dt className="ds_metadata__key">License</dt>
+  <dd className="ds_metadata__value">
+    {dataset.license_title ? (
+      <>
+        {' '}<a href={dataset.license_title} className="ds_link">{dataset.license_title}</a>
+      </>
+    ) : (
+      ' Not specified'
+    )}
+  </dd>
+</div>
+
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Published</dt>
-                  <dd className="ds_metadata__value">{format(new Date(dataset.metadata_created), 'dd MMMM yyyy')}</dd>
+                  <dd className="ds_metadata__value"> {format(new Date(dataset.metadata_created), 'dd MMMM yyyy')}</dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Last Modified</dt>
-                  <dd className="ds_metadata__value">{format(new Date(dataset.metadata_modified), 'dd MMMM yyyy')}</dd>
+                  <dd className="ds_metadata__value"> {format(new Date(dataset.metadata_modified), 'dd MMMM yyyy')}</dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Update Frequency</dt>
-                  <dd className="ds_metadata__value">{dataset.frequency || 'Not specified'}</dd>
+                  <dd className="ds_metadata__value"> {dataset.frequency || 'Not specified'}</dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Geographic Coverage</dt>
-                  <dd className="ds_metadata__value">{dataset.spatial || 'Not specified'}</dd>
+                  <dd className="ds_metadata__value"> {dataset.spatial || 'Not specified'}</dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Temporal Coverage</dt>
-                  <dd className="ds_metadata__value">{dataset.temporal_coverage || 'Not specified'}</dd>
+                  <dd className="ds_metadata__value"> {dataset.temporal_coverage || 'Not specified'}</dd>
                 </div>
                 <div className="ds_metadata__item">
-                  <dt className="ds_metadata__key">Contact</dt>
-                  <dd className="ds_metadata__value">
-                    <a href={`mailto:${dataset.maintainer_email}`} className="ds_link">
-                      {dataset.maintainer_email}
-                    </a>
-                  </dd>
-                </div>
+  <dt className="ds_metadata__key">Contact</dt>
+  <dd className="ds_metadata__value"> <a href={`mailto:${dataset.maintainer_email}`} className="ds_link">
+    {dataset.maintainer_email}
+    </a>
+  </dd>
+</div>
+
               </dl>
               <hr />
               {dataset.tags && dataset.tags.length > 0 && (
                 <section className={styles.section}>
                   <h3 className="ds_metadata__panel-title">Tags</h3>
-                  <div className={styles.tagContainer}>
-                    {dataset.tags.map((tag, index) => (
+                  <div className="ds_tag-list" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '-0.5rem' }}>
+                  {dataset.tags.map((tag, index) => (
                       <Link
                         key={index}
                         to={`/results?q=${encodeURIComponent(tag.name)}`}
@@ -215,11 +225,11 @@ const Dataset = () => {
 
               {/* Resources Section */}
               <section className={styles.section}>
-                <h2 className="ds_h3">Resources</h2>
-                <div className="ds_file-download-list">
+                <h2 className="ds_h3" style={{ marginBottom: '0px' }}>Resources </h2>
+                <div className="ds_file-download-list" style={{ marginBottom: '40px' }}>
                   {dataset.resources.map((resource, index) => (
-                    <div key={index} className="ds_file-download">
-                      <div className="ds_file-download__thumbnail">
+                    <div key={index} className="ds_file-download" style={{ marginBottom: '0px', marginTop: '15px' }}>
+                    <div className="ds_file-download__thumbnail">
                         <a className="ds_file-download__thumbnail-link" aria-hidden="true" tabIndex="-1" href={resource.url}>
                           <span className="visually-hidden">Document cover image</span>
                           <img
@@ -351,6 +361,8 @@ const Dataset = () => {
           </div>
         </main>
       </div>
+      <BackToTop />
+
     </div>
   );
 };

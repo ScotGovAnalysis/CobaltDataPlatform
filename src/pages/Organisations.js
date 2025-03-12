@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
 import styles from '../styles/Design_Style.module.css'
+import BackToTop from '../components/BackToTop';
 
 const Organisations = () => {
   const [organisations, setOrganisations] = useState([]);
@@ -198,7 +199,7 @@ const Organisations = () => {
                     <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
                       <div className="ds_metadata__item">
                         <dt className="ds_metadata__key">Datasets</dt>
-                        <dd className="ds_metadata__value">{org.package_count || 0} Datasets Loaded </dd>
+                        <dd className="ds_metadata__value">{org.package_count || 0} Datasets Published </dd>
                       </div>
                     </dl>
                   </li>
@@ -208,6 +209,8 @@ const Organisations = () => {
           </div>
         </main>
       </div>
+      <BackToTop />
+
     </div>
   );
 };

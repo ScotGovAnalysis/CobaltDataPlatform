@@ -12,7 +12,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="ds_page">
+    <div>
       <div className="ds_page__top">
           <div className="ds_wrapper">
           <header className="ds_page-header">

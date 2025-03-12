@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
+import BackToTop from '../components/BackToTop';
 
 const Organisation = () => {
   const { organisationName } = useParams();
@@ -185,6 +186,8 @@ const Organisation = () => {
           </div>
         </main>
       </div>
+      <BackToTop />
+
     </div>
   );
 };
