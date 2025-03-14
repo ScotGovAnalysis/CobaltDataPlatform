@@ -68,27 +68,27 @@ const Header = () => {
         <div className="ds_site-header__content">
           <div className="ds_site-branding">
             <a className="ds_site-branding__logo ds_site-branding__link" href="/">
-              <img
-                width="300"
-                height="58"
-                className="ds_site-branding__logo-image"
-                src="https://designsystem.gov.scot/webfiles/1737461086955/assets/images/logos/scottish-government.svg"
-                alt="The Scottish Government"
-              />
+<img
+  width="300"
+  height="58"
+  className="ds_site-branding__logo-image"
+  src="/assets/images/logos/scottish-government.svg"
+  alt="The Scottish Government"
+/>
             </a>
             <div className="ds_site-branding__title">Cobalt Open Data Portal</div>
           </div>
           <div className="ds_site-header__controls">
-            <label aria-controls="mobile-navigation" className="ds_site-header__control js-toggle-menu" htmlFor="menu">
-              <span className="ds_site-header__control-text">Menu</span>
-              <svg className="ds_icon ds_site-header__control-icon" aria-hidden="true" role="img">
-                <use href="/webfiles/1737461086955/assets/images/icons/icons.stack.svg#menu"></use>
-              </svg>
-              <svg className="ds_icon ds_site-header__control-icon ds_site-header__control-icon--active-icon" aria-hidden="true" role="img">
-                <use href="/webfiles/1737461086955/assets/images/icons/icons.stack.svg#close"></use>
-              </svg>
-            </label>
-          </div>
+  <label aria-controls="mobile-navigation" className="ds_site-header__control js-toggle-menu" htmlFor="menu">
+    <span className="ds_site-header__control-text">Menu</span>
+    <svg className="ds_icon ds_site-header__control-icon" aria-hidden="true" role="img">
+      <use href="/assets/images/icons/icons.stack.svg#menu"></use>
+    </svg>
+    <svg className="ds_icon ds_site-header__control-icon ds_site-header__control-icon--active-icon" aria-hidden="true" role="img">
+      <use href="/assets/images/icons/icons.stack.svg#close"></use>
+    </svg>
+  </label>
+</div>
           <input className="ds_site-navigation__toggle" id="menu" type="checkbox" />
           <Navigation />
           <div className="ds_site-header__search">

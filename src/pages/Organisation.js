@@ -1,193 +1,267 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
 import BackToTop from '../components/BackToTop';
+import styles from '../styles/Design_Style.module.css';
 
 const Organisation = () => {
   const { organisationName } = useParams();
   const [organisation, setOrganisation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('relevance');
+  const [filteredResults, setFilteredResults] = useState([]);
+
+  const LoadingState = () => (
+    <div className="ds_page__middle">
+      <div className="ds_wrapper">
+        <div className="ds_loading">
+          <div className="ds_loading__spinner"></div>
+          <p>Loading organisation details...</p>
+        </div>
+      </div>
+    </div>
+  );
+  
+  const ErrorState = ({ error }) => (
+    <div className="ds_page__middle">
+      <div className="ds_wrapper">
+        <div className="ds_error">
+          <svg className="ds_icon ds_icon--48" aria-hidden="true" role="img">
+            <use href="/assets/images/icons/icons.stack.svg#warning"></use>
+          </svg>
+          <h3 className="ds_error__title">Error loading organisation</h3>
+          <p>{error}</p>
+        </div>
+      </div>
+    </div>
+  );
 
   useEffect(() => {
     const fetchOrganisationDetails = async () => {
       try {
-        const response = await fetch(`${config.apiBaseUrl}/api/3/action/organization_show?id=${organisationName}&include_datasets=true&include_users=true&include_extras=true`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch organisation details');
-        }
+        const response = await fetch(
+          `${config.apiBaseUrl}/api/3/action/organization_show?id=${organisationName}&include_datasets=true&include_users=true`
+        );
+        if (!response.ok) throw new Error('Failed to fetch organisation details');
         const data = await response.json();
         setOrganisation(data.result);
+        setFilteredResults(data.result.packages || []);
         setLoading(false);
       } catch (error) {
         setError(error.message);
         setLoading(false);
       }
     };
-
     fetchOrganisationDetails();
   }, [organisationName]);
 
-  if (loading) {
-    return (
-      <div className="ds_page__middle">
-        <div className="ds_wrapper">
-          <div className="ds_loading">
-            <div className="ds_loading__spinner"></div>
-            <p>Loading organisation details...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (organisation && organisation.packages) {
+      let sorted = [...organisation.packages];
+      
+      switch (sortBy) {
+        case 'date':
+          sorted.sort((a, b) => new Date(b.metadata_modified) - new Date(a.metadata_modified));
+          break;
+        case 'adate':
+          sorted.sort((a, b) => new Date(a.metadata_modified) - new Date(b.metadata_modified));
+          break;
+        case 'relevance':
+        default:
+          // Keep original order for relevance
+          break;
+      }
+      
+      setFilteredResults(sorted);
+    }
+  }, [sortBy, organisation]);
 
-  if (error) {
-    return (
-      <div className="ds_page__middle">
-        <div className="ds_wrapper">
-          <div className="ds_error">
-            <p>Error: {error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
+  const applySorting = (e) => {
+    e.preventDefault();
+    // The actual sorting is handled by the useEffect above
+  };
+
+  if (loading) return <LoadingState />;
+  if (error) return <ErrorState error={error} />;
 
   return (
     <div className="ds_page__middle">
       <div className="ds_wrapper">
         <main className="ds_layout ds_layout--search-results--filters">
+          {/* Header Section */}
           <div className="ds_layout__header">
-            <header className="ds_page-header">
-              <h1 className="ds_page-header__title">{organisation.title || organisation.name}</h1>
-            </header>
-          </div>
-          <div className="ds_layout__content">
-            <div className="ds_site-search">
-              <form action={`/organisation/${organisation.name}`} role="search" className="ds_site-search__form" method="GET">
-                <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
-                <div className="ds_input__wrapper ds_input__wrapper--has-icon">
-                  <input
-                    name="q"
-                    required
-                    id="site-search"
-                    className="ds_input ds_site-search__input"
-                    type="search"
-                    placeholder="Search"
-                    autoComplete="off"
-                  />
-                  <button type="submit" className="ds_button js-site-search-button">
-                    <span className="visually-hidden">Search</span>
-                    <svg className="ds_icon ds_icon--24" aria-hidden="true" role="img" viewBox="0 0 24 24">
-                      <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                    </svg>
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-          <div className="ds_layout__sidebar">
-            <div className="ds_search-filters">
-              <div className="ds_details ds_no-margin" data-module="ds-details">
-                <input id="filters-toggle" type="checkbox" className="ds_details__toggle visually-hidden" />
-                <label htmlFor="filters-toggle" className="ds_details__summary">
-                  Search filters
-                </label>
-                <div className="ds_skip-links ds_skip-links--static">
-                  <ul className="ds_skip-links__list">
-                    <li className="ds_skip-links__item">
-                      <a className="ds_skip-links__link" href="#search-results">Skip to results</a>
-                    </li>
-                  </ul>
-                </div>
-                <div className="ds_details__text">
-                  <form id="filters">
-                    <h3 className="ds_search-filters__title ds_h4">Filter by</h3>
-                    <div className="ds_accordion ds_accordion--small ds_!_margin-top--0" data-module="ds-accordion">
-                      {/* Example Filter: Dataset Type */}
-                      <div className="ds_accordion-item">
-                        <input
-                          type="checkbox"
-                          className="visually-hidden ds_accordion-item__control"
-                          id="dataset-type-panel"
-                        />
-                        <div className="ds_accordion-item__header">
-                          <h3 className="ds_accordion-item__title">
-                            Dataset Type
-                          </h3>
-                          <span className="ds_accordion-item__indicator"></span>
-                          <label
-                            className="ds_accordion-item__label"
-                            htmlFor="dataset-type-panel"
-                          >
-                            <span className="visually-hidden">Show this section</span>
-                          </label>
-                        </div>
-                        <div className="ds_accordion-item__body">
-                          <fieldset>
-                            <legend className="visually-hidden">Select which dataset types you would like to see</legend>
-                            <div className="ds_search-filters__scrollable">
-                              <div className="ds_search-filters__checkboxes">
-                                {/* Add your dataset type filters here */}
-                              </div>
-                            </div>
-                          </fieldset>
-                        </div>
-                      </div>
-                    </div>
-                    <button type="submit" className="ds_button ds_button--primary ds_button--small ds_button--max ds_no-margin">
-                      Apply filter
-                    </button>
-                  </form>
+            <nav aria-label="Breadcrumb">
+              <ol className="ds_breadcrumbs">
+                <li className="ds_breadcrumbs__item">
+                  <Link className="ds_breadcrumbs__link" to="/">Home</Link>
+                </li>
+                <li className="ds_breadcrumbs__item">
+                  <span className="ds_breadcrumbs__current">{organisation.title}</span>
+                </li>
+              </ol>
+            </nav>
+            
+            <header className="ds_page-header ds_page-header--with-image">
+              <div className="ds_organisation-header">
+                {organisation.image_url && (
+                  <div className="ds_organisation-logo">
+                    <img 
+                      src={organisation.image_url} 
+                      alt={`${organisation.title} logo`} 
+                      className="ds_organisation-logo__image"
+                    />
+                  </div>
+                )}
+                <div>
+                  <h1 className="ds_page-header__title">{organisation.title}</h1>
                 </div>
               </div>
-            </div>
+            </header>
           </div>
+
+          {/* Main Content */}
           <div className="ds_layout__list">
-            <div className="ds_search-results">
-              <h2 aria-live="polite" className="ds_search-results__title">
-                {organisation.package_count} dataset{organisation.package_count !== 1 ? 's' : ''} found
-              </h2>
-              {organisation.image_url && (
-                <div className="ds_organisation-image">
-                  <img src={organisation.image_url} alt={`${organisation.title || organisation.name} logo`} className="ds_organisation-image__img" />
+            {/* Organisation Description */}
+            <section className="ds_organisation-description">
+              <h2 className="visually-hidden">About {organisation.title}</h2>
+              <div className="ds_lead ds_!_margin-bottom--6">
+                <p>{organisation.description}</p>
+              </div>
+            </section>
+
+            {/* Dataset List */}
+            <div className="ds_dataset-list">
+              <header className="ds_dataset-list-header">
+                <h2 className="ds_h3">Datasets ({organisation.package_count})</h2>
+                <div className="ds_sort-options">
+                  <label className="ds_label" htmlFor="sort-by">Sort by</label>
+                  <span className="ds_select-wrapper">
+                    <select className="ds_select" id="sort-by" value={sortBy} onChange={handleSortChange}>
+                      <option value="relevance">Most relevant</option>
+                      <option value="date">Updated (newest)</option>
+                      <option value="adate">Updated (oldest)</option>
+                    </select>
+                    <span className="ds_select-arrow" aria-hidden="true"></span>
+                    <use href="/assets/images/icons/icons.stack.svg#arrow"></use>
+                  </span>
+                  <button className="ds_button ds_button--secondary ds_button--small" type="submit" onClick={applySorting}>Apply sort</button>
                 </div>
-              )}
-              <dl className="ds_metadata ds_metadata--inline">
-                <div className="ds_metadata__item">
-                  <dt className="ds_metadata__key">Description</dt>
-                  <dd className="ds_metadata__value">{organisation.description || 'No description available'}</dd>
-                </div>
-                <div className="ds_metadata__item">
-                  <dt className="ds_metadata__key">Users</dt>
-                  <dd className="ds_metadata__value">{organisation.users?.length || 0}</dd>
-                </div>
-                <div className="ds_metadata__item">
-                  <dt className="ds_metadata__key">Followers</dt>
-                  <dd className="ds_metadata__value">{organisation.num_followers || 0}</dd>
-                </div>
-              </dl>
-              <ol className="ds_search-results__list" data-total={organisation.package_count} start="1">
-                {organisation.packages?.map((dataset) => (
-                  <li key={dataset.id} className="ds_search-result">
+              </header>
+              
+              <ol className="ds_search-results__list" data-total={filteredResults.length} start="1">
+                {filteredResults.map((result) => (
+                  <li key={result.id} className="ds_search-result">
                     <h3 className="ds_search-result__title">
-                      <a href={`/dataset/${dataset.name}`} className="ds_search-result__link">
-                        {dataset.title}
-                      </a>
+                      <Link 
+                        to={{
+                          pathname: `/dataset/${result.name}`,
+                          state: { fromResults: true }
+                        }} 
+                        className="ds_search-result__link"
+                      >
+                        {result.title}
+                      </Link>
                     </h3>
                     <p className="ds_search-result__summary">
-                      {dataset.notes || 'No description available'}
+                      {(() => {
+                        const text = result.notes || 'No description available';
+                        const words = text.split(' ');
+                        return words.length > 65 ? words.slice(0, 65).join(' ') + '...' : text;
+                      })()}
                     </p>
+                    <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Organization</dt>
+                        <dd className="ds_metadata__value">
+                          {result.organization?.title || organisation.title || 'Unknown'}
+                        </dd>
+                      </div>
+                      {result.resources && result.resources.length > 0 && (
+                        <div className="ds_metadata__item">
+                          <dt className="ds_metadata__key">Resource Types</dt>
+                          <dd className="ds_metadata__value">
+                            {
+                              [...new Set(result.resources.map(resource => resource.format))]
+                              .join(', ')
+                            }
+                          </dd>
+                        </div>
+                      )}
+                    </dl>
+                    <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Last Updated</dt>
+                        <dd className="ds_metadata__value">
+                          Last updated: {new Date(result.metadata_modified).toLocaleDateString()}
+                        </dd>
+                      </div>
+                    </dl>
                   </li>
                 ))}
               </ol>
             </div>
           </div>
+
+          {/* Metadata Sidebar */}
+          <div className="ds_layout__sidebar">
+            <div className="ds_metadata__panel">
+              <h3 className="ds_metadata__panel-title">Organisation Details</h3>
+              <dl className="ds_metadata ds_metadata--stacked">
+                <div className="ds_metadata__item">
+                  <dt className="ds_metadata__key">Established</dt>
+                  <dd className="ds_metadata__value">
+                    {new Date(organisation.created).toLocaleDateString('en-GB', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </dd>
+                </div>
+
+                <div className="ds_metadata__item">
+                  <dt className="ds_metadata__key">Status</dt>
+                  <dd className="ds_metadata__value">
+                    <span className={`ds_badge ${organisation.state === 'active' ? 'ds_badge--success' : ''}`}>
+                      {organisation.state === 'active' ? 'Active' : organisation.state.charAt(0).toUpperCase() + organisation.state.slice(1).toLowerCase()}
+                    </span>
+                  </dd>
+                </div>
+
+                <div className="ds_metadata__item">
+                  <dt className="ds_metadata__key">Administrators</dt>
+                  <dd className="ds_metadata__value">
+                    {organisation.users?.map(user => (
+                      <div key={user.id} className="ds_user-badge">
+                        <span className="ds_user-badge__name">{user.display_name}</span>
+                        <span className="ds_user-badge__role">{user.capacity}</span>
+                      </div>
+                    ))}
+                  </dd>
+                </div>
+
+                <div className="ds_metadata__item">
+                  <dt className="ds_metadata__key">Contact</dt>
+                  <dd className="ds_metadata__value">
+                    <a 
+                      href={`mailto:${organisation.packages?.[0]?.maintainer_email || 'N/A'}`} 
+                      className="ds_link"
+                    >
+                      Contact administrator
+                    </a>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
         </main>
       </div>
       <BackToTop />
-
     </div>
   );
 };

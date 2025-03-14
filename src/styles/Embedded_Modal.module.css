@@ -1,3 +1,5 @@
+/* Embedded_Modal.module.css */
+/* Existing modal framework styles (unchanged) */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -31,15 +33,8 @@
   justify-content: space-between;
   align-items: center;
   background-color: #111;
-  height: 3.5rem;
-}
-
-.modalHeader h3 {
-  margin: 0;
-  font-size: 1.125rem;
   color: #fff;
-  font-weight: 500;
-  letter-spacing: 0.01em;
+  height: 3.5rem;
 }
 
 .closeButton {
@@ -66,45 +61,227 @@
   flex-direction: column;
 }
 
-.apiFrame,
-.viewerFrame {
-  width: 100%;
-  flex: 1;
-  border: none;
-  border-radius: 8px;
-  min-height: 500px;
-  background-color: #fafafa;
-}
-
 .titleContainer {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.apiTitle,
-.viewerTitle {
-  font-weight: 500;
-  color: #fff;
+/* CKAN-style API specific additions */
+.apiDescription {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.6;
 }
 
-.apiVersion {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.875rem;
-  font-weight: 400;
+.apiDescription a {
+  color: #0065bd;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 101, 189, 0.3);
 }
 
-/* Ensure the chart scales within the modal */
-.chartContainer {
+.apiDescription a:hover {
+  color: #004d8f;
+  border-bottom-color: currentColor;
+}
+
+.languageSelector {
+  margin-bottom: 2rem;
+}
+
+.codeExamplesLabel {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.75rem;
+}
+
+.languageButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.languageButton {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.languageButton:hover {
+  background: #e9ecef;
+  border-color: #ced4da;
+}
+
+.languageButton.active {
+  background: #0065bd;
+  border-color: #0065bd;
+  color: white;
+}
+
+.apiExamplesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.apiSection {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.sectionToggle {
   width: 100%;
-  height: 100%;
+  padding: 1rem;
+  background: #f8f9fa;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  color: #212529;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.sectionToggle:hover {
+  background: #e9ecef;
+}
+
+.sectionToggle.expanded .chevron {
+  transform: rotate(180deg);
+}
+
+.sectionContent {
+  padding: 1rem;
+  background: #fff;
+}
+
+.exampleBlock {
+  margin-bottom: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.exampleBlock:last-child {
+  margin-bottom: 0;
+}
+
+.exampleHeader {
+  padding: 1rem;
+  background: rgba(0, 101, 189, 0.05);
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.exampleHeader strong {
+  font-size: 0.9rem;
+  color: #212529;
+}
+
+.copyButton {
+  background: none;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 0.375rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.copyButton:hover {
+  background: #fff;
+  border-color: #0065bd;
+  color: #0065bd;
+}
+
+.copyButton svg {
+  width: 14px;
+  height: 14px;
+}
+
+.codeBlock {
+  padding: 1rem;
+  margin: 0;
+  background: #2d2d2d;
+  color: #fff;
+  border-radius: 0 0 4px 4px;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  tab-size: 4;
+}
+
+.linkContainer {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-top: 1rem;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.75rem;
 }
 
-.chart {
-  width: 100% !important;
-  height: 100% !important;
-  max-height: 600px;
+.apiLink {
+  flex: 1;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #0065bd;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.apiLink:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modalContent {
+    width: 95%;
+    height: 95vh;
+  }
+  
+  .modalBody {
+    padding: 1rem;
+  }
+  
+  .codeBlock {
+    font-size: 0.75rem;
+    padding: 0.75rem;
+  }
+  
+  .languageButton {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .sectionToggle {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  color: #fff;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }

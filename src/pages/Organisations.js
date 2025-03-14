@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
-import styles from '../styles/Design_Style.module.css'
+import styles from '../styles/Design_Style.module.css';
 import BackToTop from '../components/BackToTop';
 
 const Organisations = () => {
   const [organisations, setOrganisations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedFilters, setSelectedFilters] = useState({
+    isActive: false,
+    hasDatasets: false,
+  });
 
   useEffect(() => {
     const fetchOrganisations = async () => {
@@ -45,6 +49,19 @@ const Organisations = () => {
 
     fetchOrganisations();
   }, []);
+
+  const handleFilterChange = (filter) => {
+    setSelectedFilters((prevFilters) => ({
+      ...prevFilters,
+      [filter]: !prevFilters[filter],
+    }));
+  };
+
+  const filteredOrganisations = organisations.filter(org => {
+    const isActive = selectedFilters.isActive ? org.state === 'active' : true;
+    const hasDatasets = selectedFilters.hasDatasets ? org.package_count > 0 : true;
+    return isActive && hasDatasets;
+  });
 
   if (loading) {
     return (
@@ -122,48 +139,81 @@ const Organisations = () => {
                   <form id="filters">
                     <h3 className="ds_search-filters__title ds_h4">Filter by</h3>
                     <div className="ds_accordion ds_accordion--small ds_!_margin-top--0" data-module="ds-accordion">
-                      {/* Example Filter: Organisation Type */}
+                      {/* Is Active Filter */}
                       <div className="ds_accordion-item">
                         <input
                           type="checkbox"
                           className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
-                          id="organisation-type-panel"
+                          id="is-active-panel"
                         />
-                         <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
-                         <h3 className="ds_accordion-item__title">
-                            Organisation Type
+                        <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
+                          <h3 className="ds_accordion-item__title">
+                            Is Active
                           </h3>
                           <span className={styles.accordionIndicator}></span>
                           <label
                             className="ds_accordion-item__label"
-                            htmlFor="organisation-type-panel"
+                            htmlFor="is-active-panel"
                           >
                             <span className="visually-hidden">Show this section</span>
                           </label>
                         </div>
                         <div className="ds_accordion-item__body">
                           <fieldset>
-                            <legend className="visually-hidden">Select which organisation types you would like to see</legend>
+                            <legend className="visually-hidden">Select active organisations</legend>
                             <div className="ds_search-filters__scrollable">
                               <div className="ds_search-filters__checkboxes">
                                 <div className="ds_checkbox ds_checkbox--small">
                                   <input
-                                    id="type-government"
+                                    id="is-active"
                                     type="checkbox"
                                     className="ds_checkbox__input"
+                                    checked={selectedFilters.isActive}
+                                    onChange={() => handleFilterChange('isActive')}
                                   />
-                                  <label htmlFor="type-government" className="ds_checkbox__label">
-                                    Government
+                                  <label htmlFor="is-active" className="ds_checkbox__label">
+                                    Active Organisations
                                   </label>
                                 </div>
+                              </div>
+                            </div>
+                          </fieldset>
+                        </div>
+                      </div>
+                      {/* Has Datasets Filter */}
+                      <div className="ds_accordion-item">
+                        <input
+                          type="checkbox"
+                          className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
+                          id="has-datasets-panel"
+                        />
+                        <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
+                          <h3 className="ds_accordion-item__title">
+                            Has Datasets
+                          </h3>
+                          <span className={styles.accordionIndicator}></span>
+                          <label
+                            className="ds_accordion-item__label"
+                            htmlFor="has-datasets-panel"
+                          >
+                            <span className="visually-hidden">Show this section</span>
+                          </label>
+                        </div>
+                        <div className="ds_accordion-item__body">
+                          <fieldset>
+                            <legend className="visually-hidden">Select organisations with datasets</legend>
+                            <div className="ds_search-filters__scrollable">
+                              <div className="ds_search-filters__checkboxes">
                                 <div className="ds_checkbox ds_checkbox--small">
                                   <input
-                                    id="type-non-profit"
+                                    id="has-datasets"
                                     type="checkbox"
                                     className="ds_checkbox__input"
+                                    checked={selectedFilters.hasDatasets}
+                                    onChange={() => handleFilterChange('hasDatasets')}
                                   />
-                                  <label htmlFor="type-non-profit" className="ds_checkbox__label">
-                                    Non-Profit
+                                  <label htmlFor="has-datasets" className="ds_checkbox__label">
+                                    Organisations with Datasets
                                   </label>
                                 </div>
                               </div>
@@ -183,15 +233,15 @@ const Organisations = () => {
           <div className="ds_layout__list">
             <div className="ds_search-results">
               <h2 aria-live="polite" className="ds_search-results__title">
-                {organisations.length} Organisation{organisations.length !== 1 ? 's' : ''} found
+                {filteredOrganisations.length} Organisation{filteredOrganisations.length !== 1 ? 's' : ''} found
               </h2>
-              <ol className="ds_search-results__list" data-total={organisations.length} start="1">
-                {organisations.map((org) => (
+              <ol className="ds_search-results__list" data-total={filteredOrganisations.length} start="1">
+                {filteredOrganisations.map((org) => (
                   <li key={org.id} className="ds_search-result">
                     <h3 className="ds_search-result__title">
-                    <Link to={`/organisation/${org.name}`} className="ds_search-result__link">
-  {org.title || org.name}
-</Link>
+                      <Link to={`/organisation/${org.name}`} className="ds_search-result__link">
+                        {org.title || org.name}
+                      </Link>
                     </h3>
                     <p className="ds_search-result__summary">
                       {org.description || 'No description available'}
@@ -199,18 +249,17 @@ const Organisations = () => {
                     <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
                       <div className="ds_metadata__item">
                         <dt className="ds_metadata__key">Datasets</dt>
-                        <dd className="ds_metadata__value">{org.package_count || 0} Datasets Published </dd>
+                        <dd className="ds_metadata__value">{org.package_count || 0} Datasets Published</dd>
                       </div>
                     </dl>
                   </li>
                 ))}
               </ol>
             </div>
+            <BackToTop />
           </div>
         </main>
       </div>
-      <BackToTop />
-
     </div>
   );
 };

@@ -1,9 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { Bar, Line, Scatter, Pie, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
 
-// Register Chart.js components
 ChartJS.register(
   ArcElement,
   CategoryScale,
@@ -14,13 +13,28 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  zoomPlugin // Register the zoom plugin
+  zoomPlugin
 );
 
-const ChartRenderer = ({ chartType, data, xAxis, yAxis, chartRef }) => {
+const generateColors = (count, seed) => {
+  const colors = [];
+  const goldenRatio = 0.618033988749895;
+  const hRange = [160, 220];
+  
+  for (let i = 0; i < count; i++) {
+    const h = (hRange[0] + (i * goldenRatio * (hRange[1] - hRange[0])) % (hRange[1] - hRange[0]));
+    const s = 70 + (Math.sin(seed + i) * 15);
+    const l = 45 + (Math.cos(seed + i) * 10);
+    colors.push(`hsl(${h},${s}%,${l}%)`);
+  }
+  return colors;
+};
+
+
+const ChartRenderer = ({ chartType, data, xAxis, yAxis, chartRef, colorSeed }) => {
   const chartInstance = useRef(null);
 
-  const generateChartData = () => {
+  const chartData = useMemo(() => {
     const dataMap = data.reduce((acc, row) => {
       const xValue = row[xAxis];
       const yValue = yAxis === 'count' ? 1 : Number(row[yAxis]);
@@ -29,7 +43,6 @@ const ChartRenderer = ({ chartType, data, xAxis, yAxis, chartRef }) => {
         if (!acc[xValue]) acc[xValue] = [];
         acc[xValue].push(yValue);
       }
-
       return acc;
     }, {});
 
@@ -38,44 +51,57 @@ const ChartRenderer = ({ chartType, data, xAxis, yAxis, chartRef }) => {
       y: yAxis === 'count' ? values.length : values.reduce((a, b) => a + b, 0) / values.length
     }));
 
+    const colors = generateColors(aggregatedData.length, colorSeed);
+
     return {
       labels: aggregatedData.map(item => item.x),
       datasets: [{
         label: yAxis === 'count' ? `Count by ${xAxis}` : `${yAxis} by ${xAxis}`,
         data: aggregatedData.map(item => item.y),
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: colors,
+        borderColor: colors.map(c => c.replace(/(\d+)%\)/, '$1%)').replace('hsl', 'hsla').replace('%)', ', 1)')),
+        borderWidth: 0,
       }]
     };
-  };
+  }, [data, xAxis, yAxis, colorSeed]);
 
-  const chartProps = {
-    ref: chartRef,
-    data: generateChartData(),
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'top' },
-        title: {
-          display: true,
-          text: yAxis === 'count' ? `Count by ${xAxis}` : `${yAxis} by ${xAxis}`
-        },
+  const chartOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { 
+        position: 'top',
+        labels: { boxWidth: 12 }
+      },
+      title: {
+        display: true,
+        text: yAxis === 'count' ? `Count by ${xAxis}` : `${yAxis} by ${xAxis}`,
+        padding: { bottom: 15 }
+      },
+      zoom: {
+        limits: { x: { min: 0, max: 100 }, y: { min: 0 } },
         zoom: {
-          zoom: {
-            wheel: { enabled: true },
-            pinch: { enabled: true },
-            mode: 'xy',
-          },
-          pan: {
-            enabled: true,
-            mode: 'xy',
-          }
+          wheel: { enabled: true, speed: 0.1 },
+          pinch: { enabled: true },
+          mode: 'xy',
+        },
+        pan: {
+          enabled: true,
+          mode: 'xy',
+          threshold: 5
         }
       }
+    },
+    animation: {
+      duration: 300,
+      easing: 'easeOutQuart'
+    },
+    elements: {
+      point: { radius: 3, hoverRadius: 5 },
+      line: { tension: 0.4 }
     }
-  };
+  }), [xAxis, yAxis]);
 
-  // Destroy the chart instance when the component unmounts or when the chart type changes
   useEffect(() => {
     return () => {
       if (chartInstance.current) {
@@ -85,14 +111,21 @@ const ChartRenderer = ({ chartType, data, xAxis, yAxis, chartRef }) => {
     };
   }, [chartType]);
 
-  switch (chartType) {
-    case 'bar': return <Bar {...chartProps} />;
-    case 'line': return <Line {...chartProps} />;
-    case 'scatter': return <Scatter {...chartProps} />;
-    case 'pie': return <Pie {...chartProps} />;
-    case 'doughnut': return <Doughnut {...chartProps} />;
-    default: return <Bar {...chartProps} />;
-  }
+  useEffect(() => {
+    if (chartRef.current?.resetZoom) {
+      chartRef.current.resetZoom();
+    }
+  }, [colorSeed, chartRef]);
+
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      {chartType === 'bar' && <Bar ref={chartRef} data={chartData} options={chartOptions} />}
+      {chartType === 'line' && <Line ref={chartRef} data={chartData} options={chartOptions} />}
+      {chartType === 'scatter' && <Scatter ref={chartRef} data={chartData} options={chartOptions} />}
+      {chartType === 'pie' && <Pie ref={chartRef} data={chartData} options={chartOptions} />}
+      {chartType === 'doughnut' && <Doughnut ref={chartRef} data={chartData} options={chartOptions} />}
+    </div>
+  );
 };
 
 export default ChartRenderer;

@@ -391,18 +391,19 @@ const Datasets = () => {
                     </button>
                   )}
                 </div>
-                <div className="ds_sort-options">
-                  <label className="ds_label" htmlFor="sort-by">Sort by</label>
-                  <span className="ds_select-wrapper">
-                    <select className="ds_select" id="sort-by" value={sortBy} onChange={handleSortChange}>
-                      <option value="relevance">Most relevant</option>
-                      <option value="date">Updated (newest)</option>
-                      <option value="adate">Updated (oldest)</option>
-                    </select>
-                    <span className="ds_select-arrow" aria-hidden="true"></span>
-                  </span>
-                  <button className="ds_button ds_button--secondary ds_button--small" type="submit">Apply sort</button>
-                </div>
+            
+<div className="ds_sort-options">
+  <label className="ds_label" htmlFor="sort-by">Sort by</label>
+  <span className={`ds_select-wrapper ${styles.selectWrapper}`}>
+    <select className={`ds_select ${styles.select}`} id="sort-by" value={sortBy} onChange={handleSortChange}>
+      <option value="relevance">Most relevant</option>
+      <option value="date">Updated (newest)</option>
+      <option value="adate">Updated (oldest)</option>
+    </select>
+    <span className={`ds_select-arrow ${styles.selectArrow}`} aria-hidden="true"></span>
+  </span>
+  <button className="ds_button ds_button--secondary ds_button--small" type="submit">Apply sort</button>
+</div>
               </div>
               <ol className="ds_search-results__list" data-total={filteredResults.length} start="1">
                 {filteredResults.map((result) => (

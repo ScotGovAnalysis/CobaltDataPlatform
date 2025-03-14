@@ -97,32 +97,32 @@ const Dataset = () => {
         <main className="ds_layout ds_layout--search-results--filters">
           {/* Header Section */}
           <div className="ds_layout__header w-full">
-            <nav aria-label="Breadcrumb">
-              <ol className="ds_breadcrumbs">
-                <li className="ds_breadcrumbs__item">
-                  <Link className="ds_breadcrumbs__link" to="/">Home</Link>
-                </li>
-                {isFromResultsPage ? (
-                  <>
-                    <li className="ds_breadcrumbs__item">
-                      <Link className="ds_breadcrumbs__link" to={`/results?q=${searchQuery}`}>Results</Link>
-                    </li>
-                    <li className="ds_breadcrumbs__item">
-                      <span className="ds_breadcrumbs__current">Dataset: {dataset.title}</span>
-                    </li>
-                  </>
-                ) : (
-                  <>
-                    <li className="ds_breadcrumbs__item">
-                      <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
-                    </li>
-                    <li className="ds_breadcrumbs__item">
-                      <span className="ds_breadcrumbs__current">{dataset.title}</span>
-                    </li>
-                  </>
-                )}
-              </ol>
-            </nav>
+          <nav aria-label="Breadcrumb">
+  <ol className="ds_breadcrumbs">
+    <li className={styles.ds_breadcrumbs__item}>
+      <Link className="ds_breadcrumbs__link" to="/">Home</Link>
+    </li>
+    {isFromResultsPage ? (
+      <>
+        <li className={styles.ds_breadcrumbs__item}>
+          <Link className="ds_breadcrumbs__link" to={`/results?q=${searchQuery}`}>Results</Link>
+        </li>
+        <li className={styles.ds_breadcrumbs__item}>
+          <span className="ds_breadcrumbs__current">Dataset: {dataset.title}</span>
+        </li>
+      </>
+    ) : (
+      <>
+        <li className={styles.ds_breadcrumbs__item}>
+          <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
+        </li>
+        <li className={styles.ds_breadcrumbs__item}>
+          <span className="ds_breadcrumbs__current">{dataset.title}</span>
+        </li>
+      </>
+    )}
+  </ol>
+</nav>
 
             <header className="gov_layout gov_layout--publication-header w-full">
               <div className="gov_layout__title w-full">
@@ -193,7 +193,7 @@ const Dataset = () => {
               {dataset.tags && dataset.tags.length > 0 && (
                 <section className={styles.section}>
                   <h3 className="ds_metadata__panel-title">Tags</h3>
-                  <div className="ds_tag-list" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '-0.5rem' }}>
+                  <div className="ds_tag-list" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '-0.5rem' }}>
                   {dataset.tags.map((tag, index) => (
                       <Link
                         key={index}

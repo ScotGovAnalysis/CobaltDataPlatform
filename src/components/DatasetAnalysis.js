@@ -8,7 +8,6 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-import { Bar, Line, Scatter, Pie, Doughnut } from 'react-chartjs-2';
 import {
   BarChart as BarChartIcon,
   StackedLineChart as LineChartIcon,
@@ -16,7 +15,8 @@ import {
   ScatterPlot as ScatterPlotIcon,
   Download as DownloadIcon,
   Compare as CompareIcon,
-  Analytics as AnalyticsIcon
+  Analytics as AnalyticsIcon,
+  RestartAlt as ResetIcon
 } from '@mui/icons-material';
 import * as htmlToImage from 'html-to-image';
 import * as XLSX from 'xlsx';
@@ -37,10 +37,10 @@ const AdvancedDataExplorer = ({ data, columns }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [comparisonColumns, setComparisonColumns] = useState([]);
+  const [colorSeed, setColorSeed] = useState(Date.now());
+  const chartRef = useRef(null);
   const safeColumns = columns || [];
   const safeData = data || [];
-
-  const chartRef = useRef(null);
 
   const chartTypes = [
     { type: 'bar', icon: <BarChartIcon /> },
@@ -49,6 +49,20 @@ const AdvancedDataExplorer = ({ data, columns }) => {
     { type: 'pie', icon: <PieChartIcon /> },
     { type: 'doughnut', icon: <PieChartIcon /> }
   ];
+
+  const handleReset = useCallback(() => {
+    setXAxis(safeColumns[0]);
+    setYAxis('count');
+    setChartType('bar');
+    setColorSeed(Date.now());
+    
+    if (chartRef.current) {
+      chartRef.current.resetZoom();
+    }
+
+    setSnackbarMessage('Chart view and settings reset');
+    setSnackbarOpen(true);
+  }, [safeColumns]);
 
   useEffect(() => {
     if (safeColumns.length > 0) {
@@ -124,9 +138,28 @@ const AdvancedDataExplorer = ({ data, columns }) => {
 
   return (
     <Container maxWidth="xl" sx={{ padding: 0 }}>
-      <Typography variant="h4" sx={{ mb: 3 }}>
-        Advanced Data Explorer
-      </Typography>
+<Typography variant="h4" sx={{ mb: 3 }}>
+  Data Analysis Tool
+</Typography>
+
+<Typography variant="body2" sx={{ mb: 2, color: 'text.secondary', lineHeight: 1.1 }}>
+  <strong>How to Use This Chart</strong>
+  <Box component="ul" sx={{ pl: 2, mt: 1, mb: 1 }}>
+    <Box component="li" sx={{ mb: 1 }}>
+      <strong>Choose your data:</strong> Select columns for the X and Y axes from the dropdowns.
+    </Box>
+    <Box component="li" sx={{ mb: 1 }}>
+      <strong>Pick a chart type:</strong> Use the icons to switch between bar, line, pie, and more.
+    </Box>
+    <Box component="li" sx={{ mb: 1 }}>
+      <strong>Interact:</strong> Zoom, pan, or hover for details. Click "Export" to save your chart or data.
+    </Box>
+    <Box component="li" sx={{ mb: 1 }}>
+      <strong>Reset:</strong> Click the "Reset" button to restore the default view and settings.
+    </Box>
+  </Box>
+</Typography>
+
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Box>
@@ -142,8 +175,17 @@ const AdvancedDataExplorer = ({ data, columns }) => {
             startIcon={<DownloadIcon />}
             onClick={exportDataToExcel}
             variant="outlined"
+            sx={{ mr: 2 }}
           >
             Export Data
+          </Button>
+          <Button
+            startIcon={<ResetIcon />}
+            onClick={handleReset}
+            variant="outlined"
+            color="secondary"
+          >
+            Reset
           </Button>
         </Box>
         <Box>
@@ -188,14 +230,28 @@ const AdvancedDataExplorer = ({ data, columns }) => {
         />
       </Box>
 
-      <Paper sx={{ p: 3, height: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Paper sx={{ 
+        p: 3, 
+        height: '70vh',
+        minHeight: '500px',
+        flex: 1, 
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden'
+      }}>
         <ChartRenderer
           chartType={chartType}
           data={data}
           xAxis={xAxis}
           yAxis={yAxis}
           chartRef={chartRef}
-          style={{ width: '100%', height: '100%', maxHeight: '600px' }}
+          colorSeed={colorSeed}
+          style={{ 
+            width: '100%', 
+            height: '100%',
+            transition: 'all 0.3s ease'
+          }}
         />
       </Paper>
 

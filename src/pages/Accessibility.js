@@ -3,7 +3,6 @@ import '@scottish-government/design-system/dist/css/design-system.min.css';
 
 const Accessibility = () => {
   return (
-    <div className="ds_page">
       <div className="ds_page__middle">
         <div className="ds_wrapper">
           <main id="main-content">
@@ -54,7 +53,6 @@ const Accessibility = () => {
           </main>
         </div>
       </div>
-    </div>
   );
 };
 

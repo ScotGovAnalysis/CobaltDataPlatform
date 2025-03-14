@@ -7,9 +7,10 @@ import DatasetAnalysis from '../components/DatasetAnalysis';
 import MapViewer from '../components/MapViewer';
 import ApiModal from '../components/ApiModal';
 import DataViewerModal from '../components/DataViewerModal';
-import AnalysisModal from '../components/AnalysisModal'; // Import the new modal
+import AnalysisModal from '../components/AnalysisModal';
 import config from '../config';
 import BackToTop from '../components/BackToTop';
+import ActionButtons from '../components/ActionButtons'
 
 const Resource = () => {
   const { id, resourceId } = useParams();
@@ -21,10 +22,14 @@ const Resource = () => {
   const [selectedView, setSelectedView] = useState(null);
   const [showApiModal, setShowApiModal] = useState(false);
   const [showDataViewerModal, setShowDataViewerModal] = useState(false);
-  const [showAnalysisModal, setShowAnalysisModal] = useState(false); // State for analysis modal
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [dataDictionary, setDataDictionary] = useState([]);
   const [resourceViewId, setResourceViewId] = useState(null);
   const [csvData, setCsvData] = useState([]);
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
+  const [loadingMap, setLoadingMap] = useState(false);
+  const [loadingDictionary, setLoadingDictionary] = useState(false);
+  const [isDictionaryOpen, setIsDictionaryOpen] = useState(false);
 
   useEffect(() => {
     const fetchDataset = async () => {
@@ -35,24 +40,10 @@ const Resource = () => {
         setDataset(datasetResult);
 
         const resource = datasetResult.resources.find(r => r.id === resourceId);
-        if (!resource) {
-          throw new Error('Resource not found');
-        }
+        if (!resource) throw new Error('Resource not found');
 
-        if (resource.format.toLowerCase() === 'csv') {
-          const response = await fetch(resource.url);
-          const text = await response.text();
-          const rows = text.split('\n').filter(row => row.trim() !== '');
-          const headers = rows[0].split(',');
-          const data = rows.slice(1).map(row => {
-            const values = row.split(',');
-            return headers.reduce((obj, header, index) => {
-              obj[header] = values[index];
-              return obj;
-            }, {});
-          });
-          setCsvData(data);
-        }
+        const isGeoJSON = resource.format.toLowerCase() === 'geojson';
+        setHasMap(isGeoJSON);
 
         const viewsResponse = await fetch(
           `${config.apiBaseUrl}/api/3/action/resource_view_list?id=${resourceId}`
@@ -84,25 +75,6 @@ const Resource = () => {
         }
 
         setResourceViewId(viewId);
-
-        const datastoreResponse = await fetch(`${config.apiBaseUrl}/api/3/action/datastore_search?resource_id=${resourceId}&limit=10`);
-        const datastoreResult = await datastoreResponse.json();
-
-        const fields = datastoreResult.result?.fields || [];
-        const dictionary = fields.map(field => ({
-          name: field.id,
-          type: field.type || 'unknown',
-          description: field.info?.notes || 'No description available.',
-        }));
-        setDataDictionary(dictionary);
-
-        if (resource.format.toLowerCase() === 'geojson') {
-          const response = await fetch(resource.url);
-          const geojsonData = await response.json();
-          setGeoJsonData(geojsonData);
-          setHasMap(true);
-        }
-
         setLoading(false);
       } catch (err) {
         console.error('Error fetching dataset:', err);
@@ -111,15 +83,120 @@ const Resource = () => {
       }
     };
 
-    if (id && resourceId) {
-      fetchDataset();
-    }
+    if (id && resourceId) fetchDataset();
   }, [id, resourceId]);
+
+  const fetchDataDictionary = async () => {
+    if (!dataset || loadingDictionary || dataDictionary.length > 0) return;
+    
+    setLoadingDictionary(true);
+    try {
+      const resource = dataset.resources.find(r => r.id === resourceId);
+      if (resource.format.toLowerCase() !== 'csv') return;
+
+      try {
+        const datastoreResponse = await fetch(
+          `${config.apiBaseUrl}/api/3/action/datastore_search?resource_id=${resource.id}&limit=0`
+        );
+        const datastoreResult = await datastoreResponse.json();
+        
+        if (datastoreResult.success) {
+          const fields = datastoreResult.result.fields;
+          const dictionary = fields.map(field => ({
+            name: field.id,
+            type: field.type,
+            description: field.info?.notes || 'No description available',
+          }));
+          setDataDictionary(dictionary);
+          return;
+        }
+      } catch (datastoreError) {
+        console.log('No datastore info available, falling back to CSV parsing');
+      }
+
+      try {
+        const headerResponse = await fetch(resource.url, {
+          headers: { 'Range': 'bytes=0-10240' }
+        });
+        
+        const text = await headerResponse.text();
+        const firstNewLine = text.indexOf('\n');
+        const headerLine = firstNewLine > 0 ? text.substring(0, firstNewLine) : text;
+        const headers = headerLine.split(',').map(h => h.trim());
+        
+        const dictionary = headers.map(header => ({
+          name: header,
+          type: 'unknown',
+          description: 'No description available',
+        }));
+        
+        setDataDictionary(dictionary);
+      } catch (headerError) {
+        console.error('Error loading headers:', headerError);
+        const fullResponse = await fetch(resource.url);
+        const text = await fullResponse.text();
+        const rows = text.split('\n').filter(row => row.trim() !== '');
+        const headers = rows[0]?.split(',').map(h => h.trim()) || [];
+        
+        const dictionary = headers.map(header => ({
+          name: header,
+          type: 'unknown',
+          description: 'No description available',
+        }));
+        
+        setDataDictionary(dictionary);
+      }
+    } catch (err) {
+      console.error('Error fetching data dictionary:', err);
+    } finally {
+      setLoadingDictionary(false);
+    }
+  };
 
   const handleDownload = () => {
     const resource = dataset?.resources?.find(r => r.id === resourceId);
-    if (resource?.url) {
-      window.location.href = resource.url;
+    if (resource?.url) window.location.href = resource.url;
+  };
+
+  const handleOpenAnalysis = async () => {
+    setLoadingAnalysis(true);
+    try {
+      const resource = dataset.resources.find(r => r.id === resourceId);
+      const response = await fetch(resource.url);
+      const text = await response.text();
+      const rows = text.split('\n').filter(row => row.trim() !== '');
+      const headers = rows[0].split(',').map(h => h.trim());
+      const data = rows.slice(1).map(row => {
+        const values = row.split(',');
+        return headers.reduce((obj, header, index) => {
+          obj[header] = values[index]?.trim();
+          return obj;
+        }, {});
+      });
+      
+      setCsvData(data);
+      setShowAnalysisModal(true);
+    } catch (err) {
+      console.error('Error loading CSV data:', err);
+      alert('Failed to load CSV data');
+    } finally {
+      setLoadingAnalysis(false);
+    }
+  };
+
+  const handleViewMap = async () => {
+    try {
+      setLoadingMap(true);
+      const resource = dataset.resources.find(r => r.id === resourceId);
+      const response = await fetch(resource.url);
+      const geojsonData = await response.json();
+      setGeoJsonData(geojsonData);
+      setSelectedView('map');
+    } catch (err) {
+      console.error('Error loading GeoJSON:', err);
+      alert('Failed to load map data');
+    } finally {
+      setLoadingMap(false);
     }
   };
 
@@ -159,19 +236,31 @@ const Resource = () => {
       <div className="ds_wrapper">
         <main className="ds_layout ds_layout--search-results--filters">
           <div className="ds_layout__header w-full">
-            <nav aria-label="Breadcrumb">
-              <ol className="ds_breadcrumbs">
-                <li className="ds_breadcrumbs__item">
-                  <Link to="/" className="ds_breadcrumbs__link">Home</Link>
-                </li>
-                <li className="ds_breadcrumbs__item">
-                  <Link to={`/dataset/${id}`} className="ds_breadcrumbs__link">Dataset</Link>
-                </li>
-                <li className="ds_breadcrumbs__item">
-                  <span className="ds_breadcrumbs__current">Explore</span>
-                </li>
-              </ol>
-            </nav>
+          <nav aria-label="Breadcrumb">
+  <ol className="ds_breadcrumbs">
+    {/* Home */}
+    <li className={styles.ds_breadcrumbs__item}>
+      <Link className="ds_breadcrumbs__link" to="/">Home</Link>
+    </li>
+
+    {/* Datasets */}
+    <li className={styles.ds_breadcrumbs__item}>
+      <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
+    </li>
+
+    {/* Dataset Name */}
+    <li className={styles.ds_breadcrumbs__item}>
+      <Link className="ds_breadcrumbs__link" to={`/dataset/${id}`}>
+        {dataset?.title || 'Dataset'}
+      </Link>
+    </li>
+
+    {/* Resource (Current Page) */}
+    <li className={styles.ds_breadcrumbs__item}>
+      <span className="ds_breadcrumbs__current">Resource</span>
+    </li>
+  </ol>
+</nav>
 
             <div className="ds_page-header">
               <h1 className="ds_page-header__title">{dataset?.title}</h1>
@@ -222,12 +311,12 @@ const Resource = () => {
                     <dd className="ds_metadata__value">{dataset.temporal_coverage}</dd>
                   </div>
                 )}
-                {dataset?.contact_email && (
+                {dataset?.maintainer_email && (
                   <div className="ds_metadata__item">
                     <dt className="ds_metadata__key">Contact</dt>
                     <dd className="ds_metadata__value">
-                      <a href={`mailto:${dataset.contact_email}`} className="ds_link">
-                        {dataset.contact_email}
+                      <a href={`mailto:${dataset.maintainer_email}`} className="ds_link">
+                        {dataset.maintainer_email}
                       </a>
                     </dd>
                   </div>
@@ -253,26 +342,22 @@ const Resource = () => {
           </div>
 
           <div className="ds_layout__list">
+          <ActionButtons
+  resourceId={resourceId}
+  resourceUrl={dataset?.resources?.find(r => r.id === resourceId)?.url}
+  resourceFormat={dataset?.resources?.find(r => r.id === resourceId)?.format}
+  onApiClick={() => setShowApiModal(true)}
+/>
             <section className={styles.section}>
-              {dataset.notes ? (
-                dataset.notes.split('\n').map((paragraph, index) => (
+              {dataset.resources[0]?.description ? (
+                dataset.resources[0].description.split('\n').map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
                 ))
               ) : (
                 <p>No description available</p>
               )}
             </section>
-            <div className="ds_button-group" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button className="ds_button" onClick={handleDownload}>
-                Download
-              </button>
-              <button
-                className="ds_button ds_button--secondary"
-                onClick={() => setShowApiModal(true)}
-              >
-                API
-              </button>
-            </div>
+
             <hr />
 
             {!selectedView ? (
@@ -297,10 +382,11 @@ const Resource = () => {
                     <article className="ds_category-item ds_category-item--card">
                       <h2 className="ds_category-item__title">
                         <button
-                          onClick={() => setShowAnalysisModal(true)} // Open analysis modal
+                          onClick={handleOpenAnalysis}
                           className="ds_category-item__link ds_category-item__link--button"
+                          disabled={loadingAnalysis}
                         >
-                          Analyse Data
+                          {loadingAnalysis ? 'Loading...' : 'Analyse Data'}
                         </button>
                       </h2>
                       <p className="ds_category-item__summary">
@@ -312,8 +398,12 @@ const Resource = () => {
                     <li className="ds_card ds_card--has-hover">
                       <article className="ds_category-item ds_category-item--card">
                         <h2 className="ds_category-item__title">
-                          <button onClick={() => setSelectedView('map')} className="ds_category-item__link">
-                            View Map
+                          <button 
+                            onClick={handleViewMap}
+                            className="ds_category-item__link"
+                            disabled={loadingMap}
+                          >
+                            {loadingMap ? 'Loading Map...' : 'View Map'}
                           </button>
                         </h2>
                         <p className="ds_category-item__summary">
@@ -330,18 +420,28 @@ const Resource = () => {
                       type="checkbox"
                       id="data-dictionary-accordion"
                       className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
+                      onChange={(e) => {
+                        if (e.target.checked && !dataDictionary.length && !loadingDictionary) {
+                          fetchDataDictionary();
+                        }
+                        setIsDictionaryOpen(e.target.checked);
+                      }}
                     />
                     <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
-                      <h3 className="ds_accordion-item__title">Data Dictionary</h3>
+                      <h3 className="ds_accordion-item__title">
+                        Data Dictionary
+                        {loadingDictionary && 
+                          <span className="ds_loading__spinner" style={{ marginLeft: '1rem', width: '1.5rem', height: '1.5rem' }}></span>}
+                      </h3>
                       <span className={styles.accordionIndicator}></span>
                       <label className="ds_accordion-item__label" htmlFor="data-dictionary-accordion">
                         <span className="visually-hidden">Show this section</span>
                       </label>
                     </div>
                     <div className="ds_accordion-item__body">
-                      <div style={{ width: '100%', overflowX: 'auto' }}>
+                      <div className={styles.tableWrapper}>
                         {dataDictionary.length > 0 ? (
-                          <table className="ds_table" style={{ width: '100%' }}>
+                          <table className={styles.tableModern}>
                             <thead>
                               <tr>
                                 <th>Field Name</th>
@@ -353,16 +453,20 @@ const Resource = () => {
                               {dataDictionary
                                 .filter(field => field.name !== '_id')
                                 .map((field, index) => (
-                                  <tr key={index}>
-                                    <td>{field.name}</td>
-                                    <td>{field.type}</td>
+                                  <tr key={index} className={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
+                                    <td><span className={styles.fieldName}>{field.name}</span></td>
+                                    <td>
+                                      <span className={styles.typeBadge}>
+                                        {field.type}
+                                      </span>
+                                    </td>
                                     <td>{field.description}</td>
                                   </tr>
                                 ))}
                             </tbody>
                           </table>
                         ) : (
-                          <p>No data dictionary available.</p>
+                          !loadingDictionary && <p className="ds_message ds_message--info">No data dictionary available.</p>
                         )}
                       </div>
                     </div>
@@ -403,10 +507,14 @@ const Resource = () => {
         isOpen={showAnalysisModal}
         onClose={() => setShowAnalysisModal(false)}
       >
-        <DatasetAnalysis resourceId={resourceId} data={csvData} columns={Object.keys(csvData[0] || {})} />
+        <DatasetAnalysis 
+          resourceId={resourceId} 
+          data={csvData} 
+          columns={Object.keys(csvData[0] || {})} 
+        />
       </AnalysisModal>
-      <BackToTop />
 
+      <BackToTop />
     </div>
   );
 };

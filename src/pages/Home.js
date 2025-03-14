@@ -8,6 +8,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [introText, setIntroText] = useState('');
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     // Fetch popular tags from the CKAN API
@@ -79,53 +80,60 @@ const Home = () => {
                   </p>
                   <div className="ds_cb__inner">
                   <div className="ds_site-search ds_site-search--large" style={{ marginBottom: '-5px' }}>
-  <form action="/results" role="search" className="ds_site-search__form" method="GET">
-    <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
-    <div className="ds_input__wrapper ds_input__wrapper--has-icon" 
-         style={{ 
-           border: '2px solid white',
-           borderRadius: '4px',
-           display: 'flex',
-           alignItems: 'center',
-           background: '#f5f5f5', // Light grey background for the wrapper
-           overflow: 'hidden',
-           width: '75%'
-         }}>
-      <input
-        name="q"
-        required
-        id="site-search"
-        className="ds_input ds_site-search__input"
-        type="search"
-        placeholder="Search our data"
-        autoComplete="off"
-        style={{ 
-          width: '100%',
-          border: 'none', // Remove default border
-          outline: 'none', // Remove focus outline
-          background: '#f5f5f5', // Light grey background for the input
-          padding: '8px' // Add some padding for better text visibility
-        }}
-      />
-      <button type="submit" className="ds_button js-site-search-button" 
-              style={{ 
-                border: 'none',
-                background: '#0065bd', // Restore the blue background for the button
-                padding: '0 12px', // Add spacing around icon
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%', // Ensure the button fills the wrapper height
-                cursor: 'pointer' // Add pointer cursor for better UX
-              }}>
-        <span className="visually-hidden">Search</span>
-        <svg className="ds_icon ds_icon--24" aria-hidden="true" role="img" viewBox="0 0 24 24" style={{ fill: 'white' }}>
-          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-        </svg>
-      </button>
+      <form action="/results" role="search" className="ds_site-search__form" method="GET">
+        <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
+        <div 
+          className="ds_input__wrapper ds_input__wrapper--has-icon"
+          style={{ 
+            border: '2px solid white',
+            borderRadius: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            background: isHovered ? '#e0e0e0' : '#f5f5f5',
+            overflow: 'hidden',
+            width: '75%'
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <input
+            name="q"
+            required
+            id="site-search"
+            className="ds_input ds_site-search__input"
+            type="search"
+            placeholder="Search our data"
+            autoComplete="off"
+            style={{ 
+              width: '100%',
+              border: 'none',
+              outline: 'none',
+              background: 'inherit',
+              padding: '8px'
+            }}
+          />
+          <button 
+            type="submit" 
+            className="ds_button js-site-search-button"
+            style={{ 
+              border: 'none',
+              background: isHovered ? '#00437d' : '#0065bd',
+              padding: '0 12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              cursor: 'pointer'
+            }}
+          >
+            <span className="visually-hidden">Search</span>
+            <svg className="ds_icon ds_icon--24" aria-hidden="true" role="img" viewBox="0 0 24 24" style={{ fill: 'white' }}>
+              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+          </button>
+        </div>
+      </form>
     </div>
-  </form>
-</div>
                 </div>
               </div>
             </div>
