@@ -17,17 +17,14 @@ A React-based frontend for CKAN, designed to provide a user-friendly interface f
 4. [Usage](#usage)
 5. [API Integration](#api-integration)
 6. [Contributing](#contributing)
-7. [License](#license)
-8. [Acknowledgements](#acknowledgements)
 
 ---
 
 ## Overview
 
-The **Cobalt Open Data Portal** is a frontend built with React that interacts with a CKAN backend via its RESTful API. 
+The Cobalt Open Data Portal is a frontend built with React that interacts with a CKAN backend via its RESTful API.
 
-This project is currently in **alpha testing** and is being evaluated alongside other open data portal tools.
-
+This project is currently in alpha testing and is being evaluated alongside other open data portal tools. It follows the Scottish Government Design System to ensure consistency with public sector digital services.
 ---
 
 ## Features
@@ -35,6 +32,7 @@ This project is currently in **alpha testing** and is being evaluated alongside 
 - **Search and Filter**: Easily search and filter datasets by keywords, organizations, and resource types.
 - **Dataset Details**: View detailed information about datasets, including metadata, resources, and download links.
 - **CKAN API Integration**: Seamlessly communicates with a CKAN instance using its RESTful API.
+- **CSV Exploration**: Allows users to visualize and slice data from CSV resources.
 
 ---
 
@@ -52,8 +50,8 @@ Before you begin, ensure you have the following installed:
 
 1. Clone the repository:
 ```bash
-   git clone https://github.com/seanjnugent/CobaltData.git
-   cd CobaltData
+   git clone https://github.com/ScotGovAnalysis/CobaltDataPlatform.git
+   cd CobaltDataPlatform
 ```
 
 2. Install dependencies:
@@ -61,51 +59,67 @@ Before you begin, ensure you have the following installed:
     npm install
 ```
 
-3.  Start the development server:
-```bash
-    npm start
-    Open your browser and navigate to http://localhost:3000.
-```
-
 ### Configuration
-To connect the frontend to your CKAN instance, update the proxy in the package.json file.
-Open package.json.
 
-Replace the server with your CKAN instance's URL/IP and port combination (or localhost):
+Before running the project, configure the environment:
 
-```javascript
-  "proxy": "http://localhost:5000"
+1.  Copy the appropriate environment template:
+
+For development:
+```bash
+    cp .env.development.template .env.development
 ```
+
+For release:
+```bash
+   cp .env.release.template .env.release
+```
+2.  Populate the .env.development or .env.release file with the necessary configuration values.
 
 ## Usage
-### For Users
-Search for Datasets: Use the search bar on the homepage to find datasets by keyword.
+### Running in Development
 
-Explore Datasets: Click on a dataset to view its details, including metadata and downloadable resources.
+To start the development server:
 
-Download Resources: Download datasets in various formats (e.g., CSV, PDF).
+```bash
+   npm start
+```
+Open your browser and navigate to http://localhost:3000.
 
-CSV resources have an "Explore" feature to allow visualisations and data slicing.
+### Building for Production
+To create a development build:
 
-### For Alpha Testers
-Provide Feedback: Submit feedback to the mailbox in the header banner.
+```bash
+   npm run build:dev
+```
+To create a release build:
 
-Test Features: Explore all features and provide feedback on usability, performance, and functionality.
+```bash
+   npm run build:release
+```
 
-Any bugs please follow the following convention:
+To serve the built app locally:
 
-Bug Description (including screenshots)
-Expected Behaviour
-Actual Behaviour
-Steps to Reproduce
+```bash
+   npx serve -s build --single -l 3000
+```
 
 ## API Integration
 The frontend interacts with CKAN using its RESTful API. Key API endpoints used include:
 
-Package Search: /api/3/action/package_search
+- Package Search: /api/3/action/package_search
 
-Package Show: /api/3/action/package_show
+- Package Show: /api/3/action/package_show
 
-Organisation List: /api/3/action/organization_list
+- Organisation List: /api/3/action/organization_list
 
 For more information, refer to the CKAN API Documentation.
+
+## Contributing
+We welcome contributions! Please follow these guidelines when reporting issues:
+
+- Bug Description (include screenshots if possible)
+- Expected Behavior
+- Actual Behavior
+- Steps to Reproduce
+For feature requests, please describe the proposed functionality and its potential impact.
