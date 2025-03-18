@@ -6,6 +6,11 @@ import styles from '../styles/Design_Style.module.css';
 import BackToTop from '../components/BackToTop';
 
 const Organisations = () => {
+  useEffect(() => {
+    // Dynamically set the page title
+    document.title = "Cobalt | Organisations";
+  }, []); 
+  
   const [organisations, setOrganisations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

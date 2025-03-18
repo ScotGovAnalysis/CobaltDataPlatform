@@ -1,9 +1,15 @@
-import React from 'react';
+import { React, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { Phone, Mail, MapPin, Twitter } from 'lucide-react';
 
+
 const Contact = () => {
+  useEffect(() => {
+    // Dynamically set the page title
+    document.title = "Cobalt | Contact Us";
+  }, []); 
+
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {

@@ -2,8 +2,16 @@ import React from 'react';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { Link } from 'react-router-dom'; // Import Link for routing
 import BackToTop from '../components/BackToTop';
+import { useEffect } from 'react';
+
 
 const About = () => {
+  useEffect(() => {
+    // Dynamically set the page title
+    document.title = "Cobalt | About";
+  }, []); 
+
+  
   return (
     <div className="ds_page__middle">
       <div className="ds_wrapper">

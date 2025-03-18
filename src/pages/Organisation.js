@@ -6,6 +6,12 @@ import BackToTop from '../components/BackToTop';
 import styles from '../styles/Design_Style.module.css';
 
 const Organisation = () => {
+  useEffect(() => {
+    // Dynamically set the page title
+    document.title = "Cobalt | Organisation";
+  }, []); 
+  
+  
   const { organisationName } = useParams();
   const [organisation, setOrganisation] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -98,11 +104,11 @@ const Organisation = () => {
           <div className="ds_layout__header">
             <nav aria-label="Breadcrumb">
               <ol className="ds_breadcrumbs">
-                <li className="ds_breadcrumbs__item">
-                  <Link className="ds_breadcrumbs__link" to="/">Home</Link>
+              <li className={styles.ds_breadcrumbs__item}>
+              <Link className="ds_breadcrumbs__link" to="/">Home</Link>
                 </li>
-                <li className="ds_breadcrumbs__item">
-                  <span className="ds_breadcrumbs__current">{organisation.title}</span>
+                <li className={styles.ds_breadcrumbs__item}>
+                <span className="ds_breadcrumbs__current">{organisation.title}</span>
                 </li>
               </ol>
             </nav>
@@ -140,18 +146,17 @@ const Organisation = () => {
               <header className="ds_dataset-list-header">
                 <h2 className="ds_h3">Datasets ({organisation.package_count})</h2>
                 <div className="ds_sort-options">
-                  <label className="ds_label" htmlFor="sort-by">Sort by</label>
-                  <span className="ds_select-wrapper">
-                    <select className="ds_select" id="sort-by" value={sortBy} onChange={handleSortChange}>
-                      <option value="relevance">Most relevant</option>
-                      <option value="date">Updated (newest)</option>
-                      <option value="adate">Updated (oldest)</option>
-                    </select>
-                    <span className="ds_select-arrow" aria-hidden="true"></span>
-                    <use href="/assets/images/icons/icons.stack.svg#arrow"></use>
-                  </span>
-                  <button className="ds_button ds_button--secondary ds_button--small" type="submit" onClick={applySorting}>Apply sort</button>
-                </div>
+  <label className="ds_label" htmlFor="sort-by">Sort by</label>
+  <span className={`ds_select-wrapper ${styles.selectWrapper}`}>
+    <select className={`ds_select ${styles.select}`} id="sort-by" value={sortBy} onChange={handleSortChange}>
+      <option value="relevance">Most relevant</option>
+      <option value="date">Updated (newest)</option>
+      <option value="adate">Updated (oldest)</option>
+    </select>
+    <span className={`ds_select-arrow ${styles.selectArrow}`} aria-hidden="true"></span>
+  </span>
+  <button className="ds_button ds_button--secondary ds_button--small" type="submit">Apply sort</button>
+</div>
               </header>
               
               <ol className="ds_search-results__list" data-total={filteredResults.length} start="1">
@@ -215,7 +220,7 @@ const Organisation = () => {
               <dl className="ds_metadata ds_metadata--stacked">
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Established</dt>
-                  <dd className="ds_metadata__value">
+                  <dd className="ds_metadata__value">{' '}
                     {new Date(organisation.created).toLocaleDateString('en-GB', {
                       year: 'numeric',
                       month: 'long',
@@ -226,7 +231,7 @@ const Organisation = () => {
 
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Status</dt>
-                  <dd className="ds_metadata__value">
+                  <dd className="ds_metadata__value">{' '}
                     <span className={`ds_badge ${organisation.state === 'active' ? 'ds_badge--success' : ''}`}>
                       {organisation.state === 'active' ? 'Active' : organisation.state.charAt(0).toUpperCase() + organisation.state.slice(1).toLowerCase()}
                     </span>
@@ -235,7 +240,7 @@ const Organisation = () => {
 
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Administrators</dt>
-                  <dd className="ds_metadata__value">
+                  <dd className="ds_metadata__value">{' '}
                     {organisation.users?.map(user => (
                       <div key={user.id} className="ds_user-badge">
                         <span className="ds_user-badge__name">{user.display_name}</span>
@@ -247,7 +252,7 @@ const Organisation = () => {
 
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Contact</dt>
-                  <dd className="ds_metadata__value">
+                  <dd className="ds_metadata__value">{' '}
                     <a 
                       href={`mailto:${organisation.packages?.[0]?.maintainer_email || 'N/A'}`} 
                       className="ds_link"

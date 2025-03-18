@@ -2,8 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config.js'
+import styles from '../styles/Design_Style.module.css'
 
 const Home = () => {
+  useEffect(() => {
+    // Dynamically set the page title
+    document.title = "Cobalt | Home";
+  }, []);
+
   const [popularTags, setPopularTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,11 +46,11 @@ const Home = () => {
             key: 'ckan.site_intro_text'
           })
         });
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch intro text');
         }
-        
+
         const data = await response.json();
         if (data.success) {
           setIntroText(data.result || 'Find and access data from the Scottish Government and its agencies');
@@ -82,9 +88,9 @@ const Home = () => {
                   <div className="ds_site-search ds_site-search--large" style={{ marginBottom: '-5px' }}>
       <form action="/results" role="search" className="ds_site-search__form" method="GET">
         <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
-        <div 
+        <div
           className="ds_input__wrapper ds_input__wrapper--has-icon"
-          style={{ 
+          style={{
             border: '2px solid white',
             borderRadius: '4px',
             display: 'flex',
@@ -104,7 +110,7 @@ const Home = () => {
             type="search"
             placeholder="Search our data"
             autoComplete="off"
-            style={{ 
+            style={{
               width: '100%',
               border: 'none',
               outline: 'none',
@@ -112,10 +118,10 @@ const Home = () => {
               padding: '8px'
             }}
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="ds_button js-site-search-button"
-            style={{ 
+            style={{
               border: 'none',
               background: isHovered ? '#00437d' : '#0065bd',
               padding: '0 12px',
@@ -189,7 +195,7 @@ const Home = () => {
         </div>
         {/* Navigation Buttons Section */}
         <div className="ds_wrapper" style={{ marginTop: '1.5rem' }}>
-     
+
      {loading ? (
        <p className="ds_hint-text" style={{ marginTop: '1rem', fontSize: '0.875rem' }}>
          Loading popular tags...
@@ -201,13 +207,12 @@ const Home = () => {
      ) : (
      <div style={{ marginTop: '0.5rem' }}>
        <h3 className="ds_h3">Popular Tags</h3>
-       <div className="ds_tag-list" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '-0.5rem' }}>
+       <div className={styles.sgTagList} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '-0.5rem' }}>
          {popularTags.slice(0, 6).map((tag, index) => (
            <Link
              key={index}
              to={`/results?q=${encodeURIComponent(tag)}`}
-             className="ds_button ds_button--secondary"
-             style={{ marginBottom: '0.5rem' }}
+             className={styles.sgTag}
            >
              {tag}
            </Link>

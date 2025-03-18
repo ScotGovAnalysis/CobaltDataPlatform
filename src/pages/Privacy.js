@@ -1,8 +1,13 @@
-import React from 'react';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
+import { useEffect, React } from 'react';
 
 const Privacy = () => {
-  return (
+  useEffect(() => {
+    // Dynamically set the page title
+    document.title = "Cobalt | Privacy";
+  }, []); 
+  
+    return (
       <div className="ds_page__middle">
         <div className="ds_wrapper">
           <main id="main-content">

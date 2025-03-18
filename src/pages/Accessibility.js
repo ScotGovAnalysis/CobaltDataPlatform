@@ -1,7 +1,13 @@
 import React from 'react';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
+import { useEffect } from 'react';
 
 const Accessibility = () => {
+  useEffect(() => {
+    // Dynamically set the page title
+    document.title = "Cobalt | Accessibility";
+  }, []);   
+  
   return (
       <div className="ds_page__middle">
         <div className="ds_wrapper">

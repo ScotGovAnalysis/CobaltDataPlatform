@@ -4,6 +4,12 @@ import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
 
 const Category = () => {
+  useEffect(() => {
+    // Dynamically set the page title
+    document.title = "Cobalt | Category";
+  }, []);   
+  
+  
   const { categoryName } = useParams();
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);

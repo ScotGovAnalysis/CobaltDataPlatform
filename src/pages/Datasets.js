@@ -6,6 +6,12 @@ import styles from '../styles/Design_Style.module.css'
 import BackToTop from '../components/BackToTop';
 
 const Datasets = () => {
+  useEffect(() => {
+    // Dynamically set the page title
+    document.title = "Cobalt | Datasets";
+  }, []); 
+  
+  
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q');
@@ -406,56 +412,72 @@ const Datasets = () => {
 </div>
               </div>
               <ol className="ds_search-results__list" data-total={filteredResults.length} start="1">
-                {filteredResults.map((result) => (
-                  <li key={result.id} className="ds_search-result">
-                    <h3 className="ds_search-result__title">
-                      <Link 
-                        to={{
-                          pathname: `/dataset/${result.name}`,
-                          state: { fromResults: true, searchQuery: searchQuery }
-                        }} 
-                        className="ds_search-result__link"
-                      >
-                        {result.title}
-                      </Link>
-                    </h3>
-                    <p className="ds_search-result__summary">
-                      {(() => {
-                        const text = result.notes || 'No description available';
-                        const words = text.split(' ');
-                        return words.length > 65 ? words.slice(0, 65).join(' ') + '...' : text;
-                      })()}
-                    </p>
-                    <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
-                      <div className="ds_metadata__item">
-                        <dt className="ds_metadata__key">Organization</dt>
-                        <dd className="ds_metadata__value">
-                          {result.organization?.title || 'Unknown'}
-                        </dd>
-                      </div>
-                      {result.resources && result.resources.length > 0 && (
-                    <div className="ds_metadata__item">
-                    <dt className="ds_metadata__key">Resource Types</dt>
-                    <dd className="ds_metadata__value">
-                      {
-                        [...new Set(result.resources.map(resource => resource.format))]
-                        .join(', ')
-                      }
-                    </dd>
-                  </div>
-                  
-                      )}
-                      </dl>
-                      <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
-                      <div className="ds_metadata__item">
-                        <dt className="ds_metadata__key">Last Updated</dt>
-                        <dd className="ds_metadata__value">
-                          Last updated: {new Date(result.metadata_modified).toLocaleDateString()}
-                        </dd>
-                      </div>
-                    </dl>
-                  </li>
-                ))}
+              
+              {filteredResults.map((result) => (
+  <li key={result.id} className="ds_search-result">
+    <h3 className="ds_search-result__title">
+      <Link
+        to={{
+          pathname: `/dataset/${result.name}`,
+          state: { fromResults: true, searchQuery: searchQuery }
+        }}
+        className="ds_search-result__link"
+      >
+        {result.title}
+      </Link>
+    </h3>
+    <p className="ds_search-result__summary">
+      {(() => {
+        const text = result.notes || 'No description available';
+        const words = text.split(' ');
+        return words.length > 65 ? words.slice(0, 65).join(' ') + '...' : text;
+      })()}
+    </p>
+    <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
+      <div className="ds_metadata__item">
+        <dt className="ds_metadata__key">Organization</dt>
+        <dd className="ds_metadata__value">
+          {result.organization?.title || 'Unknown'}
+        </dd>
+      </div>
+      {result.resources && result.resources.length > 0 && (
+        <div className="ds_metadata__item">
+          <dt className="ds_metadata__key">Resource Types</dt>
+          <dd className="ds_metadata__value">
+            {
+              [...new Set(result.resources.map(resource => resource.format))]
+              .join(', ')
+            }
+          </dd>
+        </div>
+      )}
+    </dl>
+    <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
+      <div className="ds_metadata__item">
+        <dt className="ds_metadata__key">Last Updated</dt>
+        <dd className="ds_metadata__value">
+          Last updated: {new Date(result.metadata_modified).toLocaleDateString()}
+        </dd>
+      </div>
+    </dl>
+    
+    {/* Tags section added below Last Updated */}
+    {result.tags && result.tags.length > 0 && (
+      <div className={styles.sgTagList} style={{ marginTop: '0.75rem' }}>
+        {result.tags.map((tag, index) => (
+          <Link
+            key={index}
+            to={`/results?q=${encodeURIComponent(tag.name)}`}
+            className={styles.sgTag}
+          >
+            {tag.name}
+          </Link>
+        ))}
+      </div>
+    )}
+  </li>
+))}
+
               </ol>
               <nav className="ds_pagination" aria-label="Search result pages">
                 <ul className="ds_pagination__list">

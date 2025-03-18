@@ -8,6 +8,12 @@ import styles from '../styles/Design_Style.module.css';
 import BackToTop from '../components/BackToTop';
 
 const Dataset = () => {
+  useEffect(() => {
+    // Dynamically set the page title
+    document.title = "Cobalt | Dataset";
+  }, []); 
+  
+  
   const { id } = useParams();
   const location = useLocation();
   const [dataset, setDataset] = useState(null);
@@ -93,7 +99,7 @@ const Dataset = () => {
 
   return (
     <div className="ds_page__middle">
-      <div className="ds_wrapper">
+      <div className="ds_wrapper" > {/* style={{ width: '1250px'}} <-right width but affects mobile users!! */}
         <main className="ds_layout ds_layout--search-results--filters">
           {/* Header Section */}
           <div className="ds_layout__header w-full">
@@ -191,21 +197,21 @@ const Dataset = () => {
               </dl>
               <hr />
               {dataset.tags && dataset.tags.length > 0 && (
-                <section className={styles.section}>
-                  <h3 className="ds_metadata__panel-title">Tags</h3>
-                  <div className="ds_tag-list" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '-0.5rem' }}>
-                  {dataset.tags.map((tag, index) => (
-                      <Link
-                        key={index}
-                        to={`/results?q=${encodeURIComponent(tag.name)}`}
-                        className="ds_button ds_button--secondary"
-                      >
-                        {tag.name}
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              )}
+  <section className={styles.section}>
+    <h3 className="ds_metadata__panel-title">Tags</h3>
+    <div className={styles.sgTagList}>
+      {dataset.tags.map((tag, index) => (
+        <Link
+          key={index}
+          to={`/results?q=${encodeURIComponent(tag.name)}`}
+          className={styles.sgTag}
+        >
+          {tag.name}
+        </Link>
+      ))}
+    </div>
+  </section>
+)}
             </div>
           </div>
 
@@ -228,7 +234,7 @@ const Dataset = () => {
                 <h2 className="ds_h3" style={{ marginBottom: '0px' }}>Resources </h2>
                 <div className="ds_file-download-list" style={{ marginBottom: '40px' }}>
                   {dataset.resources.map((resource, index) => (
-                    <div key={index} className="ds_file-download" style={{ marginBottom: '0px', marginTop: '15px' }}>
+                    <div key={index} className="ds_file-download" style={{ marginBottom: '0px', marginTop: '15px', paddingTop: '0px', paddingBottom: '0px', paddingRight: '20px' }}>
                     <div className="ds_file-download__thumbnail">
                         <a className="ds_file-download__thumbnail-link" aria-hidden="true" tabIndex="-1" href={resource.url}>
                           <span className="visually-hidden">Document cover image</span>
@@ -261,10 +267,7 @@ const Dataset = () => {
                         </div>
                       </div>
                       <div className="ds_button-group">
-                        <a href={resource.url} className="ds_button ds_button--download" download>
-                          Download
-                        </a>
-                        {['csv', 'geojson'].includes(resource.format.toLowerCase()) && (
+                      {['csv', 'geojson'].includes(resource.format.toLowerCase()) && (
                           <a
                             href={`/dataset/${dataset.id}/explore/${resource.id}`}
                             className="ds_button ds_button--secondary"
@@ -272,6 +275,10 @@ const Dataset = () => {
                             Explore Data
                           </a>
                         )}
+                        <a href={resource.url} className="ds_button ds_button--download" download>
+                          Download
+                        </a>
+
                       </div>
                     </div>
                   ))}

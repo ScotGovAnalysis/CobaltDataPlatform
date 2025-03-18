@@ -16,8 +16,8 @@ const ActionButtons = ({ resourceId, resourceUrl, resourceFormat, onApiClick }) 
   }, []);
 
   const handleDownload = (format, bom = false) => {
-    const url = format === 'native' 
-      ? resourceUrl 
+    const url = format === 'native'
+      ? resourceUrl
       : `https://cobaltadmin.sgdatacatalogue.net/datastore/dump/${resourceId}?format=${format}${bom ? '&bom=True' : ''}`;
     window.location.href = url;
   };
@@ -27,49 +27,54 @@ const ActionButtons = ({ resourceId, resourceUrl, resourceFormat, onApiClick }) 
       <div className={styles.buttonGroup}>
         <div className={styles.downloadWrapper}>
           <button className={styles.primaryButton}>
-            <span 
+            <span
               className={styles.buttonText}
               onClick={() => handleDownload('native')} // Add click handler here
             >
               Download
             </span>
-            <div 
-              className={styles.dropdownToggleArea}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsDropdownOpen(!isDropdownOpen);
-              }}
-            >
-              <span className={styles.dropdownArrow}>▾</span>
-            </div>
+            {resourceFormat.toLowerCase() !== 'geojson' && (
+              <div
+                className={styles.dropdownToggleArea}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDropdownOpen(!isDropdownOpen);
+                }}
+              >
+                <span className={styles.dropdownArrow}>▾</span>
+              </div>
+            )}
           </button>
-          
-          {isDropdownOpen && (
+
+          {isDropdownOpen && resourceFormat.toLowerCase() !== 'geojson' && (
             <div className={styles.dropdownMenu}>
-            <div className={styles.dropdownItem} onClick={() => handleDownload('json')}>
-              JSON
+              <div className={styles.dropdownItem} onClick={() => handleDownload('json')}>
+                JSON
+              </div>
+              <div className={styles.dropdownItem} onClick={() => handleDownload('tsv', true)}>
+                TSV with BOM
+              </div>
+              <div className={styles.dropdownItem} onClick={() => handleDownload('xml')}>
+                XML
+              </div>
+              <div className={styles.dropdownItem} onClick={() => handleDownload('csv', true)}>
+                CSV with BOM
+              </div>
+              <div className={styles.dropdownItem} onClick={() => handleDownload('native')}>
+                Native Format
+              </div>
             </div>
-            <div className={styles.dropdownItem} onClick={() => handleDownload('tsv', true)}>
-              TSV with BOM
-            </div>
-            <div className={styles.dropdownItem} onClick={() => handleDownload('xml')}>
-              XML
-            </div>
-            <div className={styles.dropdownItem} onClick={() => handleDownload('csv', true)}>
-              CSV with BOM
-            </div>
-            <div className={styles.dropdownItem} onClick={() => handleDownload('native')}>
-              Native Format
-            </div>
-          </div>
           )}
         </div>
 
-        <button className={styles.secondaryButton} onClick={onApiClick}>
-          API
-        </button>
+        {resourceFormat.toLowerCase() !== 'geojson' && (
+          <button className={styles.secondaryButton} onClick={onApiClick}>
+            API
+          </button>
+        )}
       </div>
     </div>
   );
 };
-export default ActionButtons
+
+export default ActionButtons;
