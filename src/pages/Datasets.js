@@ -4,6 +4,7 @@ import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
 import styles from '../styles/Design_Style.module.css'
 import BackToTop from '../components/BackToTop';
+import { PropagateLoader } from 'react-spinners';
 
 const Datasets = () => {
   useEffect(() => {
@@ -136,18 +137,19 @@ const Datasets = () => {
     }));
   };
 
-  if (loading) {
-    return (
-      <div className="ds_page__middle">
-        <div className="ds_wrapper">
-          <div className="ds_loading">
-            <div className="ds_loading__spinner"></div>
-            <p>Loading results...</p>
-          </div>
-        </div>
+
+  if (loading) return (
+    <div className="ds_page__middle">
+      <div className="ds_wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <PropagateLoader
+          color="#0065bd"
+          loading={true}
+          speedMultiplier={1}
+        />
       </div>
-    );
-  }
+    </div>
+  );
+
 
   if (error) {
     return (
@@ -330,9 +332,10 @@ const Datasets = () => {
           </div>
           <div className="ds_layout__list">
             <div className="ds_search-results">   
-              <h2 aria-live="polite" className="ds_search-results__title">
-                {filteredResults.length} result{filteredResults.length !== 1 ? 's' : ''} {searchQuery ? `for "${searchQuery}"` : ''}
-              </h2>
+            <h2 aria-live="polite" className="ds_search-results__title">
+  {filteredResults.length} {searchQuery ? `result${filteredResults.length !== 1 ? 's' : ''} for "${searchQuery}"` : `Dataset${filteredResults.length !== 1 ? 's' : ''}`}
+</h2>
+
               <hr className="ds_search-results__divider" />
 
               <div className="ds_search-controls">
@@ -408,7 +411,6 @@ const Datasets = () => {
     </select>
     <span className={`ds_select-arrow ${styles.selectArrow}`} aria-hidden="true"></span>
   </span>
-  <button className="ds_button ds_button--secondary ds_button--small" type="submit">Apply sort</button>
 </div>
               </div>
               <ol className="ds_search-results__list" data-total={filteredResults.length} start="1">

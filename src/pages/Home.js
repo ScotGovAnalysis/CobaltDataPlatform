@@ -53,7 +53,15 @@ const Home = () => {
 
         const data = await response.json();
         if (data.success) {
-          setIntroText(data.result || 'Find and access data from the Scottish Government and its agencies');
+          // Update the intro text with HTML formatting
+          const formattedText = data.result
+            .replace('datasets', '<strong><u><a href="http://localhost:3000/datasets" style="color: #FFFFFF;">datasets</a></u></strong>')
+            .replace('contact us', '<strong><u><a href="http://localhost:3000/contact" style="color: #FFFFFF;">contact us</a></u></strong>')
+            .replace('help', '<strong><u><a href="http://localhost:3000/help" style="color: #FFFFFF;">help</a></u></strong>')
+            .replace('theme', '<strong><u><a href="http://localhost:3000/themes" style="color: #FFFFFF;">theme</a></u></strong>')
+            .replace('organisations', '<strong><u><a href="http://localhost:3000/organisations" style="color: #FFFFFF;">organisations</a></u></strong>')
+            .replace(/\r\n\r\n/g, '</p><p>'); // Replace double newlines with paragraph tags
+          setIntroText(formattedText || 'Find and access data from the Scottish Government and its agencies');
         } else {
           throw new Error(data.error?.message || 'Failed to fetch intro text');
         }
@@ -67,7 +75,6 @@ const Home = () => {
     fetchIntroText();
   }, []);
 
-  // Rest of the component remains exactly the same
   return (
     <div className="ds_page__middle">
       <main id="main-content">
@@ -78,12 +85,11 @@ const Home = () => {
               <div className="ds_layout">
                 {/* Left Column: Text */}
                 <div className="ds_layout__content">
-                  <h1 className="ds_page-header__title" style={{ color: '#FFFFFF' }}>
-                    Open access to Scotland's official statistics
+                  <h1 className="ds_page-header__title" style={{ color: '#FFFFFF', marginBottom: '12.5px' }}>
+                    Open access to Scotland's data
                   </h1>
-                  <p className="ds_lead" style={{ color: '#FFFFFF' }}>
-                    {introText}
-                  </p>
+                  <p className="ds_lead" style={{ color: '#FFFFFF' }}
+                     dangerouslySetInnerHTML={{ __html: introText }} />
                   <div className="ds_cb__inner">
                   <div className="ds_site-search ds_site-search--large" style={{ marginBottom: '-5px' }}>
       <form action="/results" role="search" className="ds_site-search__form" method="GET">
@@ -150,7 +156,7 @@ const Home = () => {
         </div>
         <div className="ds_wrapper" style={{ marginTop: '1.5rem' }}>
           <div className="ds_cb__inner">
-          <h3 className="ds_h3">Get Started</h3>
+          <h3 className="ds_h3">Browse By</h3>
             <nav aria-label="Category navigation">
               <ul className="ds_category-list ds_category-list--grid ds_category-list--narrow" style={{ marginTop: '-0.5rem' }}>
                 <li className="ds_card ds_card--has-hover">
@@ -161,7 +167,7 @@ const Home = () => {
                       </Link>
                     </h2>
                     <p className="ds_category-item__summary">
-                      Explore a wide range of datasets available for public use.
+                      A wide range of datasets available for public use.
                     </p>
                   </article>
                 </li>
@@ -173,19 +179,19 @@ const Home = () => {
                       </Link>
                     </h2>
                     <p className="ds_category-item__summary">
-                      Browse organisations publishing Scotland's official statistics.
+                      Organisations publishing Scotland's official statistics.
                     </p>
                   </article>
                 </li>
                 <li className="ds_card ds_card--has-hover">
                   <article className="ds_category-item ds_category-item--card">
                     <h2 className="ds_category-item__title">
-                      <Link to="/categories" className="ds_category-item__link">
-                        Categories
+                      <Link to="/themes" className="ds_category-item__link">
+                        Themes
                       </Link>
                     </h2>
                     <p className="ds_category-item__summary">
-                      Browse datasets by themes such as health, education and economy.
+                      Datasets by themes such as health, education and economy.
                     </p>
                   </article>
                 </li>

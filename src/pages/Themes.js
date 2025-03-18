@@ -1,29 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
+import styles from '../styles/Design_Style.module.css'
+import BackToTop from '../components/BackToTop';
+import { PropagateLoader } from 'react-spinners';
 
-const Category = () => {
+const Themes = () => {
   useEffect(() => {
     // Dynamically set the page title
-    document.title = "Cobalt | Category";
+    document.title = "Cobalt | Themes";
   }, []);   
   
-  
-  const { categoryName } = useParams();
-  const [group, setGroup] = useState(null);
+  const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchGroupDetails = async () => {
+    const fetchGroups = async () => {
       try {
-        const response = await fetch(`${config.apiBaseUrl}/api/3/action/group_show?id=${categoryName}&include_datasets=true&include_dataset_count=true&include_extras=true&include_users=true&include_groups=true&include_tags=true&include_followers=true`);
+        const response = await fetch(`${config.apiBaseUrl}/api/3/action/group_list`);
         if (!response.ok) {
-          throw new Error('Failed to fetch group details');
+          throw new Error('Failed to fetch groups');
         }
         const data = await response.json();
-        setGroup(data.result);
+        const detailedGroups = await Promise.all(data.result.map(async (groupId) => {
+          const groupResponse = await fetch(`${config.apiBaseUrl}/api/3/action/group_show?id=${groupId}`);
+          if (!groupResponse.ok) {
+            throw new Error(`Failed to fetch details for group ${groupId}`);
+          }
+          return await groupResponse.json();
+        }));
+        setGroups(detailedGroups.map(group => group.result));
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -31,17 +39,18 @@ const Category = () => {
       }
     };
 
-    fetchGroupDetails();
-  }, [categoryName]);
+    fetchGroups();
+  }, []);
 
   if (loading) {
     return (
       <div className="ds_page__middle">
-        <div className="ds_wrapper">
-          <div className="ds_loading">
-            <div className="ds_loading__spinner"></div>
-            <p>Loading category details...</p>
-          </div>
+        <div className="ds_wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <PropagateLoader
+            color="#0065bd"
+            loading={true}
+            speedMultiplier={1}
+          />
         </div>
       </div>
     );
@@ -65,12 +74,12 @@ const Category = () => {
         <main className="ds_layout ds_layout--search-results--filters">
           <div className="ds_layout__header">
             <header className="ds_page-header">
-              <h1 className="ds_page-header__title">{group.display_name}</h1>
+              <h1 className="ds_page-header__title">Themes</h1>
             </header>
           </div>
           <div className="ds_layout__content">
             <div className="ds_site-search">
-              <form action={`/category/${group.name}`} role="search" className="ds_site-search__form" method="GET">
+              <form action="/themes" role="search" className="ds_site-search__form" method="GET">
                 <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
                 <div className="ds_input__wrapper ds_input__wrapper--has-icon">
                   <input
@@ -110,31 +119,31 @@ const Category = () => {
                   <form id="filters">
                     <h3 className="ds_search-filters__title ds_h4">Filter by</h3>
                     <div className="ds_accordion ds_accordion--small ds_!_margin-top--0" data-module="ds-accordion">
-                      {/* Example Filter: Category Type */}
+                      {/* Example Filter: Theme Type */}
                       <div className="ds_accordion-item">
                         <input
                           type="checkbox"
-                          className="visually-hidden ds_accordion-item__control"
-                          id="category-type-panel"
+                          className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
+                          id="theme-type-panel"
                         />
-                        <div className="ds_accordion-item__header">
-                          <h3 className="ds_accordion-item__title">
-                            Category Type
+                         <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
+                         <h3 className="ds_accordion-item__title">
+                            Theme Type
                           </h3>
-                          <span className="ds_accordion-item__indicator"></span>
+                          <span className={styles.accordionIndicator}></span>
                           <label
                             className="ds_accordion-item__label"
-                            htmlFor="category-type-panel"
+                            htmlFor="theme-type-panel"
                           >
                             <span className="visually-hidden">Show this section</span>
                           </label>
                         </div>
                         <div className="ds_accordion-item__body">
                           <fieldset>
-                            <legend className="visually-hidden">Select which category types you would like to see</legend>
+                            <legend className="visually-hidden">Select which theme types you would like to see</legend>
                             <div className="ds_search-filters__scrollable">
                               <div className="ds_search-filters__checkboxes">
-                                {/* Add your category type filters here */}
+                                {/* Add your theme type filters here */}
                               </div>
                             </div>
                           </fieldset>
@@ -152,18 +161,18 @@ const Category = () => {
           <div className="ds_layout__list">
             <div className="ds_search-results">
               <h2 aria-live="polite" className="ds_search-results__title">
-                {group.package_count} dataset{group.package_count !== 1 ? 's' : ''} found
+                {groups.length} categor{groups.length !== 1 ? 'ies' : 'y'} found
               </h2>
-              <ol className="ds_search-results__list" data-total={group.package_count} start="1">
-                {group.packages.map((dataset) => (
-                  <li key={dataset.id} className="ds_search-result">
+              <ol className="ds_search-results__list" data-total={groups.length} start="1">
+                {groups.map((group) => (
+                  <li key={group.id} className="ds_search-result">
                     <h3 className="ds_search-result__title">
-                      <a href={`/dataset/${dataset.name}`} className="ds_search-result__link">
-                        {dataset.title}
-                      </a>
+                    <Link to={`/theme/${group.name}`} className="ds_search-result__link">
+  {group.display_name}
+</Link>
                     </h3>
                     <p className="ds_search-result__summary">
-                      {dataset.notes || 'No description available'}
+                      {group.description || 'No description available'}
                     </p>
                   </li>
                 ))}
@@ -172,8 +181,10 @@ const Category = () => {
           </div>
         </main>
       </div>
+      <BackToTop />
+
     </div>
   );
 };
 
-export default Category;
+export default Themes;

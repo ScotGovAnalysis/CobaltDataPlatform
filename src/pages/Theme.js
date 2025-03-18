@@ -1,36 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
-import styles from '../styles/Design_Style.module.css'
-import BackToTop from '../components/BackToTop';
 
-const Categories = () => {
+const Theme = () => {
   useEffect(() => {
     // Dynamically set the page title
-    document.title = "Cobalt | Categories";
+    document.title = "Cobalt | Theme";
   }, []);   
   
-  const [groups, setGroups] = useState([]);
+  
+  const { themeName } = useParams();
+  const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchGroups = async () => {
+    const fetchGroupDetails = async () => {
       try {
-        const response = await fetch(`${config.apiBaseUrl}/api/3/action/group_list`);
+        const response = await fetch(`${config.apiBaseUrl}/api/3/action/group_show?id=${themeName}&include_datasets=true&include_dataset_count=true&include_extras=true&include_users=true&include_groups=true&include_tags=true&include_followers=true`);
         if (!response.ok) {
-          throw new Error('Failed to fetch groups');
+          throw new Error('Failed to fetch group details');
         }
         const data = await response.json();
-        const detailedGroups = await Promise.all(data.result.map(async (groupId) => {
-          const groupResponse = await fetch(`${config.apiBaseUrl}/api/3/action/group_show?id=${groupId}`);
-          if (!groupResponse.ok) {
-            throw new Error(`Failed to fetch details for group ${groupId}`);
-          }
-          return await groupResponse.json();
-        }));
-        setGroups(detailedGroups.map(group => group.result));
+        setGroup(data.result);
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -38,8 +31,8 @@ const Categories = () => {
       }
     };
 
-    fetchGroups();
-  }, []);
+    fetchGroupDetails();
+  }, [themeName]);
 
   if (loading) {
     return (
@@ -47,7 +40,7 @@ const Categories = () => {
         <div className="ds_wrapper">
           <div className="ds_loading">
             <div className="ds_loading__spinner"></div>
-            <p>Loading categories...</p>
+            <p>Loading theme details...</p>
           </div>
         </div>
       </div>
@@ -72,12 +65,12 @@ const Categories = () => {
         <main className="ds_layout ds_layout--search-results--filters">
           <div className="ds_layout__header">
             <header className="ds_page-header">
-              <h1 className="ds_page-header__title">Categories</h1>
+              <h1 className="ds_page-header__title">{group.display_name}</h1>
             </header>
           </div>
           <div className="ds_layout__content">
             <div className="ds_site-search">
-              <form action="/categories" role="search" className="ds_site-search__form" method="GET">
+              <form action={`/theme/${group.name}`} role="search" className="ds_site-search__form" method="GET">
                 <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
                 <div className="ds_input__wrapper ds_input__wrapper--has-icon">
                   <input
@@ -117,31 +110,31 @@ const Categories = () => {
                   <form id="filters">
                     <h3 className="ds_search-filters__title ds_h4">Filter by</h3>
                     <div className="ds_accordion ds_accordion--small ds_!_margin-top--0" data-module="ds-accordion">
-                      {/* Example Filter: Category Type */}
+                      {/* Example Filter: Theme Type */}
                       <div className="ds_accordion-item">
                         <input
                           type="checkbox"
-                          className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
-                          id="category-type-panel"
+                          className="visually-hidden ds_accordion-item__control"
+                          id="theme-type-panel"
                         />
-                         <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
-                         <h3 className="ds_accordion-item__title">
-                            Category Type
+                        <div className="ds_accordion-item__header">
+                          <h3 className="ds_accordion-item__title">
+                            Theme Type
                           </h3>
-                          <span className={styles.accordionIndicator}></span>
+                          <span className="ds_accordion-item__indicator"></span>
                           <label
                             className="ds_accordion-item__label"
-                            htmlFor="category-type-panel"
+                            htmlFor="theme-type-panel"
                           >
                             <span className="visually-hidden">Show this section</span>
                           </label>
                         </div>
                         <div className="ds_accordion-item__body">
                           <fieldset>
-                            <legend className="visually-hidden">Select which category types you would like to see</legend>
+                            <legend className="visually-hidden">Select which theme types you would like to see</legend>
                             <div className="ds_search-filters__scrollable">
                               <div className="ds_search-filters__checkboxes">
-                                {/* Add your category type filters here */}
+                                {/* Add your theme type filters here */}
                               </div>
                             </div>
                           </fieldset>
@@ -159,18 +152,18 @@ const Categories = () => {
           <div className="ds_layout__list">
             <div className="ds_search-results">
               <h2 aria-live="polite" className="ds_search-results__title">
-                {groups.length} categor{groups.length !== 1 ? 'ies' : 'y'} found
+                {group.package_count} dataset{group.package_count !== 1 ? 's' : ''} found
               </h2>
-              <ol className="ds_search-results__list" data-total={groups.length} start="1">
-                {groups.map((group) => (
-                  <li key={group.id} className="ds_search-result">
+              <ol className="ds_search-results__list" data-total={group.package_count} start="1">
+                {group.packages.map((dataset) => (
+                  <li key={dataset.id} className="ds_search-result">
                     <h3 className="ds_search-result__title">
-                    <Link to={`/category/${group.name}`} className="ds_search-result__link">
-  {group.display_name}
-</Link>
+                      <a href={`/dataset/${dataset.name}`} className="ds_search-result__link">
+                        {dataset.title}
+                      </a>
                     </h3>
                     <p className="ds_search-result__summary">
-                      {group.description || 'No description available'}
+                      {dataset.notes || 'No description available'}
                     </p>
                   </li>
                 ))}
@@ -179,10 +172,8 @@ const Categories = () => {
           </div>
         </main>
       </div>
-      <BackToTop />
-
     </div>
   );
 };
 
-export default Categories;
+export default Theme;

@@ -6,14 +6,14 @@ import '../index.css';
 import config from '../config';
 import styles from '../styles/Design_Style.module.css';
 import BackToTop from '../components/BackToTop';
+import { PropagateLoader } from 'react-spinners';
 
 const Dataset = () => {
   useEffect(() => {
     // Dynamically set the page title
     document.title = "Cobalt | Dataset";
-  }, []); 
-  
-  
+  }, []);
+
   const { id } = useParams();
   const location = useLocation();
   const [dataset, setDataset] = useState(null);
@@ -47,7 +47,7 @@ const Dataset = () => {
     'Coherence and Comparability',
     'Relevance',
     'Timeliness and Punctuality'
-    ];
+  ];
 
   const detailsKeys = [
     'Confidentiality Policy',
@@ -78,11 +78,12 @@ const Dataset = () => {
 
   if (loading) return (
     <div className="ds_page__middle">
-      <div className="ds_wrapper">
-        <div className="ds_loading">
-          <div className="ds_loading__spinner"></div>
-          <p>Loading dataset...</p>
-        </div>
+      <div className="ds_wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <PropagateLoader
+          color="#0065bd"
+          loading={true}
+          speedMultiplier={1}
+        />
       </div>
     </div>
   );
@@ -99,36 +100,36 @@ const Dataset = () => {
 
   return (
     <div className="ds_page__middle">
-      <div className="ds_wrapper" > {/* style={{ width: '1250px'}} <-right width but affects mobile users!! */}
+      <div className="ds_wrapper">
         <main className="ds_layout ds_layout--search-results--filters">
           {/* Header Section */}
           <div className="ds_layout__header w-full">
-          <nav aria-label="Breadcrumb">
-  <ol className="ds_breadcrumbs">
-    <li className={styles.ds_breadcrumbs__item}>
-      <Link className="ds_breadcrumbs__link" to="/">Home</Link>
-    </li>
-    {isFromResultsPage ? (
-      <>
-        <li className={styles.ds_breadcrumbs__item}>
-          <Link className="ds_breadcrumbs__link" to={`/results?q=${searchQuery}`}>Results</Link>
-        </li>
-        <li className={styles.ds_breadcrumbs__item}>
-          <span className="ds_breadcrumbs__current">Dataset: {dataset.title}</span>
-        </li>
-      </>
-    ) : (
-      <>
-        <li className={styles.ds_breadcrumbs__item}>
-          <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
-        </li>
-        <li className={styles.ds_breadcrumbs__item}>
-          <span className="ds_breadcrumbs__current">{dataset.title}</span>
-        </li>
-      </>
-    )}
-  </ol>
-</nav>
+            <nav aria-label="Breadcrumb">
+              <ol className="ds_breadcrumbs">
+                <li className={styles.ds_breadcrumbs__item}>
+                  <Link className="ds_breadcrumbs__link" to="/">Home</Link>
+                </li>
+                {isFromResultsPage ? (
+                  <>
+                    <li className={styles.ds_breadcrumbs__item}>
+                      <Link className="ds_breadcrumbs__link" to={`/results?q=${searchQuery}`}>Results</Link>
+                    </li>
+                    <li className={styles.ds_breadcrumbs__item}>
+                      <span className="ds_breadcrumbs__current">Dataset: {dataset.title}</span>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li className={styles.ds_breadcrumbs__item}>
+                      <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
+                    </li>
+                    <li className={styles.ds_breadcrumbs__item}>
+                      <span className="ds_breadcrumbs__current">{dataset.title}</span>
+                    </li>
+                  </>
+                )}
+              </ol>
+            </nav>
 
             <header className="gov_layout gov_layout--publication-header w-full">
               <div className="gov_layout__title w-full">
@@ -154,18 +155,17 @@ const Dataset = () => {
                   <dd className="ds_metadata__value"> {dataset.organization?.title || 'Not specified'}</dd>
                 </div>
                 <div className="ds_metadata__item">
-  <dt className="ds_metadata__key">License</dt>
-  <dd className="ds_metadata__value">
-    {dataset.license_title ? (
-      <>
-        {' '}<a href={dataset.license_title} className="ds_link">{dataset.license_title}</a>
-      </>
-    ) : (
-      ' Not specified'
-    )}
-  </dd>
-</div>
-
+                  <dt className="ds_metadata__key">License</dt>
+                  <dd className="ds_metadata__value">
+                    {dataset.license_title ? (
+                      <>
+                        {' '}<a href={dataset.license_title} className="ds_link">{dataset.license_title}</a>
+                      </>
+                    ) : (
+                      ' Not specified'
+                    )}
+                  </dd>
+                </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Published</dt>
                   <dd className="ds_metadata__value"> {format(new Date(dataset.metadata_created), 'dd MMMM yyyy')}</dd>
@@ -187,31 +187,30 @@ const Dataset = () => {
                   <dd className="ds_metadata__value"> {dataset.temporal_coverage || 'Not specified'}</dd>
                 </div>
                 <div className="ds_metadata__item">
-  <dt className="ds_metadata__key">Contact</dt>
-  <dd className="ds_metadata__value"> <a href={`mailto:${dataset.maintainer_email}`} className="ds_link">
-    {dataset.maintainer_email}
-    </a>
-  </dd>
-</div>
-
+                  <dt className="ds_metadata__key">Contact</dt>
+                  <dd className="ds_metadata__value"> <a href={`mailto:${dataset.maintainer_email}`} className="ds_link">
+                    {dataset.maintainer_email}
+                  </a>
+                  </dd>
+                </div>
               </dl>
               <hr />
               {dataset.tags && dataset.tags.length > 0 && (
-  <section className={styles.section}>
-    <h3 className="ds_metadata__panel-title">Tags</h3>
-    <div className={styles.sgTagList}>
-      {dataset.tags.map((tag, index) => (
-        <Link
-          key={index}
-          to={`/results?q=${encodeURIComponent(tag.name)}`}
-          className={styles.sgTag}
-        >
-          {tag.name}
-        </Link>
-      ))}
-    </div>
-  </section>
-)}
+                <section className={styles.section}>
+                  <h3 className="ds_metadata__panel-title">Tags</h3>
+                  <div className={styles.sgTagList}>
+                    {dataset.tags.map((tag, index) => (
+                      <Link
+                        key={index}
+                        to={`/results?q=${encodeURIComponent(tag.name)}`}
+                        className={styles.sgTag}
+                      >
+                        {tag.name}
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
             </div>
           </div>
 
@@ -219,9 +218,9 @@ const Dataset = () => {
           <div className="ds_layout__list">
             <div className="ds_search-results">
               <hr />
-              
+
               {/* Description Section */}
- 
+
               {/* Headline Section */}
               <section className={styles.section}>
                 <h2 className="ds_h3">Summary</h2>
@@ -234,8 +233,8 @@ const Dataset = () => {
                 <h2 className="ds_h3" style={{ marginBottom: '0px' }}>Resources </h2>
                 <div className="ds_file-download-list" style={{ marginBottom: '40px' }}>
                   {dataset.resources.map((resource, index) => (
-                    <div key={index} className="ds_file-download" style={{ marginBottom: '0px', marginTop: '15px', paddingTop: '0px', paddingBottom: '0px', paddingRight: '20px' }}>
-                    <div className="ds_file-download__thumbnail">
+                    <div key={index} className="ds_file-download" style={{ width: '750px', marginBottom: '0px', marginTop: '15px', paddingTop: '0px', paddingBottom: '0px', paddingRight: '20px' }}>
+                      <div className="ds_file-download__thumbnail">
                         <a className="ds_file-download__thumbnail-link" aria-hidden="true" tabIndex="-1" href={resource.url}>
                           <span className="visually-hidden">Document cover image</span>
                           <img
@@ -253,11 +252,11 @@ const Dataset = () => {
                           <dl className="ds_metadata ds_metadata--inline">
                             <div className="ds_metadata__item">
                               <dt className="ds_metadata__key visually-hidden">File type</dt>
-                              <dd className="ds_metadata__value">{resource.format || 'Unknown format'}</dd>
+                              <dd className="ds_metadata__value">{resource.format || 'Unknown format'} {' '}</dd>
                             </div>
                             <div className="ds_metadata__item">
                               <dt className="ds_metadata__key visually-hidden">File size</dt>
-                              <dd className="ds_metadata__value">{(resource.size / 1024).toFixed(2)} KB</dd>
+                              <dd className="ds_metadata__value">{(resource.size / 1024).toFixed(2)} KB{' '}</dd>
                             </div>
                             <div className="ds_metadata__item">
                               <dt className="ds_metadata__key visually-hidden">Date Created</dt>
@@ -267,7 +266,7 @@ const Dataset = () => {
                         </div>
                       </div>
                       <div className="ds_button-group">
-                      {['csv', 'geojson'].includes(resource.format.toLowerCase()) && (
+                        {['csv', 'geojson'].includes(resource.format.toLowerCase()) && (
                           <a
                             href={`/dataset/${dataset.id}/explore/${resource.id}`}
                             className="ds_button ds_button--secondary"
@@ -278,7 +277,6 @@ const Dataset = () => {
                         <a href={resource.url} className="ds_button ds_button--download" download>
                           Download
                         </a>
-
                       </div>
                     </div>
                   ))}
@@ -303,7 +301,7 @@ const Dataset = () => {
                     {qualityKeys.map((key, index) => {
                       const detail = dataset.extras.find(extra => extra.key === key);
                       if (!detail?.value) return null;
-                      
+
                       return (
                         <div key={index} className="ds_accordion-item">
                           <input
@@ -338,7 +336,7 @@ const Dataset = () => {
                     {detailsKeys.map((key, index) => {
                       const detail = dataset.extras.find(extra => extra.key === key);
                       if (!detail?.value) return null;
-                      
+
                       return (
                         <div key={index} className="ds_accordion-item">
                           <input
@@ -369,7 +367,6 @@ const Dataset = () => {
         </main>
       </div>
       <BackToTop />
-
     </div>
   );
 };

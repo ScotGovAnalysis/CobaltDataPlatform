@@ -4,6 +4,7 @@ import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
 import styles from '../styles/Design_Style.module.css';
 import BackToTop from '../components/BackToTop';
+import { PropagateLoader } from 'react-spinners';
 
 const Organisations = () => {
   useEffect(() => {
@@ -67,19 +68,18 @@ const Organisations = () => {
     const hasDatasets = selectedFilters.hasDatasets ? org.package_count > 0 : true;
     return isActive && hasDatasets;
   });
-
-  if (loading) {
-    return (
-      <div className="ds_page__middle">
-        <div className="ds_wrapper">
-          <div className="ds_loading">
-            <div className="ds_loading__spinner"></div>
-            <p>Loading organisations...</p>
-          </div>
-        </div>
+  if (loading) return (
+    <div className="ds_page__middle">
+      <div className="ds_wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <PropagateLoader
+          color="#0065bd"
+          loading={true}
+          speedMultiplier={1}
+        />
       </div>
-    );
-  }
+    </div>
+  );
+
 
   if (error) {
     return (

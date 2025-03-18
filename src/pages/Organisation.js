@@ -4,45 +4,20 @@ import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
 import BackToTop from '../components/BackToTop';
 import styles from '../styles/Design_Style.module.css';
+import { PropagateLoader } from 'react-spinners';
 
 const Organisation = () => {
   useEffect(() => {
     // Dynamically set the page title
     document.title = "Cobalt | Organisation";
-  }, []); 
-  
-  
+  }, []);
+
   const { organisationName } = useParams();
   const [organisation, setOrganisation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('relevance');
   const [filteredResults, setFilteredResults] = useState([]);
-
-  const LoadingState = () => (
-    <div className="ds_page__middle">
-      <div className="ds_wrapper">
-        <div className="ds_loading">
-          <div className="ds_loading__spinner"></div>
-          <p>Loading organisation details...</p>
-        </div>
-      </div>
-    </div>
-  );
-  
-  const ErrorState = ({ error }) => (
-    <div className="ds_page__middle">
-      <div className="ds_wrapper">
-        <div className="ds_error">
-          <svg className="ds_icon ds_icon--48" aria-hidden="true" role="img">
-            <use href="/assets/images/icons/icons.stack.svg#warning"></use>
-          </svg>
-          <h3 className="ds_error__title">Error loading organisation</h3>
-          <p>{error}</p>
-        </div>
-      </div>
-    </div>
-  );
 
   useEffect(() => {
     const fetchOrganisationDetails = async () => {
@@ -66,7 +41,7 @@ const Organisation = () => {
   useEffect(() => {
     if (organisation && organisation.packages) {
       let sorted = [...organisation.packages];
-      
+
       switch (sortBy) {
         case 'date':
           sorted.sort((a, b) => new Date(b.metadata_modified) - new Date(a.metadata_modified));
@@ -79,7 +54,7 @@ const Organisation = () => {
           // Keep original order for relevance
           break;
       }
-      
+
       setFilteredResults(sorted);
     }
   }, [sortBy, organisation]);
@@ -93,8 +68,35 @@ const Organisation = () => {
     // The actual sorting is handled by the useEffect above
   };
 
-  if (loading) return <LoadingState />;
-  if (error) return <ErrorState error={error} />;
+  if (loading) {
+    return (
+      <div className="ds_page__middle">
+        <div className="ds_wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <PropagateLoader
+            color="#0065bd"
+            loading={true}
+            speedMultiplier={1}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="ds_page__middle">
+        <div className="ds_wrapper">
+          <div className="ds_error">
+            <svg className="ds_icon ds_icon--48" aria-hidden="true" role="img">
+              <use href="/assets/images/icons/icons.stack.svg#warning"></use>
+            </svg>
+            <h3 className="ds_error__title">Error loading organisation</h3>
+            <p>{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="ds_page__middle">
@@ -104,22 +106,22 @@ const Organisation = () => {
           <div className="ds_layout__header">
             <nav aria-label="Breadcrumb">
               <ol className="ds_breadcrumbs">
-              <li className={styles.ds_breadcrumbs__item}>
-              <Link className="ds_breadcrumbs__link" to="/">Home</Link>
+                <li className={styles.ds_breadcrumbs__item}>
+                  <Link className="ds_breadcrumbs__link" to="/">Home</Link>
                 </li>
                 <li className={styles.ds_breadcrumbs__item}>
-                <span className="ds_breadcrumbs__current">{organisation.title}</span>
+                  <span className="ds_breadcrumbs__current">{organisation.title}</span>
                 </li>
               </ol>
             </nav>
-            
+
             <header className="ds_page-header ds_page-header--with-image">
               <div className="ds_organisation-header">
                 {organisation.image_url && (
                   <div className="ds_organisation-logo">
-                    <img 
-                      src={organisation.image_url} 
-                      alt={`${organisation.title} logo`} 
+                    <img
+                      src={organisation.image_url}
+                      alt={`${organisation.title} logo`}
                       className="ds_organisation-logo__image"
                     />
                   </div>
@@ -146,28 +148,28 @@ const Organisation = () => {
               <header className="ds_dataset-list-header">
                 <h2 className="ds_h3">Datasets ({organisation.package_count})</h2>
                 <div className="ds_sort-options">
-  <label className="ds_label" htmlFor="sort-by">Sort by</label>
-  <span className={`ds_select-wrapper ${styles.selectWrapper}`}>
-    <select className={`ds_select ${styles.select}`} id="sort-by" value={sortBy} onChange={handleSortChange}>
-      <option value="relevance">Most relevant</option>
-      <option value="date">Updated (newest)</option>
-      <option value="adate">Updated (oldest)</option>
-    </select>
-    <span className={`ds_select-arrow ${styles.selectArrow}`} aria-hidden="true"></span>
-  </span>
-  <button className="ds_button ds_button--secondary ds_button--small" type="submit">Apply sort</button>
-</div>
+                  <label className="ds_label" htmlFor="sort-by">Sort by</label>
+                  <span className={`ds_select-wrapper ${styles.selectWrapper}`}>
+                    <select className={`ds_select ${styles.select}`} id="sort-by" value={sortBy} onChange={handleSortChange}>
+                      <option value="relevance">Most relevant</option>
+                      <option value="date">Updated (newest)</option>
+                      <option value="adate">Updated (oldest)</option>
+                    </select>
+                    <span className={`ds_select-arrow ${styles.selectArrow}`} aria-hidden="true"></span>
+                  </span>
+                  <button className="ds_button ds_button--secondary ds_button--small" type="submit" onClick={applySorting}>Apply sort</button>
+                </div>
               </header>
-              
+
               <ol className="ds_search-results__list" data-total={filteredResults.length} start="1">
                 {filteredResults.map((result) => (
                   <li key={result.id} className="ds_search-result">
                     <h3 className="ds_search-result__title">
-                      <Link 
+                      <Link
                         to={{
                           pathname: `/dataset/${result.name}`,
                           state: { fromResults: true }
-                        }} 
+                        }}
                         className="ds_search-result__link"
                       >
                         {result.title}
@@ -253,8 +255,8 @@ const Organisation = () => {
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Contact</dt>
                   <dd className="ds_metadata__value">{' '}
-                    <a 
-                      href={`mailto:${organisation.packages?.[0]?.maintainer_email || 'N/A'}`} 
+                    <a
+                      href={`mailto:${organisation.packages?.[0]?.maintainer_email || 'N/A'}`}
                       className="ds_link"
                     >
                       Contact administrator

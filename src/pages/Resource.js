@@ -11,6 +11,7 @@ import AnalysisModal from '../components/AnalysisModal';
 import config from '../config';
 import BackToTop from '../components/BackToTop';
 import ActionButtons from '../components/ActionButtons';
+import { PropagateLoader } from 'react-spinners';
 
 const Resource = () => {
   const { id, resourceId } = useParams();
@@ -224,18 +225,18 @@ const Resource = () => {
     return `${config.apiBaseUrl}/dataset/${datasetName}/resource/${resourceId}/view/${resourceViewId}`;
   };
 
-  if (loading) {
-    return (
-      <div className="ds_page__middle">
-        <div className="ds_wrapper">
-          <div className="ds_loading">
-            <div className="ds_loading__spinner"></div>
-            <p>Loading dataset...</p>
-          </div>
-        </div>
+  if (loading) return (
+    <div className="ds_page__middle">
+      <div className="ds_wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <PropagateLoader
+          color="#0065bd"
+          loading={true}
+          speedMultiplier={1}
+        />
       </div>
-    );
-  }
+    </div>
+  );
+
 
   if (error) {
     return (
@@ -384,22 +385,34 @@ const Resource = () => {
                     </article>
                   </li>
                 )}
-                <li className="ds_card ds_card--has-hover">
-                  <article className="ds_category-item ds_category-item--card">
-                    <h2 className="ds_category-item__title">
-                      <button
-                        onClick={handleOpenAnalysis}
-                        className="ds_category-item__link ds_category-item__link--button"
-                        disabled={loadingAnalysis}
-                      >
-                        {loadingAnalysis ? 'Loading...' : 'Analyse Data'}
-                      </button>
-                    </h2>
-                    <p className="ds_category-item__summary">
-                      View statistics and analysis of the dataset.
-                    </p>
-                  </article>
-                </li>
+    <li className="ds_card ds_card--has-hover">
+  <article className="ds_category-item ds_category-item--card">
+    <h2 className="ds_category-item__title">
+      <button
+        onClick={handleOpenAnalysis}
+        className="ds_category-item__link ds_category-item__link--button"
+        disabled={loadingAnalysis}
+        style={{ position: 'relative', display: 'inline-block' }}
+      >
+        {loadingAnalysis ? (
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+            <PropagateLoader
+              color="#0065bd"
+              loading={true}
+              speedMultiplier={1}
+            />
+          </div>
+        ) : (
+          'Analyse Data'
+        )}
+      </button>
+    </h2>
+    <p className="ds_category-item__summary">
+      View statistics and analysis of the dataset.
+    </p>
+  </article>
+</li>
+
                 {hasMap && (
                   <li className="ds_card ds_card--has-hover">
                     <article className="ds_category-item ds_category-item--card">
