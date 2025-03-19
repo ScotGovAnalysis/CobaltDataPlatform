@@ -29,10 +29,10 @@ This project is currently in alpha testing and is being evaluated alongside othe
 
 ## Features
 
-- **Search and Filter**: Easily search and filter datasets by keywords, organizations, and resource types.
+- **Search and Filter**: Easily search and filter datasets by keywords, organisations, and resource types.
 - **Dataset Details**: View detailed information about datasets, including metadata, resources, and download links.
 - **CKAN API Integration**: Seamlessly communicates with a CKAN instance using its RESTful API.
-- **CSV Exploration**: Allows users to visualize and slice data from CSV resources.
+- **CSV Exploration**: Allows users to visualise and slice data from CSV resources.
 
 ---
 
