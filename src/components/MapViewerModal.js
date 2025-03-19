@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import 'proj4';
-import 'proj4leaflet';
 import styles from '../styles/Embedded_Modal.module.css';
 
 // Fix Leaflet icon URLs
@@ -14,51 +12,59 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-// Define British National Grid CRS
-const bngCRS = new L.Proj.CRS(
-  'EPSG:27700',
-  '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs',
-  {
-    resolutions: [
-      8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5
-    ],
-    origin: [-238375.0, 1376256.0],
-    bounds: L.bounds([-238375.0, 0.0], [700000.0, 1376256.0])
-  }
-);
+// Custom component to fit map to bounds
+const FitBounds = ({ bounds }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (bounds && bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }, [bounds, map]);
+  return null;
+};
 
 const MapViewerModal = ({ isOpen, onClose, data, properties = [] }) => {
-  const [transformedData, setTransformedData] = useState(null);
-  const [mapCenter, setMapCenter] = useState([56.4907, -4.2026]); // Default to Scotland
-  const [mapZoom, setMapZoom] = useState(6); // Default zoom level
+  const [mapBounds, setMapBounds] = useState(null);
+  const [mapCenter, setMapCenter] = useState([55.8600, -4.2500]); // Center on Glasgow
+  const [mapZoom, setMapZoom] = useState(12); // Zoom level for city view
 
-  // Transform GeoJSON data to WGS84 (latitude/longitude)
+  // Calculate bounds from GeoJSON data
   useEffect(() => {
-    if (data && data.features) {
-      const transformedGeoJson = JSON.parse(JSON.stringify(data));
+    if (data && data.features && data.features.length > 0) {
+      console.log('GeoJSON Data:', data); // Debug: Log the data
       const bounds = new L.LatLngBounds();
+      let hasValidGeometry = false;
 
-      transformedGeoJson.features = transformedGeoJson.features.map(feature => {
-        const coords = feature.geometry.coordinates;
-        if (feature.geometry.type === 'LineString') {
-          feature.geometry.coordinates = coords.map(coord => {
-            const point = L.point(coord[0], coord[1]);
-            const latLng = bngCRS.unproject(point);
-            bounds.extend(latLng);
-            return [latLng.lng, latLng.lat];
-          });
+      data.features.forEach((feature, index) => {
+        if (feature.geometry && feature.geometry.coordinates) {
+          const geometry = feature.geometry;
+          hasValidGeometry = true;
+          console.log(`Feature ${index} Geometry:`, geometry); // Debug: Log each geometry
+
+          if (geometry.type === 'Point') {
+            bounds.extend([geometry.coordinates[1], geometry.coordinates[0]]);
+          } else if (geometry.type === 'LineString' || geometry.type === 'MultiPoint') {
+            geometry.coordinates.forEach(coord => bounds.extend([coord[1], coord[0]]));
+          } else if (geometry.type === 'Polygon' || geometry.type === 'MultiLineString') {
+            geometry.coordinates.forEach(ring => ring.forEach(coord => bounds.extend([coord[1], coord[0]])));
+          } else if (geometry.type === 'MultiPolygon') {
+            geometry.coordinates.forEach(polygon =>
+              polygon.forEach(ring => ring.forEach(coord => bounds.extend([coord[1], coord[0]])))
+            );
+          }
+        } else {
+          console.warn(`Feature ${index} has no valid geometry`);
         }
-        return feature;
       });
 
-      setTransformedData(transformedGeoJson);
-
-      // Set map center and zoom based on bounds
-      if (bounds.isValid()) {
-        const center = bounds.getCenter();
-        setMapCenter([center.lat, center.lng]);
-        setMapZoom(bounds.getNorthEast().distanceTo(bounds.getSouthWest()) > 5000 ? 10 : 13);
+      if (hasValidGeometry && bounds.isValid()) {
+        console.log('Calculated Bounds:', bounds.toBBoxString()); // Debug: Log bounds
+        setMapBounds(bounds);
+      } else {
+        console.error('No valid geometries found in GeoJSON data');
       }
+    } else {
+      console.error('Invalid or empty GeoJSON data:', data);
     }
   }, [data]);
 
@@ -77,13 +83,13 @@ const MapViewerModal = ({ isOpen, onClose, data, properties = [] }) => {
             aria-label="Close modal"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M15 5L5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M5 5L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M15 5L5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M5 5L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
         </div>
-        <div className={styles.modalBody}>
-          {!transformedData ? (
+        <div className={styles.modalBody} style={{ padding: 0 }}>
+          {!data || !data.features ? (
             <p>Processing map data...</p>
           ) : (
             <MapContainer
@@ -94,14 +100,15 @@ const MapViewerModal = ({ isOpen, onClose, data, properties = [] }) => {
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
+              {mapBounds && <FitBounds bounds={mapBounds} />}
               <GeoJSON
-                data={transformedData}
+                data={data}
                 style={{
                   color: '#3388ff',
                   weight: 2,
-                  opacity: 0.7
+                  opacity: 0.7,
                 }}
                 onEachFeature={(feature, layer) => {
                   if (feature.properties) {

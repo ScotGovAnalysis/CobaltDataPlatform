@@ -1,38 +1,41 @@
-import { React, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { Phone, Mail, MapPin, Twitter } from 'lucide-react';
-
 
 const Contact = () => {
   useEffect(() => {
     // Dynamically set the page title
     document.title = "Cobalt | Contact Us";
-  }, []); 
+  }, []);
 
   const navigate = useNavigate();
+  const [showGif, setShowGif] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate('/home');
+    setShowGif(true);
+    setTimeout(() => {
+      setShowGif(false);
+      navigate('/home');
+    }, 5000);
   };
 
   return (
     <div>
       <div className="ds_page__top">
-          <div className="ds_wrapper">
+        <div className="ds_wrapper">
           <header className="ds_page-header">
-          <h1 className="ds_page-header__title">Contact us</h1>
-          <p className="ds_!text-white ds_!text-lg">The Open Data team values your feedback, questions or comments. We are always happy to hear from you.</p>
-        </header>
+            <h1 className="ds_page-header__title">Contact us</h1>
+            <p className="ds_!text-white ds_!text-lg">The Open Data team values your feedback, questions or comments. We are always happy to hear from you.</p>
+          </header>
         </div>
-
       </div>
 
       <div className="ds_page__middle">
         <div className="ds_wrapper">
           {/* Using the proper sidebar layout */}
-          <div className="ds_layout  ds_layout--sidebar-first">
+          <div className="ds_layout ds_layout--sidebar-first">
             {/* Sidebar */}
             <div className="ds_layout__sidebar">
               <aside>
@@ -46,7 +49,7 @@ const Contact = () => {
 
                 <div className="ds_contact-info ds_!bg-white ds_!p-6 ds_!rounded-lg ds_!shadow-sm">
                   <h2 className="ds_h3 ds_!text-sky-600 ds_!mb-6">Ways to Reach Us</h2>
-                  
+
                   <div className="ds_!flex ds_!items-center ds_!mb-6">
                     <Mail className="ds_!text-sky-400 ds_!mr-3" size={24} />
                     <div>
@@ -119,11 +122,11 @@ const Contact = () => {
 
                     <div className="ds_form-group">
                       <label className="ds_label" htmlFor="message">Your Message</label>
-                      <textarea 
-                        className="ds_input" 
-                        id="message" 
-                        name="message" 
-                        rows="6" 
+                      <textarea
+                        className="ds_input"
+                        id="message"
+                        name="message"
+                        rows="6"
                         placeholder="Tell us how we can help you today..."
                         required
                       ></textarea>
@@ -146,6 +149,22 @@ const Contact = () => {
           </div>
         </div>
       </div>
+
+      {showGif && (
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1000,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          padding: '20px',
+          borderRadius: '10px',
+          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)'
+        }}>
+          <img src="https://media1.tenor.com/m/z0NTv7yYBtQAAAAd/oiia-cat.gif" alt="OIIA Cat" />
+        </div>
+      )}
     </div>
   );
 };

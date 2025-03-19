@@ -251,33 +251,48 @@ const Resource = () => {
   }
 
   return (
-    <div className="ds_page__middle">
-      <div className="ds_wrapper">
-        <main className="ds_layout ds_layout--search-results--filters">
-          <div className="ds_layout__header w-full">
-            <nav aria-label="Breadcrumb">
-              <ol className="ds_breadcrumbs">
-                <li className={styles.ds_breadcrumbs__item}>
-                  <Link className="ds_breadcrumbs__link" to="/">Home</Link>
-                </li>
-                <li className={styles.ds_breadcrumbs__item}>
-                  <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
-                </li>
-                <li className={styles.ds_breadcrumbs__item}>
-                  <Link className="ds_breadcrumbs__link" to={`/dataset/${id}`}>
-                    {dataset?.title || 'Dataset'}
-                  </Link>
-                </li>
-                <li className={styles.ds_breadcrumbs__item}>
-                  <span className="ds_breadcrumbs__current">Resource</span>
-                </li>
-              </ol>
-            </nav>
+<div className="ds_page__middle">
+  <div className="ds_wrapper">
+    <main className="ds_layout ds_layout--search-results--filters">
+      <div className="ds_layout__header w-full">
+        <nav aria-label="Breadcrumb">
+          <ol className="ds_breadcrumbs">
+            <li className={styles.ds_breadcrumbs__item}>
+              <Link className="ds_breadcrumbs__link" to="/">Home</Link>
+            </li>
+            <li className={styles.ds_breadcrumbs__item}>
+              <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
+            </li>
+            <li className={styles.ds_breadcrumbs__item}>
+              <Link className="ds_breadcrumbs__link" to={`/dataset/${id}`}>
+                {dataset?.title || 'Dataset'}
+              </Link>
+            </li>
+            <li className={styles.ds_breadcrumbs__item}>
+              <span className="ds_breadcrumbs__current">Resource</span>
+            </li>
+          </ol>
+        </nav>
 
-            <div className="ds_page-header">
-              <h1 className="ds_page-header__title">{dataset?.title}</h1>
-            </div>
+        <div
+          className="ds_page-header"
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        >
+          {/* Title takes 75% width */}
+          <div style={{ flex: '0 0 115%'}}>
+            <h1 className="ds_page-header__title" style={{ marginRight: '100px'}}>{dataset?.title}</h1>
           </div>
+          {/* ActionButtons takes 25% width */}
+          <div style={{ flex: '0 0 0'  }}>
+            <ActionButtons
+              resourceId={resourceId}
+              resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
+              resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
+              onApiClick={() => setShowApiModal(true)}
+            />
+          </div>
+        </div>
+      </div>
 
           <div className="ds_layout__sidebar">
             <div className="ds_metadata__panel">
@@ -346,25 +361,18 @@ const Resource = () => {
           </div>
 
           <div className="ds_layout__list">
-            {!hasMap && (
-              <ActionButtons
-                resourceId={resourceId}
-                resourceUrl={dataset?.resources?.find(r => r.id === resourceId)?.url}
-                resourceFormat={dataset?.resources?.find(r => r.id === resourceId)?.format}
-                onApiClick={() => setShowApiModal(true)}
-              />
-            )}
-            <section className={styles.section}>
-              {dataset.resources[0]?.description ? (
-                dataset.resources[0].description.split('\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))
-              ) : (
-                <p>No description available</p>
-              )}
-            </section>
 
-            <hr />
+  <section className={styles.section}>
+    {dataset.resources[0]?.description ? (
+      dataset.resources[0].description.split('\n').map((paragraph, index) => (
+        <p key={index}>{paragraph}</p>
+      ))
+    ) : (
+      <p>No description available</p>
+    )}
+  </section>
+
+  <hr />
 
             <nav aria-label="Data view navigation">
               <ul className="ds_category-list ds_category-list--grid ds_category-list--narrow">
@@ -494,12 +502,12 @@ const Resource = () => {
             </nav>
 
             {showMapViewerModal && (
-              <MapViewerModal
-                data={geoJsonData}
-                isOpen={showMapViewerModal}
-                onClose={() => setShowMapViewerModal(false)}
-              />
-            )}
+  <MapViewerModal
+    data={geoJsonData}
+    isOpen={showMapViewerModal}
+    onClose={() => setShowMapViewerModal(false)}
+  />
+)}
           </div>
         </main>
       </div>

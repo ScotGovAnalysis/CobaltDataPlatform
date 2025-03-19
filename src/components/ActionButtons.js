@@ -1,76 +1,73 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import styles from '../styles/Design_Style.module.css';
+import config from '../config.js';
 
 const ActionButtons = ({ resourceId, resourceUrl, resourceFormat, onApiClick }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleDownload = (format, bom = false) => {
-    const url = format === 'native'
-      ? resourceUrl
-      : `https://cobaltadmin.sgdatacatalogue.net/datastore/dump/${resourceId}?format=${format}${bom ? '&bom=True' : ''}`;
+  const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef(null);
+  const isGeoJSON = resourceFormat?.toLowerCase() === 'geojson';
+  
+  // Toggle dropdown
+  const toggleDropdown = () => setIsOpen(!isOpen);
+  
+  // Handle download
+  const handleDownload = (format) => {
+    const url = format === 'native' 
+      ? resourceUrl 
+      : `${config.apiBaseUrl}/datastore/dump/${resourceId}?format=${format}`;
     window.location.href = url;
   };
-
+  
   return (
-    <div className={styles.actionButtonsContainer} ref={dropdownRef}>
-      <div className={styles.buttonGroup}>
-        <div className={styles.downloadWrapper}>
-          <button className={styles.primaryButton}>
-            <span
-              className={styles.buttonText}
-              onClick={() => handleDownload('native')} // Add click handler here
+    <div className={styles.actionButtons} ref={wrapperRef}>
+      <div
+        className={styles.buttonGroup}
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end', // Always align content to the right
+          width: '100%'
+        }}
+      >
+        {!isGeoJSON ? (
+          // Both buttons scenario
+          <>
+            <button 
+              className={styles.apiButton} 
+              onClick={onApiClick}
+              style={{ marginRight: '8px' }}
             >
-              Download
-            </span>
-            {resourceFormat.toLowerCase() !== 'geojson' && (
-              <div
-                className={styles.dropdownToggleArea}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsDropdownOpen(!isDropdownOpen);
-                }}
+              API
+            </button>
+            
+            <div className={styles.downloadWrapper}>
+              <button
+                className={`${styles.primaryButton} ${styles.hasDropdown}`}
+                onClick={toggleDropdown}
               >
-                <span className={styles.dropdownArrow}>▾</span>
-              </div>
-            )}
-          </button>
-
-          {isDropdownOpen && resourceFormat.toLowerCase() !== 'geojson' && (
-            <div className={styles.dropdownMenu}>
-              <div className={styles.dropdownItem} onClick={() => handleDownload('json')}>
-                JSON
-              </div>
-              <div className={styles.dropdownItem} onClick={() => handleDownload('tsv', true)}>
-                TSV with BOM
-              </div>
-              <div className={styles.dropdownItem} onClick={() => handleDownload('xml')}>
-                XML
-              </div>
-              <div className={styles.dropdownItem} onClick={() => handleDownload('csv', true)}>
-                CSV with BOM
-              </div>
-              <div className={styles.dropdownItem} onClick={() => handleDownload('native')}>
-                Native Format
-              </div>
+                <span className={styles.buttonText}>Download</span>
+                <span className={styles.dropdownChevron}>▾</span>
+              </button>
+              
+              {isOpen && (
+                <div className={styles.dropdownMenu}>
+                  <button onClick={() => handleDownload('csv')}>CSV</button>
+                  <button onClick={() => handleDownload('json')}>JSON</button>
+                  <button onClick={() => handleDownload('xml')}>XML</button>
+                  <button onClick={() => handleDownload('tsv')}>TSV</button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-
-        {resourceFormat.toLowerCase() !== 'geojson' && (
-          <button className={styles.secondaryButton} onClick={onApiClick}>
-            API
-          </button>
+          </>
+        ) : (
+          // GeoJSON scenario (download button only)
+          <div className={styles.downloadWrapper}>
+            <button
+              className={styles.primaryButton}
+              onClick={() => handleDownload('native')}
+            >
+              <span className={styles.buttonText}>Download</span>
+            </button>
+          </div>
         )}
       </div>
     </div>
