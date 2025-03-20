@@ -32,9 +32,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #111;
+  background-color: #0065bd;
   color: #fff;
-  height: 3.5rem;
+  height: 3rem;
 }
 
 .closeButton {
@@ -60,6 +60,16 @@
   display: flex;
   flex-direction: column;
 }
+
+.modalBodyJson {
+  padding: 0rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #000000
+}
+
 
 .titleContainer {
   display: flex;

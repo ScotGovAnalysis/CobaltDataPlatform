@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import styles from '../styles/Embedded_Modal.module.css';
+import styles from '../../styles/Embedded_Modal.module.css';
 
 // Fix Leaflet icon URLs
 delete L.Icon.Default.prototype._getIconUrl;

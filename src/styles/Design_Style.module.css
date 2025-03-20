@@ -566,3 +566,12 @@
   flex-grow: 1;
   text-align: right;
 }
+
+.expandedRow {
+  background-color: #ebebeb;
+}
+
+.toggleIcon {
+  margin-left: 8px;
+  cursor: pointer;
+}
