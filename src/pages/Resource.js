@@ -21,7 +21,7 @@ const Resource = () => {
   const [error, setError] = useState(null);
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [hasMap, setHasMap] = useState(false);
-  const [selectedView, setSelectedView] = useState(null);
+  const [setSelectedView] = useState(null);
   const [showDataViewerModal, setShowDataViewerModal] = useState(false);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [showMapViewerModal, setShowMapViewerModal] = useState(false);

@@ -25,8 +25,8 @@ const FitBounds = ({ bounds }) => {
 
 const MapViewerModal = ({ isOpen, onClose, data, properties = [] }) => {
   const [mapBounds, setMapBounds] = useState(null);
-  const [mapCenter, setMapCenter] = useState([55.8600, -4.2500]); // Center on Glasgow
-  const [mapZoom, setMapZoom] = useState(12); // Zoom level for city view
+  const [mapCenter] = useState([55.8600, -4.2500]); // Center on Glasgow
+  const [mapZoom] = useState(12); // Zoom level for city view
 
   // Calculate bounds from GeoJSON data
   useEffect(() => {

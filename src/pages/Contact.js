@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
-import { Phone, Mail, MapPin, Twitter } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
 
 const Contact = () => {
   useEffect(() => {
