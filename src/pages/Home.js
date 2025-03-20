@@ -55,11 +55,11 @@ const Home = () => {
         if (data.success) {
           // Update the intro text with HTML formatting
           const formattedText = data.result
-            .replace('datasets', '<strong><u><a href="http://localhost:3000/datasets" style="color: #FFFFFF;">datasets</a></u></strong>')
-            .replace('contact us', '<strong><u><a href="http://localhost:3000/contact" style="color: #FFFFFF;">contact us</a></u></strong>')
-            .replace('help', '<strong><u><a href="http://localhost:3000/help" style="color: #FFFFFF;">help</a></u></strong>')
-            .replace('theme', '<strong><u><a href="http://localhost:3000/themes" style="color: #FFFFFF;">theme</a></u></strong>')
-            .replace('organisations', '<strong><u><a href="http://localhost:3000/organisations" style="color: #FFFFFF;">organisations</a></u></strong>')
+            .replace('datasets', '<strong><u><a href="/datasets" style="color: #FFFFFF;">datasets</a></u></strong>')
+            .replace('contact us', '<strong><u><a href="/contact" style="color: #FFFFFF;">contact us</a></u></strong>')
+            .replace('help', '<strong><u><a href="/help" style="color: #FFFFFF;">help</a></u></strong>')
+            .replace('theme', '<strong><u><a href="/themes" style="color: #FFFFFF;">theme</a></u></strong>')
+            .replace('organisations', '<strong><u><a href="/organisations" style="color: #FFFFFF;">organisations</a></u></strong>')
             .replace(/\r\n\r\n/g, '</p><p>'); // Replace double newlines with paragraph tags
           setIntroText(formattedText || 'Find and access data from the Scottish Government and its agencies');
         } else {

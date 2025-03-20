@@ -1,15 +1,15 @@
 import React from 'react';
-import styles from '../styles/Embedded_Modal.module.css'; // Create a CSS module for styling
+import styles from '../../styles/Embedded_Modal.module.css';
 
-const AnalysisModal = ({ isOpen, onClose, children }) => {
+const DataViewerModal = ({ isOpen, onClose, src }) => {
   if (!isOpen) return null;
 
   return (
     <div className={styles.modalOverlay}>
-      <div className={styles.modalContent}>
+      <div className={styles.modalContent} style={{ padding: 0 }}>
         <div className={styles.modalHeader}>
           <div className={styles.titleContainer}>
-            <span className={styles.viewerTitle}>Dataset Analysis</span>
+            <span className={styles.viewerTitle}>Data Viewer</span>
           </div>
           <button
             className={styles.closeButton}
@@ -22,12 +22,19 @@ const AnalysisModal = ({ isOpen, onClose, children }) => {
             </svg>
           </button>
         </div>
-        <div className={styles.modalBody}>
-          {children}
+        <div className={styles.modalBody} style={{ padding: 5 }}>
+          <iframe
+            title="Data Viewer"
+            src={src}
+            className={styles.viewerFrame}
+            width="100%"
+            height="100%"
+            frameBorder="0"
+          />
         </div>
       </div>
     </div>
   );
 };
 
-export default AnalysisModal;
+export default DataViewerModal;

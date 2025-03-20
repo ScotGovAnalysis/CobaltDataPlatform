@@ -3,15 +3,16 @@ import { useParams, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { format } from 'date-fns';
 import styles from '../styles/Design_Style.module.css';
-import DatasetAnalysis from '../components/DatasetAnalysis';
-import MapViewerModal from '../components/MapViewerModal';
+import MapViewerModal from '../components/modals/MapViewerModal';
 import ApiModal from '../components/ApiModal';
-import DataViewerModal from '../components/DataViewerModal';
-import AnalysisModal from '../components/AnalysisModal';
+import DataViewerModal from '../components/modals/DataViewerModal';
+import AnalysisModal from '../components/modals/AnalysisModal';
 import config from '../config';
 import BackToTop from '../components/BackToTop';
 import ActionButtons from '../components/ActionButtons';
 import { PropagateLoader } from 'react-spinners';
+import DataDictionary from '../components/DataDictionary';
+import JSONViewerModal from '../components/modals/JSONViewerModal';
 
 const Resource = () => {
   const { id, resourceId } = useParams();
@@ -25,13 +26,14 @@ const Resource = () => {
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [showMapViewerModal, setShowMapViewerModal] = useState(false);
   const [showApiModal, setShowApiModal] = useState(false);
-  const [dataDictionary, setDataDictionary] = useState([]);
   const [resourceViewId, setResourceViewId] = useState(null);
-  const [csvData, setCsvData] = useState([]);
+  const [analysisData, setAnalysisData] = useState(null);
+  const [analysisColumns, setAnalysisColumns] = useState([]);
   const [loadingAnalysis, setLoadingAnalysis] = useState(false);
   const [loadingMap, setLoadingMap] = useState(false);
-  const [loadingDictionary, setLoadingDictionary] = useState(false);
-  const [isDictionaryOpen, setIsDictionaryOpen] = useState(false);
+  const [showJsonModal, setShowJsonModal] = useState(false);
+  const [loadingJson, setLoadingJson] = useState(false);
+  const [jsonData, setJsonData] = useState(null);
 
   useEffect(() => {
     if (!id || !resourceId) {
@@ -51,9 +53,10 @@ const Resource = () => {
         if (!resource) throw new Error('Resource not found');
 
         const isGeoJSON = resource.format.toLowerCase() === 'geojson';
+        const isJSON = resource.format.toLowerCase() === 'json';
         setHasMap(isGeoJSON);
 
-        if (!isGeoJSON) {
+        if (!isGeoJSON && !isJSON) {
           const viewsResponse = await fetch(
             `${config.apiBaseUrl}/api/3/action/resource_view_list?id=${resourceId}`
           );
@@ -130,92 +133,57 @@ const Resource = () => {
     setLoadingAnalysis(true);
     try {
       const resource = dataset.resources.find(r => r.id === resourceId);
+      if (!resource) throw new Error('Resource not found');
+      
       const response = await fetch(resource.url);
-      const text = await response.text();
-      const rows = text.split('\n').filter(row => row.trim() !== '');
-      const headers = rows[0].split(',').map(h => h.trim());
-      const data = rows.slice(1).map(row => {
-        const values = row.split(',');
-        return headers.reduce((obj, header, index) => {
-          obj[header] = values[index]?.trim();
-          return obj;
-        }, {});
-      });
+      if (!response.ok) throw new Error('Failed to fetch data');
 
-      setCsvData(data);
+      const format = resource.format.toLowerCase();
+      
+      if (format === 'csv') {
+        const text = await response.text();
+        const rows = text.split('\n').filter(row => row.trim() !== '');
+        const headers = rows[0].split(',').map(h => h.trim());
+        const data = rows.slice(1).map(row => {
+          const values = row.split(',');
+          return headers.reduce((obj, header, index) => {
+            obj[header] = values[index]?.trim();
+            return obj;
+          }, {});
+        });
+        setAnalysisData(data);
+        setAnalysisColumns(headers);
+      } else if (format === 'json' || format === 'geojson') {
+        const jsonData = await response.json();
+        let normalizedData = [];
+        let columns = [];
+
+        if (format === 'geojson' && jsonData.features) {
+          normalizedData = jsonData.features.map(f => ({
+            ...f.properties,
+            geometry: JSON.stringify(f.geometry)
+          }));
+          columns = Object.keys(normalizedData[0] || {});
+        } else if (Array.isArray(jsonData)) {
+          normalizedData = jsonData;
+          columns = Object.keys(jsonData[0] || {});
+        } else {
+          normalizedData = [jsonData];
+          columns = Object.keys(jsonData);
+        }
+
+        setAnalysisData(normalizedData);
+        setAnalysisColumns(columns);
+      } else {
+        throw new Error('Unsupported file format for analysis');
+      }
+
       setShowAnalysisModal(true);
     } catch (err) {
-      console.error('Error loading CSV data:', err);
-      alert('Failed to load CSV data');
+      console.error('Error loading data for analysis:', err);
+      alert('Failed to load data for analysis: ' + err.message);
     } finally {
       setLoadingAnalysis(false);
-    }
-  };
-
-  const fetchDataDictionary = async () => {
-    if (!dataset || loadingDictionary || dataDictionary.length > 0) return;
-
-    setLoadingDictionary(true);
-    try {
-      const resource = dataset.resources.find(r => r.id === resourceId);
-      if (resource.format.toLowerCase() !== 'csv') return;
-
-      try {
-        const datastoreResponse = await fetch(
-          `${config.apiBaseUrl}/api/3/action/datastore_search?resource_id=${resource.id}&limit=0`
-        );
-        const datastoreResult = await datastoreResponse.json();
-
-        if (datastoreResult.success) {
-          const fields = datastoreResult.result.fields;
-          const dictionary = fields.map(field => ({
-            name: field.id,
-            type: field.type,
-            description: field.info?.notes || 'No description available',
-          }));
-          setDataDictionary(dictionary);
-          return;
-        }
-      } catch (datastoreError) {
-        console.log('No datastore info available, falling back to CSV parsing');
-      }
-
-      try {
-        const headerResponse = await fetch(resource.url, {
-          headers: { 'Range': 'bytes=0-10240' }
-        });
-
-        const text = await headerResponse.text();
-        const firstNewLine = text.indexOf('\n');
-        const headerLine = firstNewLine > 0 ? text.substring(0, firstNewLine) : text;
-        const headers = headerLine.split(',').map(h => h.trim());
-
-        const dictionary = headers.map(header => ({
-          name: header,
-          type: 'unknown',
-          description: 'No description available',
-        }));
-
-        setDataDictionary(dictionary);
-      } catch (headerError) {
-        console.error('Error loading headers:', headerError);
-        const fullResponse = await fetch(resource.url);
-        const text = await fullResponse.text();
-        const rows = text.split('\n').filter(row => row.trim() !== '');
-        const headers = rows[0]?.split(',').map(h => h.trim()) || [];
-
-        const dictionary = headers.map(header => ({
-          name: header,
-          type: 'unknown',
-          description: 'No description available',
-        }));
-
-        setDataDictionary(dictionary);
-      }
-    } catch (err) {
-      console.error('Error fetching data dictionary:', err);
-    } finally {
-      setLoadingDictionary(false);
     }
   };
 
@@ -223,6 +191,24 @@ const Resource = () => {
     if (!dataset || !resourceViewId) return null;
     const datasetName = dataset.name.replace(/_/g, '_');
     return `${config.apiBaseUrl}/dataset/${datasetName}/resource/${resourceId}/view/${resourceViewId}`;
+  };
+
+  const handleViewJson = async () => {
+    setLoadingJson(true);
+    try {
+      const resource = dataset.resources.find(r => r.id === resourceId);
+      const response = await fetch(resource.url);
+      if (!response.ok) throw new Error('Failed to fetch JSON data');
+
+      const jsonData = await response.json();
+      setJsonData(jsonData);
+      setShowJsonModal(true);
+    } catch (err) {
+      console.error('Error loading JSON:', err);
+      alert('Failed to load JSON data');
+    } finally {
+      setLoadingJson(false);
+    }
   };
 
   if (loading) return (
@@ -237,7 +223,6 @@ const Resource = () => {
     </div>
   );
 
-
   if (error) {
     return (
       <div className="ds_page__middle">
@@ -251,48 +236,46 @@ const Resource = () => {
   }
 
   return (
-<div className="ds_page__middle">
-  <div className="ds_wrapper">
-    <main className="ds_layout ds_layout--search-results--filters">
-      <div className="ds_layout__header w-full">
-        <nav aria-label="Breadcrumb">
-          <ol className="ds_breadcrumbs">
-            <li className={styles.ds_breadcrumbs__item}>
-              <Link className="ds_breadcrumbs__link" to="/">Home</Link>
-            </li>
-            <li className={styles.ds_breadcrumbs__item}>
-              <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
-            </li>
-            <li className={styles.ds_breadcrumbs__item}>
-              <Link className="ds_breadcrumbs__link" to={`/dataset/${id}`}>
-                {dataset?.title || 'Dataset'}
-              </Link>
-            </li>
-            <li className={styles.ds_breadcrumbs__item}>
-              <span className="ds_breadcrumbs__current">Resource</span>
-            </li>
-          </ol>
-        </nav>
+    <div className="ds_page__middle">
+      <div className="ds_wrapper">
+        <main className="ds_layout ds_layout--search-results--filters">
+          <div className="ds_layout__header w-full">
+            <nav aria-label="Breadcrumb">
+              <ol className="ds_breadcrumbs">
+                <li className={styles.ds_breadcrumbs__item}>
+                  <Link className="ds_breadcrumbs__link" to="/">Home</Link>
+                </li>
+                <li className={styles.ds_breadcrumbs__item}>
+                  <Link className="ds_breadcrumbs__link" to="/datasets">Datasets</Link>
+                </li>
+                <li className={styles.ds_breadcrumbs__item}>
+                  <Link className="ds_breadcrumbs__link" to={`/dataset/${id}`}>
+                    {dataset?.title || 'Dataset'}
+                  </Link>
+                </li>
+                <li className={styles.ds_breadcrumbs__item}>
+                  <span className="ds_breadcrumbs__current">Resource</span>
+                </li>
+              </ol>
+            </nav>
 
-        <div
-          className="ds_page-header"
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-        >
-          {/* Title takes 75% width */}
-          <div style={{ flex: '0 0 115%'}}>
-            <h1 className="ds_page-header__title" style={{ marginRight: '100px'}}>{dataset?.title}</h1>
+            <div
+              className="ds_page-header"
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <div style={{ flex: '0 0 115%'}}>
+                <h1 className="ds_page-header__title" style={{ marginRight: '100px'}}>{dataset?.title}</h1>
+              </div>
+              <div style={{ flex: '0 0 0'  }}>
+                <ActionButtons
+                  resourceId={resourceId}
+                  resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
+                  resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
+                  onApiClick={() => setShowApiModal(true)}
+                />
+              </div>
+            </div>
           </div>
-          {/* ActionButtons takes 25% width */}
-          <div style={{ flex: '0 0 0'  }}>
-            <ActionButtons
-              resourceId={resourceId}
-              resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
-              resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
-              onApiClick={() => setShowApiModal(true)}
-            />
-          </div>
-        </div>
-      </div>
 
           <div className="ds_layout__sidebar">
             <div className="ds_metadata__panel">
@@ -301,32 +284,33 @@ const Resource = () => {
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Size</dt>
                   <dd className="ds_metadata__value">
-                  {' '}{((dataset?.resources?.find(r => r.id === resourceId)?.size || 0) / 1024).toFixed(2)} KB
+                    {' '}{((dataset?.resources?.find(r => r.id === resourceId)?.size || 0) / 1024).toFixed(2)} KB
                   </dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Date Published</dt>
                   <dd className="ds_metadata__value">
-                     {dataset?.metadata_created ? format(new Date(dataset.metadata_created), ' dd MMMM yyyy') : ' N/A'}
+                    {dataset?.metadata_created ? format(new Date(dataset.metadata_created), ' dd MMMM yyyy') : ' N/A'}
                   </dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Last Updated</dt>
                   <dd className="ds_metadata__value">
-                     {dataset?.metadata_modified ? format(new Date(dataset.metadata_modified), ' dd MMMM yyyy') : ' N/A'}
+                    {dataset?.metadata_modified ? format(new Date(dataset.metadata_modified), ' dd MMMM yyyy') : ' N/A'}
                   </dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">License</dt>
                   <dd className="ds_metadata__value">
-    {dataset.license_title ? (
-      <>
-        {' '}<a href={dataset.license_title} className="ds_link">{dataset.license_title}</a>
-      </>
-    ) : (
-      ' Not specified'
-    )}
-  </dd>                </div>
+                    {dataset.license_title ? (
+                      <>
+                        {' '}<a href={dataset.license_title} className="ds_link">{dataset.license_title}</a>
+                      </>
+                    ) : (
+                      ' Not specified'
+                    )}
+                  </dd>
+                </div>
                 {dataset?.frequency && (
                   <div className="ds_metadata__item">
                     <dt className="ds_metadata__key">Update Frequency</dt>
@@ -355,24 +339,22 @@ const Resource = () => {
                     </dd>
                   </div>
                 )}
-
               </dl>
             </div>
           </div>
 
           <div className="ds_layout__list">
+            <section className={styles.section}>
+              {dataset.resources[0]?.description ? (
+                dataset.resources[0].description.split('\n').map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))
+              ) : (
+                <p>No description available</p>
+              )}
+            </section>
 
-  <section className={styles.section}>
-    {dataset.resources[0]?.description ? (
-      dataset.resources[0].description.split('\n').map((paragraph, index) => (
-        <p key={index}>{paragraph}</p>
-      ))
-    ) : (
-      <p>No description available</p>
-    )}
-  </section>
-
-  <hr />
+            <hr />
 
             <nav aria-label="Data view navigation">
               <ul className="ds_category-list ds_category-list--grid ds_category-list--narrow">
@@ -393,33 +375,61 @@ const Resource = () => {
                     </article>
                   </li>
                 )}
-    <li className="ds_card ds_card--has-hover">
-  <article className="ds_category-item ds_category-item--card">
-    <h2 className="ds_category-item__title">
-      <button
-        onClick={handleOpenAnalysis}
-        className="ds_category-item__link ds_category-item__link--button"
-        disabled={loadingAnalysis}
-        style={{ position: 'relative', display: 'inline-block' }}
-      >
-        {loadingAnalysis ? (
-          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-            <PropagateLoader
-              color="#0065bd"
-              loading={true}
-              speedMultiplier={1}
-            />
-          </div>
-        ) : (
-          'Analyse Data'
-        )}
-      </button>
-    </h2>
-    <p className="ds_category-item__summary">
-      View statistics and analysis of the dataset.
-    </p>
-  </article>
-</li>
+                {(hasMap || dataset?.resources.find(r => r.id === resourceId)?.format.toLowerCase() === 'json') && (
+                  <li className="ds_card ds_card--has-hover">
+                    <article className="ds_category-item ds_category-item--card">
+                      <h2 className="ds_category-item__title">
+                        <button
+                          onClick={handleViewJson}
+                          className="ds_category-item__link ds_category-item__link--button"
+                          disabled={loadingJson}
+                        >
+                          {loadingJson ? (
+                          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                            <PropagateLoader
+                              color="#0065bd"
+                              loading={true}
+                              speedMultiplier={1}
+                            />
+                          </div>
+                        ) : (
+                          'View JSON'
+                        )}
+                        </button>
+                      </h2>
+                      <p className="ds_category-item__summary">
+                      Explore the complete JSON document.
+                      </p>
+                    </article>
+                  </li>
+                )}
+                <li className="ds_card ds_card--has-hover">
+                  <article className="ds_category-item ds_category-item--card">
+                    <h2 className="ds_category-item__title">
+                      <button
+                        onClick={handleOpenAnalysis}
+                        className="ds_category-item__link ds_category-item__link--button"
+                        disabled={loadingAnalysis}
+                        style={{ position: 'relative', display: 'inline-block' }}
+                      >
+                        {loadingAnalysis ? (
+                          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                            <PropagateLoader
+                              color="#0065bd"
+                              loading={true}
+                              speedMultiplier={1}
+                            />
+                          </div>
+                        ) : (
+                          'Analyse Data'
+                        )}
+                      </button>
+                    </h2>
+                    <p className="ds_category-item__summary">
+                      View statistics and analysis of the dataset.
+                    </p>
+                  </article>
+                </li>
 
                 {hasMap && (
                   <li className="ds_card ds_card--has-hover">
@@ -441,73 +451,24 @@ const Resource = () => {
                 )}
               </ul>
 
-              <div className="ds_accordion" style={{ width: '100%', marginTop: '2rem' }}>
-                <div className="ds_accordion-item">
-                  <input
-                    type="checkbox"
-                    id="data-dictionary-accordion"
-                    className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
-                    onChange={(e) => {
-                      if (e.target.checked && !dataDictionary.length && !loadingDictionary) {
-                        fetchDataDictionary();
-                      }
-                      setIsDictionaryOpen(e.target.checked);
-                    }}
-                  />
-                  <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
-                    <h3 className="ds_accordion-item__title">
-                      Data Dictionary
-                      {loadingDictionary &&
-                        <span className="ds_loading__spinner" style={{ marginLeft: '1rem', width: '1.5rem', height: '1.5rem' }}></span>}
-                    </h3>
-                    <span className={styles.accordionIndicator}></span>
-                    <label className="ds_accordion-item__label" htmlFor="data-dictionary-accordion">
-                      <span className="visually-hidden">Show this section</span>
-                    </label>
-                  </div>
-                  <div className="ds_accordion-item__body">
-                    <div className={styles.tableWrapper}>
-                      {dataDictionary.length > 0 ? (
-                        <table className={styles.tableModern}>
-                          <thead>
-                            <tr>
-                              <th>Field Name</th>
-                              <th>Type</th>
-                              <th>Description</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {dataDictionary
-                              .filter(field => field.name !== '_id')
-                              .map((field, index) => (
-                                <tr key={index} className={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                                  <td><span className={styles.fieldName}>{field.name}</span></td>
-                                  <td>
-                                    <span className={styles.typeBadge}>
-                                      {field.type}
-                                    </span>
-                                  </td>
-                                  <td>{field.description}</td>
-                                </tr>
-                              ))}
-                          </tbody>
-                        </table>
-                      ) : (
-                        !loadingDictionary && <p className="ds_message ds_message--info">No data dictionary available.</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <DataDictionary dataset={dataset} resourceId={resourceId} config={config} />
+
             </nav>
 
             {showMapViewerModal && (
-  <MapViewerModal
-    data={geoJsonData}
-    isOpen={showMapViewerModal}
-    onClose={() => setShowMapViewerModal(false)}
-  />
-)}
+              <MapViewerModal
+                data={geoJsonData}
+                isOpen={showMapViewerModal}
+                onClose={() => setShowMapViewerModal(false)}
+              />
+            )}
+            {showJsonModal && (
+              <JSONViewerModal
+                isOpen={showJsonModal}
+                onClose={() => setShowJsonModal(false)}
+                data={jsonData}
+              />
+            )}
           </div>
         </main>
       </div>
@@ -531,13 +492,10 @@ const Resource = () => {
       <AnalysisModal
         isOpen={showAnalysisModal}
         onClose={() => setShowAnalysisModal(false)}
-      >
-        <DatasetAnalysis
-          resourceId={resourceId}
-          data={csvData}
-          columns={Object.keys(csvData[0] || {})}
-        />
-      </AnalysisModal>
+        data={analysisData}
+        columns={analysisColumns}
+        fileType={dataset?.resources.find(r => r.id === resourceId)?.format.toLowerCase() || 'csv'}
+      />
 
       <BackToTop />
     </div>
