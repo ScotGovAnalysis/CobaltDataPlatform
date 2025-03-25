@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Navigation from './Navigation';
 import '../App.css';
 
@@ -8,6 +8,7 @@ const Header = () => {
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollY = useRef(0);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,7 +50,7 @@ const Header = () => {
       document.documentElement.style.setProperty('--header-height', `${height}px`);
     }
   }, []);
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -61,36 +62,37 @@ const Header = () => {
   };
 
   return (
-    <header 
-      className={`ds_site-header ${!showHeader ? 'header-hidden' : ''}`} 
+    <header
+      className={`ds_site-header ${!showHeader ? 'header-hidden' : ''}`}
       role="banner"
-    >      <div className="ds_wrapper">
+    >
+      <div className="ds_wrapper">
         <div className="ds_site-header__content">
           <div className="ds_site-branding">
             <a className="ds_site-branding__logo ds_site-branding__link" href="/">
-<img
-  width="300"
-  height="58"
-  className="ds_site-branding__logo-image"
-  src="/assets/images/logos/scottish-government.svg"
-  alt="The Scottish Government"
-/>
+              <img
+                width="300"
+                height="58"
+                className="ds_site-branding__logo-image"
+                src="/assets/images/logos/scottish-government.svg"
+                alt="The Scottish Government"
+              />
             </a>
             <div className="ds_site-branding__title">Cobalt Open Data Portal</div>
           </div>
           <div className="ds_site-header__controls">
-  <label aria-controls="mobile-navigation" className="ds_site-header__control js-toggle-menu" htmlFor="menu">
-    <span className="ds_site-header__control-text">Menu</span>
-    <svg className="ds_icon ds_site-header__control-icon" aria-hidden="true" role="img">
-      <use href="/assets/images/icons/icons.stack.svg#menu"></use>
-    </svg>
-    <svg className="ds_icon ds_site-header__control-icon ds_site-header__control-icon--active-icon" aria-hidden="true" role="img">
-      <use href="/assets/images/icons/icons.stack.svg#close"></use>
-    </svg>
-  </label>
-</div>
+            <label aria-controls="mobile-navigation" className="ds_site-header__control js-toggle-menu" htmlFor="menu">
+              <span className="ds_site-header__control-text">Menu</span>
+              <svg className="ds_icon ds_site-header__control-icon" aria-hidden="true" role="img">
+                <use href="/assets/images/icons/icons.stack.svg#menu"></use>
+              </svg>
+              <svg className="ds_icon ds_site-header__control-icon ds_site-header__control-icon--active-icon" aria-hidden="true" role="img">
+                <use href="/assets/images/icons/icons.stack.svg#close"></use>
+              </svg>
+            </label>
+          </div>
           <input className="ds_site-navigation__toggle" id="menu" type="checkbox" />
-          <Navigation />
+          <Navigation currentPath={location.pathname} />
           <div className="ds_site-header__search">
             <div className="ds_site-search">
               <form onSubmit={handleSubmit} role="search" className="ds_site-search__form" method="GET">
@@ -105,8 +107,8 @@ const Header = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className="ds_button ds_button--icon-only js-site-search-button"
                     onClick={handleSubmit}
                   >
