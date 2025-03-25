@@ -171,7 +171,7 @@ const Dataset = () => {
                   <dd className="ds_metadata__value"> {format(new Date(dataset.metadata_created), 'dd MMMM yyyy')}</dd>
                 </div>
                 <div className="ds_metadata__item">
-                  <dt className="ds_metadata__key">Last Modified</dt>
+                  <dt className="ds_metadata__key">Last Updated</dt>
                   <dd className="ds_metadata__value"> {format(new Date(dataset.metadata_modified), 'dd MMMM yyyy')}</dd>
                 </div>
                 <div className="ds_metadata__item">
