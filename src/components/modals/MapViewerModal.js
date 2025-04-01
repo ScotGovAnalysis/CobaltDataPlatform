@@ -23,7 +23,7 @@ const FitBounds = ({ bounds }) => {
   return null;
 };
 
-const MapViewerModal = ({ isOpen, onClose, data, properties = [] }) => {
+const MapViewerModal = ({ isOpen, onClose, data }) => {
   const [mapBounds, setMapBounds] = useState(null);
   const [mapCenter] = useState([55.8600, -4.2500]); // Center on Glasgow
   const [mapZoom] = useState(12); // Zoom level for city view
@@ -31,7 +31,6 @@ const MapViewerModal = ({ isOpen, onClose, data, properties = [] }) => {
   // Calculate bounds from GeoJSON data
   useEffect(() => {
     if (data && data.features && data.features.length > 0) {
-      console.log('GeoJSON Data:', data); // Debug: Log the data
       const bounds = new L.LatLngBounds();
       let hasValidGeometry = false;
 
@@ -39,7 +38,6 @@ const MapViewerModal = ({ isOpen, onClose, data, properties = [] }) => {
         if (feature.geometry && feature.geometry.coordinates) {
           const geometry = feature.geometry;
           hasValidGeometry = true;
-          console.log(`Feature ${index} Geometry:`, geometry); // Debug: Log each geometry
 
           if (geometry.type === 'Point') {
             bounds.extend([geometry.coordinates[1], geometry.coordinates[0]]);
@@ -58,7 +56,6 @@ const MapViewerModal = ({ isOpen, onClose, data, properties = [] }) => {
       });
 
       if (hasValidGeometry && bounds.isValid()) {
-        console.log('Calculated Bounds:', bounds.toBBoxString()); // Debug: Log bounds
         setMapBounds(bounds);
       } else {
         console.error('No valid geometries found in GeoJSON data');
@@ -112,8 +109,8 @@ const MapViewerModal = ({ isOpen, onClose, data, properties = [] }) => {
                 }}
                 onEachFeature={(feature, layer) => {
                   if (feature.properties) {
-                    const popupContent = properties
-                      .map(prop => `${prop}: ${feature.properties[prop]}`)
+                    const popupContent = Object.entries(feature.properties)
+                      .map(([key, value]) => `${key}: ${value}`)
                       .join('<br>');
                     layer.bindPopup(popupContent);
                   }

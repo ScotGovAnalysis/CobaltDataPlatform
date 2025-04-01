@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import styles from '../styles/Embedded_Modal.module.css'; // Keep your existing CSS module path
-import config from '../config.js'
+import styles from '../../styles/Embedded_Modal.module.css'; // Keep your existing CSS module path
+import config from '../../config.js'
 
 const ApiModal = ({ resourceId, isOpen, onClose }) => {
   const [selectedLanguage, setSelectedLanguage] = useState('curl');

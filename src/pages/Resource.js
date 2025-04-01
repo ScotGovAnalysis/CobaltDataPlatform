@@ -4,7 +4,7 @@ import '@scottish-government/design-system/dist/css/design-system.min.css';
 import { format } from 'date-fns';
 import styles from '../styles/Design_Style.module.css';
 import MapViewerModal from '../components/modals/MapViewerModal';
-import ApiModal from '../components/ApiModal';
+import ApiModal from '../components/modals/ApiModal';
 import DataViewerModal from '../components/modals/DataViewerModal';
 import AnalysisModal from '../components/modals/AnalysisModal';
 import config from '../config';
@@ -21,7 +21,7 @@ const Resource = () => {
   const [error, setError] = useState(null);
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [hasMap, setHasMap] = useState(false);
-  const [setSelectedView] = useState(null);
+  const [selectedView, setSelectedView] = useState(null);
   const [showDataViewerModal, setShowDataViewerModal] = useState(false);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [showMapViewerModal, setShowMapViewerModal] = useState(false);
@@ -266,14 +266,16 @@ const Resource = () => {
               <div style={{ flex: '0 0 115%'}}>
                 <h1 className="ds_page-header__title" style={{ marginRight: '100px'}}>{dataset?.title}</h1>
               </div>
-              <div style={{ flex: '0 0 0'  }}>
-                <ActionButtons
-                  resourceId={resourceId}
-                  resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
-                  resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
-                  onApiClick={() => setShowApiModal(true)}
-                />
-              </div>
+              <div style={{ flex: '0 0 0' }}>
+  <ActionButtons
+    resourceId={resourceId}
+    resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
+    resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
+    onApiClick={() => setShowApiModal(true)}
+  />
+</div>
+
+
             </div>
           </div>
 
