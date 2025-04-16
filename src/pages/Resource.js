@@ -108,6 +108,27 @@ const Resource = () => {
     fetchDataset();
   }, [id, resourceId]);
 
+  useEffect(() => {
+    // Helper function to convert to camel case
+    const toCamelCase = (str) => {
+      return str.replace(/_/g, ' ').replace(/\w\S*/g, (txt) => {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      });
+    };
+
+    // Dynamically set the page title
+    if (dataset && dataset.resources) {
+      const resource = dataset.resources.find(r => r.id === resourceId);
+      if (resource) {
+        document.title = `Cobalt | ${toCamelCase(resource.name)}`;
+      } else {
+        document.title = "Cobalt | Dataset";
+      }
+    } else {
+      document.title = "Cobalt | Dataset";
+    }
+  }, [dataset, resourceId]);
+
   const handleViewMap = async () => {
     try {
       setLoadingMap(true);
@@ -134,12 +155,12 @@ const Resource = () => {
     try {
       const resource = dataset.resources.find(r => r.id === resourceId);
       if (!resource) throw new Error('Resource not found');
-      
+
       const response = await fetch(resource.url);
       if (!response.ok) throw new Error('Failed to fetch data');
 
       const format = resource.format.toLowerCase();
-      
+
       if (format === 'csv') {
         const text = await response.text();
         const rows = text.split('\n').filter(row => row.trim() !== '');
@@ -267,15 +288,13 @@ const Resource = () => {
                 <h1 className="ds_page-header__title" style={{ marginRight: '100px'}}>{dataset?.title}</h1>
               </div>
               <div style={{ flex: '0 0 0' }}>
-  <ActionButtons
-    resourceId={resourceId}
-    resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
-    resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
-    onApiClick={() => setShowApiModal(true)}
-  />
-</div>
-
-
+                <ActionButtons
+                  resourceId={resourceId}
+                  resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
+                  resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
+                  onApiClick={() => setShowApiModal(true)}
+                />
+              </div>
             </div>
           </div>
 
@@ -283,6 +302,12 @@ const Resource = () => {
             <div className="ds_metadata__panel">
               <h3 className="ds_metadata__panel-title">Metadata</h3>
               <dl className="ds_metadata">
+                <div className="ds_metadata__item">
+                  <dt className="ds_metadata__key">File</dt>
+                  <dd className="ds_metadata__value">
+                    {' '}{dataset?.resources?.find(r => r.id === resourceId)?.name || 'N/A'}
+                  </dd>
+                </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Size</dt>
                   <dd className="ds_metadata__value">
@@ -292,13 +317,13 @@ const Resource = () => {
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Date Published</dt>
                   <dd className="ds_metadata__value">
-                    {dataset?.metadata_created ? format(new Date(dataset.metadata_created), ' dd MMMM yyyy') : ' N/A'}
+                    {dataset?.metadata_created ? format(new Date(dataset.metadata_created), 'dd MMMM yyyy') : 'N/A'}
                   </dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Last Updated</dt>
                   <dd className="ds_metadata__value">
-                    {dataset?.metadata_modified ? format(new Date(dataset.metadata_modified), ' dd MMMM yyyy') : ' N/A'}
+                    {dataset?.metadata_modified ? format(new Date(dataset.metadata_modified), 'dd MMMM yyyy') : 'N/A'}
                   </dd>
                 </div>
                 <div className="ds_metadata__item">
@@ -309,7 +334,7 @@ const Resource = () => {
                         {' '}<a href={dataset.license_title} className="ds_link">{dataset.license_title}</a>
                       </>
                     ) : (
-                      ' Not specified'
+                      'Not specified'
                     )}
                   </dd>
                 </div>
