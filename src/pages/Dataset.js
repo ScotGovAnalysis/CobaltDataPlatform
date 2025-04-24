@@ -9,11 +9,6 @@ import BackToTop from '../components/BackToTop';
 import { PropagateLoader } from 'react-spinners';
 
 const Dataset = () => {
-  useEffect(() => {
-    // Dynamically set the page title
-    document.title = "Cobalt | Dataset";
-  }, []);
-
   const { id } = useParams();
   const location = useLocation();
   const [dataset, setDataset] = useState(null);
@@ -75,6 +70,15 @@ const Dataset = () => {
       setLoading(false);
     }
   }, [id]);
+
+  useEffect(() => {
+    // Dynamically set the page title
+    if (dataset && dataset.title) {
+      document.title = `Cobalt | ${dataset.title}`;
+    } else {
+      document.title = "Cobalt | Dataset";
+    }
+  }, [dataset]);
 
   if (loading) return (
     <div className="ds_page__middle">

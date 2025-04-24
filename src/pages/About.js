@@ -15,6 +15,8 @@ const About = () => {
           <header className="ds_page-header">
             <h1 className="ds_page-header__title">About</h1>
           </header>
+          <section className="ds_layout ds_layout--article">
+          <div className="ds_layout__content">
           <p className="ds_h3">Cobalt Open Data Portal</p>
           <p>
             The Scottish Government’s Open Data team is running an{' '}
@@ -26,6 +28,9 @@ const About = () => {
               statistics.gov.scot
             </a>. Prototypes will be focused on addressing the high priority user needs identified during discovery, as well as addressing the key problems and challenges our users face. This Cobalt Open Data Portal is one of those prototypes.
           </p>
+          </div>
+
+          </section>
 
           <section className="ds_layout ds_layout--article">
             <div className="ds_layout__content">
