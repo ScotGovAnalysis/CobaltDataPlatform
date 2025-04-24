@@ -34,18 +34,22 @@ function App() {
       <CssBaseline />
       <Router>
         <ScrollToTop />
+        
         <div className="ds_page">
+   
           {/* Target element for back to top */}
           <div id="page-top"></div>
+
+          {/* Skip link */}
+    
+
           <Header />
-          <main className="flex-1 p-6 overflow-auto" style={{ paddingTop: '0' }}>
+          <main id="main-content" className="flex-1 p-6 overflow-auto" style={{ paddingTop: '0' }}>
             <Routes>
               <Route path="/" element={<Navigate to="/home" />} />
               {routes.map(({ path, element }) => (
-                <Route key={path} path={path} element={element}  />
-                
-              ))}        
-
+                <Route key={path} path={path} element={element} />
+              ))}
             </Routes>
           </main>
           <Footer />
@@ -54,4 +58,5 @@ function App() {
     </ThemeProvider>
   );
 }
+
 export default App;

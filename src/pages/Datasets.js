@@ -175,6 +175,10 @@ const Datasets = () => {
             </header>
           </div>
           <div className="ds_layout__content">
+          </div>
+          <div className="ds_layout__sidebar">
+            <div className="ds_search-filters">
+            <h3 className="ds_search-filters__title ds_h4">Search</h3>
             <div className="ds_site-search">
               <form action="/results" role="search" className="ds_site-search__form" method="GET">
                 <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
@@ -197,9 +201,6 @@ const Datasets = () => {
                 </div>
               </form>
             </div>
-          </div>
-          <div className="ds_layout__sidebar">
-            <div className="ds_search-filters">
               <div className="ds_details ds_no-margin" data-module="ds-details">
                 <input id="filters-toggle" type="checkbox" className="ds_details__toggle visually-hidden" />
                 <label htmlFor="filters-toggle" className="ds_details__summary">
