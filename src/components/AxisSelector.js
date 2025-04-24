@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Menu, MenuItem } from '@mui/material';
 import { ArrowDropDown as DropDownIcon } from '@mui/icons-material';
+import styles from '../styles/Embedded_Modal.module.css';
 
 const AxisSelector = ({ axis, setAxis, columns, label, disabledAxis, includeCount }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -11,6 +12,7 @@ const AxisSelector = ({ axis, setAxis, columns, label, disabledAxis, includeCoun
         variant="outlined"
         onClick={(e) => setAnchorEl(e.currentTarget)}
         endIcon={<DropDownIcon />}
+        className={styles.analysisButton}
       >
         {label}: {axis}
       </Button>
@@ -27,6 +29,7 @@ const AxisSelector = ({ axis, setAxis, columns, label, disabledAxis, includeCoun
               setAnchorEl(null);
             }}
             disabled={column === disabledAxis}
+            className={styles.chartTypeMenuItem}
           >
             {column}
           </MenuItem>
@@ -37,6 +40,7 @@ const AxisSelector = ({ axis, setAxis, columns, label, disabledAxis, includeCoun
               setAxis('count');
               setAnchorEl(null);
             }}
+            className={styles.chartTypeMenuItem}
             disabled={'count' === disabledAxis}
           >
             Count

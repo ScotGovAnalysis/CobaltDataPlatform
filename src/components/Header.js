@@ -6,26 +6,26 @@ import '../App.css';
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showHeader, setShowHeader] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
   const navigate = useNavigate();
   const location = useLocation();
+  const menuButtonRef = useRef(null);
+  const menuCheckboxRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
       if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-        // Scroll down past 100px threshold
         setShowHeader(false);
       } else if (currentScrollY < lastScrollY.current) {
-        // Scroll up
         setShowHeader(true);
       }
 
       lastScrollY.current = currentScrollY;
     };
 
-    // Throttle scroll handler
     let throttleTimeout;
     const throttledHandleScroll = () => {
       if (!throttleTimeout) {
@@ -54,24 +54,38 @@ const Header = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to results page with search query
       navigate(`/results?q=${encodeURIComponent(searchQuery.trim())}`);
-      // Optional: Clear the search input after submission
       setSearchQuery('');
     }
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen((prev) => !prev);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleMenu();
+    }
+  };
+
+  useEffect(() => {
+    if (menuCheckboxRef.current) {
+      menuCheckboxRef.current.checked = isMenuOpen;
+    }
+  }, [isMenuOpen]);
+
   return (
     <header className={`ds_site-header ds_site-header--gradient ${!showHeader ? 'header-hidden' : ''}`} role="banner">
-         <div className="ds_skip-links">
-                    <ul className="ds_skip-links__list">
-                      <li className="ds_skip-links__item">
-                        <a className="ds_skip-links__link" href="#main-content">Skip to main content</a>
-                      </li>
-                    </ul>
-                  </div>
+      <div className="ds_skip-links">
+        <ul className="ds_skip-links__list">
+          <li className="ds_skip-links__item">
+            <a className="ds_skip-links__link" href="#main-content">Skip to main content</a>
+          </li>
+        </ul>
+      </div>
       <div className="ds_wrapper">
-          
         <div className="ds_site-header__content">
           <div className="ds_site-branding">
             <a className="ds_site-branding__logo ds_site-branding__link" href="/">
@@ -85,20 +99,45 @@ const Header = () => {
           </div>
 
           <div className="ds_site-header__controls">
-            <label aria-controls="mobile-navigation" className="ds_site-header__control js-toggle-menu" htmlFor="menu">
+            <label
+              aria-controls="mobile-navigation"
+              className="ds_site-header__control js-toggle-menu"
+              htmlFor="menu"
+              tabIndex="0"
+              role="button"
+              aria-expanded={isMenuOpen}
+              ref={menuButtonRef}
+              onKeyDown={handleKeyDown}
+            >
               <span className="ds_site-header__control-text">Menu</span>
               <svg className="ds_icon ds_site-header__control-icon" aria-hidden="true" role="img">
                 <use href="/assets/images/icons/icons.stack.svg#menu"></use>
               </svg>
-              <svg className="ds_icon ds_site-header__control-icon ds_site-header__control-icon--active-icon" aria-hidden="true" role="img">
+              <svg
+                className="ds_icon ds_site-header__control-icon ds_site-header__control-icon--active-icon"
+                aria-hidden="true"
+                role="img"
+              >
                 <use href="/assets/images/icons/icons.stack.svg#close"></use>
               </svg>
             </label>
           </div>
 
-          <input className="ds_site-navigation__toggle" id="menu" type="checkbox" />
+          <input
+            className="ds_site-navigation__toggle"
+            id="menu"
+            type="checkbox"
+            ref={menuCheckboxRef}
+            onChange={toggleMenu}
+            aria-hidden="true"
+          />
 
-          <nav id="mobile-navigation" className="ds_site-navigation ds_site-navigation--mobile" data-module="ds-mobile-navigation-menu">
+          <nav
+            id="mobile-navigation"
+            className={`ds_site-navigation ds_site-navigation--mobile ${isMenuOpen ? 'ds_site-navigation--open' : ''}`}
+            data-module="ds-mobile-navigation-menu"
+            aria-hidden={!isMenuOpen}
+          >
             <Navigation currentPath={location.pathname} />
           </nav>
 

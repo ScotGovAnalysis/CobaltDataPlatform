@@ -18,10 +18,11 @@ const Help = () => {
         <main id="main-content">
           <header className="ds_page-header">
             <h1 className="ds_page-header__title">Help & Support</h1>
+            </header>
+
             <p className="ds_page-header__subtitle">
               Find answers to common questions and get support for the Cobalt Open Data Portal.
             </p>
-          </header>
 
           <section className="ds_layout ds_layout--article">
             <div className="ds_layout__content">

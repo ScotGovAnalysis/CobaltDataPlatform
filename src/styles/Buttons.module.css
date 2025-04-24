@@ -1,0 +1,178 @@
+/**
+ * Button Styles
+ */
+ .custom-ds_button {
+  background-color: transparent;
+  border: 2px solid #0065bd;
+  color: #0065bd;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 0; /* Square corners */
+}
+
+.custom-actionButtons {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.custom-ds_button:hover {
+  background-color: #0065bd;
+  color: white;
+}
+
+.custom-primaryButton {
+  background: #0065bd; /* Blue background */
+  border: 2px solid #0065bd; /* Blue border */
+  color: white; /* White text */
+  padding: 0.5rem 1rem;
+  border-radius: 0; /* Square corners */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  position: relative; /* Ensure the button is positioned correctly */
+}
+
+.custom-primaryButton:hover {
+  background: #00437d; /* Darker blue on hover */
+  border-color: #00437d;
+}
+
+.custom-primaryButton.hasDropdown {
+  padding-right: 2.5rem;
+}
+
+.custom-dropdownChevron {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.custom-secondaryButton {
+  background: transparent;
+  border-color: #0065bd;
+  color: #0065bd;
+  min-width: 80px;
+}
+
+.custom-secondaryButton:hover {
+  background-color: #d9eeff;
+}
+
+.custom-dropdownToggle {
+  padding-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.custom-downloadWrapper {
+  position: relative;
+}
+
+.custom-dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 0; /* Square corners */
+  margin-top: 0.25rem;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.custom-dropdownItem {
+  padding: 12px 16px;
+  color: #333;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid #eee;
+}
+
+.custom-dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.custom-dropdownItem:hover {
+  background: #f8f8f8;
+}
+
+.custom-buttonText {
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the text */
+  width: 100%; /* Ensure it takes full width */
+}
+
+.custom-dropdownToggleArea {
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: absolute;
+  right: 0;
+  height: 100%;
+}
+
+.custom-dropdownToggleArea:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.custom-dropdownArrow {
+  font-size: 1.2rem;
+  line-height: 1;
+  display: block;
+  transform: translateY(-1px);
+}
+
+.custom-dropdownMenu button {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.custom-dropdownMenu button:hover {
+  background: #f5f5f5;
+}
+
+/* API Button */
+.custom-apiButton {
+  background: white; /* White background */
+  border: 2px solid #0065bd; /* Blue border */
+  color: #0065bd; /* Blue text */
+  padding: 0.5rem 1rem;
+  border-radius: 0; /* Square corners */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.custom-apiButton:hover {
+  background: #0065bd; /* Blue background on hover */
+  color: white; /* White text on hover */
+}
+
+/* Placeholder for API Button */
+.custom-apiButtonPlaceholder {
+  width: 80px; /* Adjust width to match API button */
+  height: 40px; /* Adjust height to match API button */
+  visibility: hidden;
+}

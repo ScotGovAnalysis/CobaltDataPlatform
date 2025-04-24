@@ -1,0 +1,49 @@
+/**
+ * Sort Options and Select Styles
+ */
+ .custom-selectWrapper {
+  position: relative;
+  display: inline-block;
+  min-width: 10em;
+  max-width: max-content;
+}
+
+.custom-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 3rem !important;
+  background-image: none !important;
+  width: 100%;
+}
+
+.custom-selectArrow {
+  display: block !important;
+  position: absolute !important;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 3rem;
+  background-color: #0065bd;
+  pointer-events: none;
+}
+
+.custom-selectArrow::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -75%) rotate(-45deg);
+  width: 0.75em;
+  height: 0.75em;
+  border: solid #ffffff;
+  border-width: 0 0 0.1875em 0.1875em;
+}
+
+.custom-select:focus + .custom-selectArrow {
+  background-color: #fdd522;
+}
+
+.custom-select:focus + .custom-selectArrow::before {
+  border-color: #333333;
+}

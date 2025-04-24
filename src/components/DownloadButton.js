@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import styles from '../styles/Design_Style.module.css';
+import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config.js';
+import styles from '../styles/Design_Style.module.css';
 
 const DownloadButton = ({ resourceId, resourceUrl, resourceFormat }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,28 +13,26 @@ const DownloadButton = ({ resourceId, resourceUrl, resourceFormat }) => {
 
   // Handle download
   const handleDownload = (format) => {
-    const url = format === 'native'
-      ? resourceUrl
-      : `${config.apiBaseUrl}/datastore/dump/${resourceId}?format=${format}`;
+    const url = format === 'native' ? resourceUrl : `${config.apiBaseUrl}/datastore/dump/${resourceId}?format=${format}`;
     window.location.href = url;
+    setIsOpen(false);
   };
 
   return (
     <div className={styles.downloadWrapper} ref={wrapperRef}>
       <button
-        className={`${styles.primaryButton} ${isGeoJSON ? '' : styles.hasDropdown}`}
+        className={`ds_button ${!isGeoJSON ? styles.hasDropdown : ''}`}
         onClick={toggleDropdown}
       >
-        <span className={styles.buttonText}>Download</span>
-        {!isGeoJSON && <span className={styles.dropdownChevron}>▾</span>}
+        Download{!isGeoJSON && ' ▾'}
       </button>
       {isOpen && !isGeoJSON && (
-        <div className={styles.dropdownMenu}>
-          <button onClick={() => handleDownload('csv')}>CSV</button>
-          <button onClick={() => handleDownload('json')}>JSON</button>
-          <button onClick={() => handleDownload('xml')}>XML</button>
-          <button onClick={() => handleDownload('tsv')}>TSV</button>
-        </div>
+      <div className={styles.dropdownMenu}>
+      <button onClick={() => handleDownload('csv')}>CSV</button>
+      <button onClick={() => handleDownload('json')}>JSON</button>
+      <button onClick={() => handleDownload('xml')}>XML</button>
+      <button onClick={() => handleDownload('tsv')}>TSV</button>
+    </div>
       )}
     </div>
   );

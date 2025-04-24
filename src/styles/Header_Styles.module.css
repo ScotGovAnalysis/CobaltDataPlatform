@@ -1,0 +1,110 @@
+/**
+ * Responsive Header Styles with CSS Modules
+ */
+
+/* Make header take full width and reset constraints */
+.ds_header {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    clear: both;
+    float: none !important;
+  }
+  
+  /* Override for global design system class to ensure ours takes precedence */
+  :global(.ds_layout__header) {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    clear: both;
+    float: none !important;
+  }
+  
+  /* Make page header flex container with wrap capabilities */
+  .ds_page_header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+    margin-bottom: 0px;
+  }
+  
+  /* Override for global class */
+  :global(.ds_page-header) {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 1rem !important;
+  }
+  
+  /* Title should take available space but allow wrapping */
+  .ds_page_header_title {
+    flex: 1 1 auto;
+    margin-right: 0;
+    min-width: 250px; /* Minimum width before allowing buttons to move up */
+  }
+  
+  :global(.ds_page-header__title) {
+    flex: 1 1 auto !important;
+    margin-right: 0 !important;
+    min-width: 250px !important;
+  }
+  
+  /* Action buttons container */
+  .action_buttons_container {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  /* Style for the div that wraps your ActionButtons component */
+  :global(.ds_page-header > div:last-child) {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+  }
+  
+  /* Ensure buttons wrap properly at smaller widths or when zoomed */
+  @media (max-width: 992px), (min-width: 100%) {
+    .ds_page_header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .action_buttons_container {
+      margin-top: 1rem;
+      align-self: flex-end;
+    }
+    
+    :global(.ds_page-header) {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+    }
+    
+    :global(.ds_page-header > div:last-child) {
+      margin-top: 1rem !important;
+      align-self: flex-end !important;
+    }
+  }
+  
+  /* Override grid layout for better responsiveness */
+  @supports (display: grid) {
+    :global(.ds_layout--search-results--filters) {
+      grid-template-areas: 
+        "h h h h h h h h h h h h"
+        "c c c c c c c c c c c c"
+        "s s s s l l l l l l l l"
+        ". . . . f f f f f f f f" !important;
+    }
+    
+    /* Ensure header spans full width in grid */
+    :global(.ds_layout__header) {
+      grid-column: 1 / -1 !important;
+    }
+  }

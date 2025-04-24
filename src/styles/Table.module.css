@@ -1,0 +1,108 @@
+/**
+ * Table Styles
+ */
+ .custom-tableWrapper {
+  width: 112.5%;
+  overflow-x: auto;
+  border-radius: 12px;
+  background: white;
+  margin: 0;
+  padding: 0;
+}
+
+.custom-tableModern {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  table-layout: fixed;
+}
+
+.custom-tableModern th {
+  background: linear-gradient(90deg, #0065bd, #0065bd);
+  color: white;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-align: left;
+  padding: 16px 24px;
+  position: relative;
+  border: none;
+}
+
+.custom-tableModern th:first-child {
+  width: 25%;
+  border-top-left-radius: 12px;
+}
+
+.custom-tableModern th:nth-child(2) {
+  width: 15%;
+}
+
+.custom-tableModern th:last-child {
+  width: 60%;
+  border-top-right-radius: 12px;
+}
+
+.custom-tableModern td {
+  padding: 16px 24px;
+  border: none;
+  font-size: 0.95rem;
+  color: #333;
+  vertical-align: middle;
+}
+
+.custom-tableModern tbody tr {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.custom-evenRow {
+  background-color: rgba(0, 101, 189, 0.02);
+}
+
+.custom-tableModern tbody tr:hover {
+  background-color: rgba(0, 101, 189, 0.05);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.custom-tableModern tbody tr:last-child {
+  border-bottom: none;
+}
+
+.custom-fieldName {
+  font-weight: 500;
+  color: #0065bd;
+}
+
+.custom-typeBadge {
+  display: inline-block;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 20px;
+  background: rgba(0, 101, 189, 0.08);
+  color: #0065bd;
+  letter-spacing: 0.5px;
+  text-transform: lowercase;
+}
+
+/* Animation for rows */
+.custom-tableModern tbody tr {
+  animation: fadeIn 0.3s ease-in-out forwards;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-tableModern tbody tr:nth-child(1) { animation-delay: 0.05s; }
+.custom-tableModern tbody tr:nth-child(2) { animation-delay: 0.1s; }
+.custom-tableModern tbody tr:nth-child(3) { animation-delay: 0.15s; }
+.custom-tableModern tbody tr:nth-child(4) { animation-delay: 0.2s; }
+.custom-tableModern tbody tr:nth-child(5) { animation-delay: 0.25s; }

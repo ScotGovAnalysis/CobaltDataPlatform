@@ -1,4 +1,3 @@
-/* Embedded_Modal.module.css */
 /* Existing modal framework styles (unchanged) */
 .modalOverlay {
   position: fixed;
@@ -67,9 +66,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #000000
+  background-color: #000000;
 }
-
 
 .titleContainer {
   display: flex;
@@ -259,6 +257,57 @@
 
 .apiLink:hover {
   text-decoration: underline;
+}
+
+/* Button hover styles for higher contrast */
+.analysisButton {
+  transition: all 0.2s ease;
+}
+
+.analysisButton:hover {
+  background-color: #004d8f !important; /* Darker blue for higher contrast */
+  color: #ffffff !important; /* White text for maximum contrast */
+  border-color: #004d8f !important; /* Match border to background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+/* Override MUI secondary button hover for Reset button */
+.analysisButtonSecondary:hover {
+  background-color: #d81b60 !important; /* Darker pink for secondary */
+  color: #ffffff !important;
+  border-color: #d81b60 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Chart type buttons (IconButton or Button in ChartTypeSelector) */
+.chartTypeButton {
+  transition: all 0.2s ease;
+}
+
+.chartTypeButton:hover {
+  background-color: #004d8f !important; /* Same dark blue as other buttons */
+  color: #ffffff !important; /* White icon/text */
+  border-color: #004d8f !important; /* Match border */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Consistent shadow */
+}
+
+/* Ensure IconButton icons are white on hover */
+.chartTypeButton:hover svg {
+  color: #ffffff !important;
+}
+
+/* MenuItem hover styles for chart type dropdown */
+.chartTypeMenuItem {
+  transition: all 0.2s ease;
+}
+
+.chartTypeMenuItem:hover {
+  background-color: #004d8f !important; /* Darker blue for hover */
+  color: #ffffff !important; /* White text */
+}
+
+.chartTypeMenuItem:hover svg {
+  color: #ffffff !important; /* White icons */
 }
 
 /* Responsive adjustments */

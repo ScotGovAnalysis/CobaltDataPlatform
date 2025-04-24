@@ -13,6 +13,7 @@ import ActionButtons from '../components/ActionButtons';
 import { PropagateLoader } from 'react-spinners';
 import DataDictionary from '../components/DataDictionary';
 import JSONViewerModal from '../components/modals/JSONViewerModal';
+import headerStyles from '../styles/Header_Styles.module.css';
 
 const Resource = () => {
   const { id, resourceId } = useParams();
@@ -257,11 +258,11 @@ const Resource = () => {
   }
 
   return (
-    <div className="ds_page__middle">
-      <div className="ds_wrapper">
-        <main className="ds_layout ds_layout--search-results--filters">
-          <div className="ds_layout__header w-full">
-            <nav aria-label="Breadcrumb">
+<div className="ds_page__middle">
+  <div className="ds_wrapper">
+    <main className="ds_layout ds_layout--search-results--filters">
+    <div className={`ds_layout__header ${headerStyles.ds_header}`} style={{ marginBottom: 0 }}>
+    <nav aria-label="Breadcrumb">
               <ol className="ds_breadcrumbs">
                 <li className={styles.ds_breadcrumbs__item}>
                   <Link className="ds_breadcrumbs__link" to="/">Home</Link>
@@ -281,25 +282,30 @@ const Resource = () => {
             </nav>
 
             <div
-              className="ds_page-header"
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-            >
-              <div style={{ flex: '0 0 115%'}}>
-                <h1 className="ds_page-header__title" style={{ marginRight: '100px'}}>{dataset?.title}</h1>
-              </div>
-              <div style={{ flex: '0 0 0' }}>
-                <ActionButtons
-                  resourceId={resourceId}
-                  resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
-                  resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
-                  onApiClick={() => setShowApiModal(true)}
-                />
-              </div>
-            </div>
+          className={`ds_page-header ${headerStyles.ds_page_header}`}
+        >
+          <div className={headerStyles.ds_page_header_title}>
+            <h1 className="ds_page-header__title">{dataset?.title}</h1>
           </div>
+          <div
+  className={headerStyles.action_buttons_container}
+  style={{ marginBottom: 0 }}
+>
+  <ActionButtons
+    resourceId={resourceId}
+    resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
+    resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
+    onApiClick={() => setShowApiModal(true)}
+  />
+</div>
 
+        </div>
+          </div>
+ 
           <div className="ds_layout__sidebar">
             <div className="ds_metadata__panel">
+            <hr />
+
               <h3 className="ds_metadata__panel-title">Metadata</h3>
               <dl className="ds_metadata">
                 <div className="ds_metadata__item">
@@ -371,6 +377,8 @@ const Resource = () => {
           </div>
 
           <div className="ds_layout__list">
+          <hr />
+
             <section className={styles.section}>
               {dataset.resources[0]?.description ? (
                 dataset.resources[0].description.split('\n').map((paragraph, index) => (

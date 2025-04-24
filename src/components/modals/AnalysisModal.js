@@ -233,19 +233,45 @@ const AnalysisModal = ({ isOpen, onClose, data, columns, fileType = 'csv' }) => 
                     chartTypes={chartTypes}
                   />
                   <Box sx={{ flexGrow: 1, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                    <Button startIcon={<DownloadIcon />} onClick={exportChartAsPNG} variant="outlined">
+                    <Button
+                      startIcon={<DownloadIcon />}
+                      onClick={exportChartAsPNG}
+                      variant="outlined"
+                      className={styles.analysisButton}
+                    >
                       Export Chart
                     </Button>
-                    <Button startIcon={<DownloadIcon />} onClick={exportDataToExcel} variant="outlined">
+                    <Button
+                      startIcon={<DownloadIcon />}
+                      onClick={exportDataToExcel}
+                      variant="outlined"
+                      className={styles.analysisButton}
+                    >
                       Export Data
                     </Button>
-                    <Button startIcon={<ResetIcon />} onClick={handleReset} variant="outlined" color="secondary">
+                    <Button
+                      startIcon={<ResetIcon />}
+                      onClick={handleReset}
+                      variant="outlined"
+                      color="secondary"
+                      className={`${styles.analysisButton} ${styles.analysisButtonSecondary}`}
+                    >
                       Reset
                     </Button>
-                    <Button startIcon={<CompareIcon />} onClick={() => setComparisonModalOpen(true)} variant="outlined">
+                    <Button
+                      startIcon={<CompareIcon />}
+                      onClick={() => setComparisonModalOpen(true)}
+                      variant="outlined"
+                      className={styles.analysisButton}
+                    >
                       Compare
                     </Button>
-                    <Button startIcon={<AnalyticsIcon />} onClick={() => setStatisticsModalOpen(true)} variant="outlined">
+                    <Button
+                      startIcon={<AnalyticsIcon />}
+                      onClick={() => setStatisticsModalOpen(true)}
+                      variant="outlined"
+                      className={styles.analysisButton}
+                    >
                       Statistics
                     </Button>
                   </Box>

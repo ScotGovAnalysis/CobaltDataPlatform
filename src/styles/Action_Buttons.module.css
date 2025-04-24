@@ -1,0 +1,13 @@
+/**
+ * Action Buttons Container
+ */
+ .custom-actionButtonsContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 0;
+}
+
+.custom-buttonGroup {
+  display: flex;
+  gap: 8px;
+}

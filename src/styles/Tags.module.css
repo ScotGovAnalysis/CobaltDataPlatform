@@ -1,0 +1,49 @@
+/**
+ * Tag Styles
+ */
+ .custom-sgTagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  margin-bottom: -0.5rem;
+}
+
+.custom-sgTag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #d9effc; /* Light blue color in Scottish Gov palette */
+  color: #0065bd; /* Scottish Gov link blue */
+  border-radius: 4px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.custom-sgTag:hover {
+  background-color: #b3e0fc; /* Slightly darker blue on hover */
+  text-decoration: none;
+  box-shadow: none; /* Ensure no box-shadow */
+}
+
+.custom-sgTag:focus {
+  outline: 3px solid #ffdd00; /* Scottish Gov focus yellow */
+  outline-offset: 0;
+  background-color: #b3e0fc;
+  box-shadow: none; /* Ensure no box-shadow */
+}
+
+.custom-apiButtonWrapper {
+  flex-grow: 1;
+  text-align: right;
+}
+
+.custom-expandedRow {
+  background-color: #ebebeb;
+}
+
+.custom-toggleIcon {
+  margin-left: 8px;
+  cursor: pointer;
+}

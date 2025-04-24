@@ -14,7 +14,6 @@ const ActionButtons = ({ resourceId, resourceUrl, resourceFormat, onApiClick }) 
         ) : (
           <div className={styles.apiButtonPlaceholder} />
         )}
-        <div style={{ flexGrow: 1 }} /> {/* Push download button to the right */}
         <DownloadButton
           resourceId={resourceId}
           resourceUrl={resourceUrl}

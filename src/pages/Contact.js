@@ -27,8 +27,9 @@ const Contact = () => {
         <div className="ds_wrapper">
           <header className="ds_page-header">
             <h1 className="ds_page-header__title">Contact us</h1>
+            </header>
+
             <p className="ds_!text-white ds_!text-lg">The Open Data team values your feedback, questions or comments. We are always happy to hear from you.</p>
-          </header>
         </div>
       </div>
 

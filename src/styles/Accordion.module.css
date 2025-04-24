@@ -1,0 +1,32 @@
+/**
+ * Accordion Styles
+ */
+ .custom-accordionIndicator {
+  position: absolute;
+  right: 1.5rem;
+  top: 1.125rem;
+  width: 0.75em;
+  height: 0.75em;
+  border: solid #0065bd;
+  border-width: 0 0.1875em 0.1875em 0; /* Thicker border */
+  transform: rotate(45deg);
+  transition: transform 0.2s, top 0.2s;
+  pointer-events: none;
+}
+
+.custom-accordionItemControl:checked ~ .custom-accordionItemHeader .custom-accordionIndicator {
+  top: 1.375rem;
+  transform: rotate(-135deg);
+}
+
+@media (min-width: 768px) {
+  .custom-accordionIndicator {
+    top: 21px;
+    right: 26px;
+  }
+
+  .custom-accordionItemControl:checked ~ .custom-accordionItemHeader .custom-accordionIndicator {
+    top: 27px;
+    right: 26px;
+  }
+}

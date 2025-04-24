@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
-import config from '../config.js'
+import '../styles/Accordion.module.css';
+import '../styles/Select.module.css';
+import '../styles/Buttons.module.css';
+import '../styles/Breadcrumbs.module.css';
+import '../styles/Organisation.module.css';
+import '../styles/Table.module.css';
+import '../styles/Action_Buttons.module.css';
+import '../styles/Select_Override.module.css';
+import '../styles/Tags.module.css';
+import '../styles/Search_Bar.module.css';
+import config from '../config.js';
 import styles from '../styles/Design_Style.module.css'
+
 
 const Home = () => {
   useEffect(() => {
-    // Dynamically set the page title
     document.title = "Cobalt | Home";
   }, []);
 
@@ -17,7 +27,6 @@ const Home = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    // Fetch popular tags from the CKAN API
     const fetchPopularTags = async () => {
       try {
         const response = await fetch(`${config.apiBaseUrl}/api/action/tag_list`);
@@ -33,34 +42,54 @@ const Home = () => {
       }
     };
 
-    // Fetch intro text from CKAN API
     const fetchIntroText = async () => {
       try {
         const response = await fetch(`${config.apiBaseUrl}/api/3/action/config_option_show`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': config.apiToken
+            'Authorization': config.apiToken,
           },
           body: JSON.stringify({
-            key: 'ckan.site_intro_text'
-          })
+            key: 'ckan.site_intro_text',
+          }),
         });
-
+    
         if (!response.ok) {
           throw new Error('Failed to fetch intro text');
         }
-
+    
         const data = await response.json();
         if (data.success) {
-          // Update the intro text with HTML formatting
-          const formattedText = data.result
-            .replace('datasets', '<strong><u><a href="/datasets" style="color: #FFFFFF;">datasets</a></u></strong>')
-            .replace('contact us', '<strong><u><a href="/contact" style="color: #FFFFFF;">contact us</a></u></strong>')
-            .replace('help', '<strong><u><a href="/help" style="color: #FFFFFF;">help</a></u></strong>')
-            .replace('theme', '<strong><u><a href="/themes" style="color: #FFFFFF;">theme</a></u></strong>')
-            .replace('organisations', '<strong><u><a href="/organisations" style="color: #FFFFFF;">organisations</a></u></strong>')
-            .replace(/\r\n\r\n/g, '</p><p>'); // Replace double newlines with paragraph tags
+          const formattedText = `
+            <style>
+              .intro-link:hover {
+                color: #002147 !important; /* Navy blue color */
+              }
+            </style>
+            ${data.result
+              .replace(
+                'datasets',
+                '<strong><u><a href="/datasets" class="intro-link" style="color: #FFFFFF;">datasets</a></u></strong>'
+              )
+              .replace(
+                'contact us',
+                '<strong><u><a href="/contact" class="intro-link" style="color: #FFFFFF;">contact us</a></u></strong>'
+              )
+              .replace(
+                'help',
+                '<strong><u><a href="/help" class="intro-link" style="color: #FFFFFF;">help</a></u></strong>'
+              )
+              .replace(
+                'theme',
+                '<strong><u><a href="/themes" class="intro-link" style="color: #FFFFFF;">theme</a></u></strong>'
+              )
+              .replace(
+                'organisations',
+                '<strong><u><a href="/organisations" class="intro-link" style="color: #FFFFFF;">organisations</a></u></strong>'
+              )
+              .replace(/\r\n\r\n/g, '</p><p>')}
+          `;
           setIntroText(formattedText || 'Find and access data from the Scottish Government and its agencies');
         } else {
           throw new Error(data.error?.message || 'Failed to fetch intro text');
@@ -88,74 +117,55 @@ const Home = () => {
                   <h1 className="ds_page-header__title" style={{ color: '#FFFFFF', marginBottom: '12.5px' }}>
                     Open access to Scotland's data
                   </h1>
-                  <p className="ds_lead" style={{ color: '#FFFFFF' }}
-                     dangerouslySetInnerHTML={{ __html: introText }} />
+                  <p className="ds_lead" style={{ color: '#FFFFFF' }} dangerouslySetInnerHTML={{ __html: introText }} />
                   <div className="ds_cb__inner">
-                  <div className="ds_site-search ds_site-search--large" style={{ marginBottom: '-5px' }}>
-      <form action="/results" role="search" className="ds_site-search__form" method="GET">
-        <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
-        <div
-          className="ds_input__wrapper ds_input__wrapper--has-icon"
-          style={{
-            border: '2px solid white',
-            borderRadius: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            background: isHovered ? '#e0e0e0' : '#f5f5f5',
-            overflow: 'hidden',
-            width: '75%'
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <input
-            name="q"
-            required
-            id="site-search"
-            className="ds_input ds_site-search__input"
-            type="search"
-            placeholder="Search our data"
-            autoComplete="off"
-            style={{
-              width: '100%',
-              border: 'none',
-              outline: 'none',
-              background: 'inherit',
-              padding: '8px'
-            }}
-          />
-          <button
-            type="submit"
-            className="ds_button js-site-search-button"
-            style={{
-              border: 'none',
-              background: isHovered ? '#00437d' : '#0065bd',
-              padding: '0 12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              cursor: 'pointer'
-            }}
+                  <div className="search-container" style={{ 
+  border: '4px solid white', 
+  borderRadius: '8px',
+  display: 'inline-block',
+  width: 'calc(100% - 4rem)', // Accounting for border width on both sides
+  maxWidth: '800px',
+  height: '56px',
+  marginBottom: '15px'
+}}>
+  <div className="ds_site-search" style={{ width: '100%' }}>
+    <form action="/results" role="search" className="ds_site-search__form" method="GET">
+      <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
+      <div className="ds_input__wrapper ds_input__wrapper--has-icon">
+        <input
+          name="q"
+          required
+          id="site-search"
+          className="ds_input ds_site-search__input"
+          type="search"
+          placeholder="Search our data"
+          autoComplete="off"
+        />
+        <button type="submit" className="ds_button js-site-search-button">
+          <span className="visually-hidden">Search</span>
+          <svg
+            className="ds_icon"
+            aria-hidden="true"
+            role="img"
+            viewBox="0 0 24 24"
           >
-            <span className="visually-hidden">Search</span>
-            <svg className="ds_icon ds_icon--24" aria-hidden="true" role="img" viewBox="0 0 24 24" style={{ fill: 'white' }}>
-              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-            </svg>
-          </button>
-        </div>
-      </form>
-    </div>
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Search Bar Section */}
-        </div>
+        {/* Browse By Section */}
         <div className="ds_wrapper" style={{ marginTop: '1.5rem' }}>
-          <div className="ds_cb__inner">
+        <div className="ds_cb__inner">
           <h3 className="ds_h3">Browse By</h3>
             <nav aria-label="Category navigation">
               <ul className="ds_category-list ds_category-list--grid ds_category-list--narrow" style={{ marginTop: '-0.5rem' }}>

@@ -34,7 +34,7 @@
 /**
  * Sort Options and Select Styles
  */
- .selectWrapper {
+.selectWrapper {
   position: relative;
   display: inline-block;
   min-width: 10em;
@@ -80,10 +80,11 @@
 .select:focus + .selectArrow::before {
   border-color: #333333;
 }
+
 /**
  * Button Styles
  */
- .ds_button {
+.ds_button {
   background-color: transparent;
   border: 2px solid #0065bd;
   color: #0065bd;
@@ -93,17 +94,16 @@
 }
 
 .actionButtons {
-  position: relative;
-  display: inline-block;
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 0;
 }
 
 .buttonGroup {
   display: flex;
   gap: 0.5rem;
-  justify-content: flex-end;
-  width: 100%;
+  width: auto; /* Ensure the container wraps around the buttons */
 }
-
 .ds_button:hover {
   background-color: #0065bd;
   color: white;
@@ -147,7 +147,7 @@
 }
 
 .secondaryButton:hover {
-  background: #d9eeff;
+  midst: #d9eeff;
 }
 
 .dropdownToggle {
@@ -259,8 +259,6 @@
   visibility: hidden;
 }
 
-
-
 /**
  * Breadcrumbs Styles
  */
@@ -282,8 +280,9 @@
   content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="%23727272"/></svg>');
   margin: 0 8px;
   position: relative;
-  top: 2px; /* Adjust vertical alignment */
+  top: 2px;
 }
+
 
 .ds_breadcrumbs__link {
   color: inherit; /* Inherit breadcrumb text color */
@@ -357,14 +356,13 @@
   gap: 0.5rem;
   padding: 0.25rem 0;
 }
-
 /**
  * Table Styles
  */
-.tableWrapper {
+ .tableWrapper {
   width: 112.5%;
   overflow-x: auto;
-  border-radius: 12px;
+  border-radius: 0; /* Set border-radius to 0 */
   background: white;
   margin: 0;
   padding: 0;
@@ -387,11 +385,12 @@
   padding: 16px 24px;
   position: relative;
   border: none;
+  border-radius: 0; /* Set border-radius to 0 */
 }
 
 .tableModern th:first-child {
   width: 25%;
-  border-top-left-radius: 12px;
+  border-top-left-radius: 0; /* Set border-radius to 0 */
 }
 
 .tableModern th:nth-child(2) {
@@ -400,7 +399,7 @@
 
 .tableModern th:last-child {
   width: 60%;
-  border-top-right-radius: 12px;
+  border-top-right-radius: 0; /* Set border-radius to 0 */
 }
 
 .tableModern td {
@@ -438,7 +437,7 @@
 .typeBadge {
   display: inline-block;
   padding: 5px 12px;
-  font-size: 0.8rem;
+  font-size: 0.55rem;
   font-weight: 500;
   border-radius: 20px;
   background: rgba(0, 101, 189, 0.08);
@@ -474,17 +473,21 @@
   display: flex;
   justify-content: flex-end;
   margin: 1rem 0;
+  margin-bottom: 0 !important;
 }
 
 .buttonGroup {
   display: flex;
   gap: 8px;
+  height: 55px;
+
 }
 
 /* Download Wrapper */
 .downloadWrapper {
   position: relative;
 }
+
 /**
  * Select Override Styles
  */
@@ -536,9 +539,9 @@
   filter: brightness(0) saturate(100%) invert(19%) sepia(98%) saturate(2098%) hue-rotate(357deg) brightness(93%) contrast(106%);
 }
 
-
-/* Add these to your Design_Style.module.css file */
-
+/**
+ * Tag Styles
+ */
 .sgTagList {
   display: flex;
   flex-wrap: wrap;
@@ -584,4 +587,322 @@
 .toggleIcon {
   margin-left: 8px;
   cursor: pointer;
+}
+
+/**
+ * Search Bar Overrides
+ */
+.ds_cb--blue .ds_site-search {
+  border: 2rem solid #ffffff !important; /* 2rem white border around entire search bar */
+  border-radius: 8px; /* Slightly larger radius for thick border */
+  padding: 1rem; /* Internal padding to prevent content from touching border */
+  box-sizing: border-box;
+  display: block; /* Ensure block-level for border rendering */
+  position: relative; /* Ensure positioning context */
+  background: transparent; /* No background to avoid conflicts */
+  margin: 0 auto; /* Center within parent */
+}
+
+.ds_site-search--large {
+  max-width: 100%; /* Ensure it fits within parent */
+  margin-bottom: 0 !important; /* Override default margin */
+}
+
+.ds_site-search__input[type="search"] {
+  border: 2px solid #ffffff !important; /* Thicker white border */
+  border-right: none !important; /* Remove right border for seamless button integration */
+  background: #f5f5f5 !important; /* Default background */
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.ds_input__wrapper {
+  display: flex;
+  align-items: center;
+  border: 2px solid #ffffff; /* Thicker white border around input + button */
+  border-radius: 4px;
+  overflow: hidden;
+  width: 75%; /* Match custom search bar’s width */
+  background: #f5f5f5; /* Default background */
+  transition: background 0.2s;
+}
+
+.ds_input__wrapper:hover {
+  background: #e0e0e0; /* Hover background */
+}
+
+.ds_input__wrapper:focus-within {
+  border-color: #ffdd00; /* Yellow focus border */
+}
+
+.ds_button.js-site-search-button {
+  border: none !important; /* Remove button border */
+  background: #0065bd !important; /* Default button background */
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ds_button.js-site-search-button:hover {
+  background: #00437d !important; /* Darker blue on hover */
+}
+
+.ds_button.js-site-search-button:focus {
+  outline: none; /* Remove default outline */
+}
+
+.ds_button.js-site-search-button:focus-visible {
+  outline: 3px solid #ffdd00; /* Yellow focus outline for accessibility */
+  outline-offset: 2px;
+}
+/* Search Bar Overrides */
+.custom-search-bar {
+  border: 2rem solid #ffffff !important; /* 2rem white border around entire search bar */
+  border-radius: 8px; /* Slightly larger radius for thick border */
+  padding: 1rem; /* Internal padding to prevent content from touching border */
+  box-sizing: border-box;
+  display: block; /* Ensure block-level for border rendering */
+  position: relative; /* Ensure positioning context */
+  background: transparent; /* No background to avoid conflicts */
+  margin: 0 auto; /* Center within parent */
+}
+
+.custom-search-bar .ds_site-search__input[type="search"] {
+  border: none !important; /* Remove border from input */
+  background: #f5f5f5 !important; /* Default background */
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.custom-search-bar .ds_input__wrapper {
+  display: flex;
+  align-items: center;
+  border: none !important; /* Remove border from input wrapper */
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%; /* Ensure it takes full width */
+  background: #f5f5f5; /* Default background */
+  transition: background 0.2s;
+}
+
+.custom-search-bar .ds_input__wrapper:hover {
+  background: #e0e0e0; /* Hover background */
+}
+
+.custom-search-bar .ds_input__wrapper:focus-within {
+  border-color: #ffdd00; /* Yellow focus border */
+}
+
+.custom-search-bar .ds_button.js-site-search-button {
+  border: none !important; /* Remove button border */
+  background: #0065bd !important; /* Default button background */
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.custom-search-bar .ds_button.js-site-search-button:hover {
+  background: #00437d !important; /* Darker blue on hover */
+}
+
+.custom-search-bar .ds_button.js-site-search-button:focus {
+  outline: none; /* Remove default outline */
+}
+
+.custom-search-bar .ds_button.js-site-search-button:focus-visible {
+  outline: 3px solid #ffdd00; /* Yellow focus outline for accessibility */
+  outline-offset: 2px;
+}
+
+/**
+ * Header Styles
+ */
+ .ds_layout__header {
+  width: 100% !important; /* Override any SG design system constraints */
+  max-width: none !important; /* Ensure no max-width limits */
+  padding: 0 !important; /* Remove any padding that might offset content */
+  margin: 0 !important; /* Remove margins to align with ds_wrapper */
+}
+
+.ds_page_header {
+  width: 100% !important; /* Ensure full width */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap; /* Prevent wrapping unless specified in media query */
+}
+
+/* Ensure the title doesn't take excessive space */
+.ds_page_header__title {
+  flex: 1 1 auto; /* Allow title to take available space but shrink if needed */
+  margin-right: 1rem; /* Small margin for spacing */
+}
+
+/* Container for ActionButtons */
+.actionButtonsContainer {
+  flex: 0 0 auto; /* Prevent growing, take content width */
+  display: flex;
+  justify-content: flex-end; /* Ensure buttons are right-aligned */
+  margin-bottom: 0 !important;
+
+}
+
+/* Override ActionButtons to ensure no extra spacing */
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  width: auto; /* Take content width */
+  margin-bottom: 0 !important;
+
+}
+
+/* Simplify buttonGroup to avoid redundant styles */
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+  width: auto; /* Take content width */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ds_page_header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ds_page_header__title {
+    margin-bottom: 1rem;
+    margin-right: 0;
+  }
+
+  .actionButtonsContainer {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .actionButtons {
+    width: auto;
+  }
+}
+
+/**
+ * Responsive Header Styles
+ */
+
+/**
+ * Responsive Header Styles with CSS Modules
+ */
+
+/* Make header take full width and reset constraints */
+.ds_header {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  clear: both;
+  float: none !important;
+}
+
+/* Override for global design system class to ensure ours takes precedence */
+:global(.ds_layout__header) {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  clear: both;
+  float: none !important;
+}
+
+/* Make page header flex container with wrap capabilities */
+.ds_page_header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+}
+
+/* Override for global class */
+:global(.ds_page-header) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 1rem !important;
+}
+
+/* Title should take available space but allow wrapping */
+.ds_page_header_title {
+  flex: 1 1 auto;
+  margin-right: 0;
+  min-width: 250px; /* Minimum width before allowing buttons to move up */
+}
+
+:global(.ds_page-header__title) {
+  flex: 1 1 auto !important;
+  margin-right: 0 !important;
+  min-width: 250px !important;
+}
+
+/* Action buttons container */
+.action_buttons_container {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Style for the div that wraps your ActionButtons component */
+:global(.ds_page-header > div:last-child) {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+/* Ensure buttons wrap properly at smaller widths or when zoomed */
+@media (max-width: 992px), (min-width: 100%) {
+  .ds_page_header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .action_buttons_container {
+    margin-top: 1rem;
+    align-self: flex-end;
+  }
+  
+  :global(.ds_page-header) {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  :global(.ds_page-header > div:last-child) {
+    margin-top: 1rem !important;
+    align-self: flex-end !important;
+  }
+}
+
+/* Override grid layout for better responsiveness */
+@supports (display: grid) {
+  :global(.ds_layout--search-results--filters) {
+    grid-template-areas: 
+      "h h h h h h h h h h h h"
+      "c c c c c c c c c c c c"
+      "s s s s l l l l l l l l"
+      ". . . . f f f f f f f f" !important;
+  }
+  
+  /* Ensure header spans full width in grid */
+  :global(.ds_layout__header) {
+    grid-column: 1 / -1 !important;
+  }
 }

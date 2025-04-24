@@ -1,0 +1,65 @@
+/* Search Bar Styling */
+.custom-search-bar {
+  padding: 0;
+  margin: 1rem 0;
+  box-sizing: border-box;
+  border: 2rem solid #ffffff !important;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.custom-search-bar .ds_site-search__form {
+  margin: 0;
+}
+
+.custom-search-bar .ds_input__wrapper {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.custom-search-bar .ds_input__wrapper--has-icon .ds_input {
+  padding-right: 48px;
+}
+
+.custom-search-bar .ds_site-search__input {
+  background-color: #f8f8f8;
+  border: 1px solid #b3b3b3;
+  border-right: none;
+  height: 48px;
+  width: 100%;
+  margin: 0;
+  padding: 0 12px;
+}
+
+.custom-search-bar .js-site-search-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 48px;
+  height: 48px;
+  background-color: #0065bd;
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-search-bar .js-site-search-button svg {
+  fill: white;
+  width: 24px;
+  height: 24px;
+}
+
+.custom-search-bar .js-site-search-button:hover,
+.custom-search-bar .js-site-search-button:focus {
+  background-color: #00437e;
+}
+
+.custom-search-bar .ds_site-search__input:focus {
+  border-color: #ffdd00;
+  outline: none;
+}
+

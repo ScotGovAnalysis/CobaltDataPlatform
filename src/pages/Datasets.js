@@ -180,27 +180,28 @@ const Datasets = () => {
             <div className="ds_search-filters">
             <h3 className="ds_search-filters__title ds_h4">Search</h3>
             <div className="ds_site-search">
-              <form action="/results" role="search" className="ds_site-search__form" method="GET">
-                <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
-                <div className="ds_input__wrapper ds_input__wrapper--has-icon">
-                  <input
-                    name="q"
-                    required
-                    id="site-search"
-                    className="ds_input ds_site-search__input"
-                    type="search"
-                    placeholder="Search"
-                    autoComplete="off"
-                  />
-                  <button type="submit" className="ds_button js-site-search-button">
-                    <span className="visually-hidden">Search</span>
-                    <svg className="ds_icon ds_icon--24" aria-hidden="true" role="img" viewBox="0 0 24 24">
-                      <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                    </svg>
-                  </button>
-                </div>
-              </form>
-            </div>
+  <form action="/results" role="search" className="ds_site-search__form" method="GET">
+    <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
+    <div className="ds_input__wrapper ds_input__wrapper--has-icon">
+      <input
+        name="q"
+        required
+        id="site-search"
+        className="ds_input ds_site-search__input"
+        type="search"
+        placeholder="Search"
+        autoComplete="off"
+        value={searchQuery || ''} // Set the input value to searchQuery
+      />
+      <button type="submit" className="ds_button js-site-search-button">
+        <span className="visually-hidden">Search</span>
+        <svg className="ds_icon ds_icon--24" aria-hidden="true" role="img" viewBox="0 0 24 24">
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+      </button>
+    </div>
+  </form>
+</div>
               <div className="ds_details ds_no-margin" data-module="ds-details">
                 <input id="filters-toggle" type="checkbox" className="ds_details__toggle visually-hidden" />
                 <label htmlFor="filters-toggle" className="ds_details__summary">

@@ -1,0 +1,36 @@
+/**
+ * Breadcrumbs Styles
+ */
+ .custom-ds_breadcrumbs {
+  color: #727272;
+  font-size: 14px;
+  line-height: 24px;
+  padding-left: 0;
+  margin: 24px 0 16px;
+}
+
+.custom-ds_breadcrumbs__item {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}
+
+.custom-ds_breadcrumbs__item:not(:first-child)::before {
+  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="%23727272"/></svg>');
+  margin: 0 8px;
+  position: relative;
+  top: 2px;
+}
+
+.custom-ds_breadcrumbs__link {
+  color: inherit; /* Inherit breadcrumb text color */
+  text-decoration: none; /* Remove underline */
+}
+
+.custom-ds_breadcrumbs__link:hover {
+  text-decoration: underline; /* Add underline on hover */
+}
+
+.custom-ds_breadcrumbs__current {
+  font-weight: bold; /* Highlight current page */
+}
