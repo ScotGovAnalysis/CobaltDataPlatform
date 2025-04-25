@@ -192,9 +192,14 @@ const Dataset = () => {
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Contact</dt>
-                  <dd className="ds_metadata__value"> <a href={`mailto:${dataset.maintainer_email}`} className="ds_link">
-                    {dataset.maintainer_email}
-                  </a>
+                  <dd className="ds_metadata__value"> {' '}
+                     {dataset.maintainer_email ? (
+                      <a href={`mailto:${dataset.maintainer_email}`} className="ds_link">
+                         {dataset.maintainer_email}
+                      </a>
+                    ) : (
+                      ' Not specified'
+                    )}
                   </dd>
                 </div>
               </dl>

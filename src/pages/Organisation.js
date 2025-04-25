@@ -7,12 +7,12 @@ import BackToTop from '../components/BackToTop';
 import { PropagateLoader } from 'react-spinners';
 
 const Organisation = () => {
-
   const { organisationName } = useParams();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q');
   const [organisation, setOrganisation] = useState(null);
+  const [datasets, setDatasets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('relevance');
@@ -21,27 +21,40 @@ const Organisation = () => {
   const [filteredResults, setFilteredResults] = useState([]);
 
   useEffect(() => {
-    const fetchOrganisationDetails = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/api/3/action/organization_show?id=${organisationName}&include_datasets=true&include_users=true`
+        setLoading(true);
+
+        // Fetch organization details without datasets
+        const orgResponse = await fetch(
+          `${config.apiBaseUrl}/api/3/action/organization_show?id=${organisationName}`
         );
-        if (!response.ok) throw new Error('Failed to fetch organisation details');
-        const data = await response.json();
-        let datasets = data.result.packages || [];
+        if (!orgResponse.ok) throw new Error('Failed to fetch organisation details');
+        const orgData = await orgResponse.json();
+        setOrganisation(orgData.result);
+
+        // Fetch datasets separately with full details including tags
+        const datasetsResponse = await fetch(
+          `${config.apiBaseUrl}/api/3/action/package_search?q=organization:${organisationName}&rows=1000`
+        );
+        if (!datasetsResponse.ok) throw new Error('Failed to fetch datasets');
+        const datasetsData = await datasetsResponse.json();
+
+        let fetchedDatasets = datasetsData.result.results || [];
         if (searchQuery) {
-          datasets = datasets.filter(dataset =>
+          fetchedDatasets = fetchedDatasets.filter(dataset =>
             dataset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             dataset.notes?.toLowerCase().includes(searchQuery.toLowerCase())
           );
         }
-        data.result.packages = datasets;
-        setOrganisation(data.result);
 
-        // Dynamically extract unique resource formats
+        setDatasets(fetchedDatasets);
+        setFilteredResults(fetchedDatasets);
+
+        // Extract unique resource formats
         const uniqueFormats = Array.from(
           new Set(
-            datasets
+            fetchedDatasets
               .flatMap(dataset =>
                 dataset.resources
                   ? dataset.resources.map(resource => resource.format)
@@ -52,14 +65,13 @@ const Organisation = () => {
         );
         setResourceTypeOptions(uniqueFormats);
 
-        setFilteredResults(datasets);
         setLoading(false);
       } catch (error) {
         setError(error.message);
         setLoading(false);
       }
     };
-    fetchOrganisationDetails();
+    fetchData();
   }, [organisationName, searchQuery]);
 
   useEffect(() => {
@@ -69,11 +81,10 @@ const Organisation = () => {
       document.title = "Cobalt | Organisation";
     }
   }, [organisation]);
-  
 
   useEffect(() => {
-    if (organisation && organisation.packages) {
-      let sorted = [...organisation.packages];
+    if (datasets.length > 0) {
+      let sorted = [...datasets];
 
       switch (sortBy) {
         case 'date':
@@ -98,7 +109,7 @@ const Organisation = () => {
 
       setFilteredResults(filtered);
     }
-  }, [sortBy, selectedResourceTypes, organisation]);
+  }, [sortBy, selectedResourceTypes, datasets]);
 
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
@@ -171,9 +182,8 @@ const Organisation = () => {
                 </li>
               </ol>
             </nav>
-            <header className="ds_page-header ds_page-header--with-image"                       style= {{ marginBottom:'0px'}}
-            >
-              <div className="ds_organisation-header" >
+            <header className="ds_page-header ds_page-header--with-image" style={{ marginBottom: '0px' }}>
+              <div className="ds_organisation-header">
                 {organisation.image_url && (
                   <div className="ds_organisation-logo">
                     <img
@@ -212,48 +222,50 @@ const Organisation = () => {
                 </div>
               </div>
               <div className="ds_metadata__panel">
-              <hr />
+                <hr />
 
                 <h3 className="ds_search-filters__title ds_h4">Organisation Details</h3>
                 <dl className="ds_metadata ds_metadata--stacked">
                   <div className="ds_metadata__item">
                     <dt className="ds_metadata__key">Established</dt>
                     <dd className="ds_metadata__value">
-                    {' '}{new Date(organisation.created).toLocaleDateString('en-GB', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      {' '}{new Date(organisation.created).toLocaleDateString('en-GB', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
                     </dd>
                   </div>
                   <div className="ds_metadata__item">
                     <dt className="ds_metadata__key">Status</dt>
                     <dd className="ds_metadata__value">
                       <span className={`ds_badge ${organisation.state === 'active' ? 'ds_badge--success' : ''}`}>
-                      {' '}{organisation.state === 'active' ? 'Active' : organisation.state.charAt(0).toUpperCase() + organisation.state.slice(1).toLowerCase()}
+                        {' '}{organisation.state === 'active' ? 'Active' : organisation.state.charAt(0).toUpperCase() + organisation.state.slice(1).toLowerCase()}
                       </span>
                     </dd>
                   </div>
                   <div className="ds_metadata__item">
                     <dt className="ds_metadata__key">Administrators</dt>
                     <dd className="ds_metadata__value">
-                    {' '}{organisation.users?.map(user => (
-                        <div key={user.id} className="ds_user-badge">
-                          <span className="ds_user-badge__name">{user.display_name}</span>
-                          <span className="ds_user-badge__role">{user.capacity}</span>
-                        </div>
-                      ))}
+                      {' '}{organisation.users?.map(user => (
+                          <div key={user.id} className="ds_user-badge">
+                            <span className="ds_user-badge__name">{user.display_name}</span>
+                            <span className="ds_user-badge__role">{user.capacity}</span>
+                          </div>
+                        ))}
                     </dd>
                   </div>
                   <div className="ds_metadata__item">
                     <dt className="ds_metadata__key">Contact</dt>
                     <dd className="ds_metadata__value">
-                    {' '}<a
-                        href={`mailto:${organisation.packages?.[0]?.maintainer_email || 'N/A'}`}
-                        className="ds_link"
-                      >
-                        Contact administrator
-                      </a>
+                      {datasets[0]?.maintainer_email ? (
+                        <a
+                          href={`mailto:${datasets[0].maintainer_email}`}
+                          className="ds_link"
+                        >
+                          Contact administrator
+                        </a>
+                      ) : 'Not specified'}
                     </dd>
                   </div>
                 </dl>
@@ -261,7 +273,7 @@ const Organisation = () => {
             </div>
           </div>
           <div className="ds_layout__list">
-          <hr />
+            <hr />
 
             <section className="ds_organisation-description">
               <h2 className="visually-hidden">About {organisation.title}</h2>

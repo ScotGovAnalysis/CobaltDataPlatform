@@ -3,16 +3,15 @@ import { useParams, useLocation, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
 import styles from '../styles/Design_Style.module.css';
-import BackToTop from '../components/BackToTop';
 import { PropagateLoader } from 'react-spinners';
-
+import BackToTop from '../components/BackToTop';
 const Theme = () => {
-
   const { themeName } = useParams();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q');
   const [group, setGroup] = useState(null);
+  const [datasets, setDatasets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('relevance');
@@ -22,39 +21,49 @@ const Theme = () => {
   const [resourceTypeOptions, setResourceTypeOptions] = useState([]);
 
   useEffect(() => {
-    const fetchGroupDetails = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
-          `${config.apiBaseUrl}/api/3/action/group_show?id=${themeName}&include_datasets=true&include_dataset_count=true&include_extras=true&include_users=true&include_groups=true&include_tags=true&include_followers=true`
+        setLoading(true);
+
+        // Fetch group details without datasets
+        const groupResponse = await fetch(
+          `${config.apiBaseUrl}/api/3/action/group_show?id=${themeName}`
         );
-        if (!response.ok) {
-          throw new Error('Failed to fetch group details');
-        }
-        const data = await response.json();
-        let datasets = data.result.packages;
+        if (!groupResponse.ok) throw new Error('Failed to fetch group details');
+        const groupData = await groupResponse.json();
+        setGroup(groupData.result);
+
+        // Fetch datasets separately with full details including tags
+        const datasetsResponse = await fetch(
+          `${config.apiBaseUrl}/api/3/action/package_search?q=groups:${themeName}&rows=1000`
+        );
+        if (!datasetsResponse.ok) throw new Error('Failed to fetch datasets');
+        const datasetsData = await datasetsResponse.json();
+
+        let fetchedDatasets = datasetsData.result.results || [];
         if (searchQuery) {
-          datasets = datasets.filter(dataset =>
+          fetchedDatasets = fetchedDatasets.filter(dataset =>
             dataset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             dataset.notes?.toLowerCase().includes(searchQuery.toLowerCase())
           );
         }
-        data.result.packages = datasets;
-        setGroup(data.result);
 
-        // Dynamically extract unique organizations
+        setDatasets(fetchedDatasets);
+
+        // Extract unique organizations
         const uniqueOrgs = Array.from(
           new Set(
-            datasets
+            fetchedDatasets
               .map(dataset => dataset.organization?.title)
               .filter(org => org)
           )
         );
         setOrganizationOptions(uniqueOrgs);
 
-        // Dynamically extract unique resource formats
+        // Extract unique resource formats
         const uniqueFormats = Array.from(
           new Set(
-            datasets
+            fetchedDatasets
               .flatMap(dataset =>
                 dataset.resources
                   ? dataset.resources.map(resource => resource.format)
@@ -72,31 +81,19 @@ const Theme = () => {
       }
     };
 
-    fetchGroupDetails();
+    fetchData();
   }, [themeName, searchQuery]);
 
-    useEffect(() => {
-      if (group) {
-        document.title = `Cobalt | ${group.display_name}`;
-      } else {
-        document.title = "Cobalt | Theme";
-      }
-    }, [group]);
-    
+  useEffect(() => {
+    if (group) {
+      document.title = `Cobalt | ${group.display_name}`;
+    } else {
+      document.title = "Cobalt | Theme";
+    }
+  }, [group]);
 
   const handleSortChange = (e) => {
-    const selectedSort = e.target.value;
-    setSortBy(selectedSort);
-
-    if (group) {
-      let sortedDatasets = [...group.packages];
-      if (selectedSort === 'date') {
-        sortedDatasets.sort((a, b) => new Date(b.metadata_modified) - new Date(a.metadata_modified));
-      } else if (selectedSort === 'adate') {
-        sortedDatasets.sort((a, b) => new Date(a.metadata_modified) - new Date(b.metadata_modified));
-      }
-      setGroup({ ...group, packages: sortedDatasets });
-    }
+    setSortBy(e.target.value);
   };
 
   const handleOrganizationFilter = (org) => {
@@ -115,23 +112,32 @@ const Theme = () => {
     );
   };
 
-  const filteredDatasets = group?.packages.filter(dataset => {
-    const orgMatch =
-      selectedOrganizations.length === 0 ||
-      selectedOrganizations.includes(dataset.organization?.title);
-    const resourceMatch =
-      selectedResourceTypes.length === 0 ||
-      (dataset.resources &&
-        dataset.resources.some(resource =>
-          selectedResourceTypes.includes(resource.format)
-        ));
-    return orgMatch && resourceMatch;
-  }) || [];
+  const filteredDatasets = datasets
+    .filter(dataset => {
+      const orgMatch =
+        selectedOrganizations.length === 0 ||
+        selectedOrganizations.includes(dataset.organization?.title);
+      const resourceMatch =
+        selectedResourceTypes.length === 0 ||
+        (dataset.resources &&
+          dataset.resources.some(resource =>
+            selectedResourceTypes.includes(resource.format)
+          ));
+      return orgMatch && resourceMatch;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'date') {
+        return new Date(b.metadata_modified) - new Date(a.metadata_modified);
+      } else if (sortBy === 'adate') {
+        return new Date(a.metadata_modified) - new Date(b.metadata_modified);
+      }
+      return 0; // relevance remains unchanged
+    });
 
   const getOrganizationCounts = () => {
     return organizationOptions.map(org => ({
       name: org,
-      count: group?.packages.filter(
+      count: datasets.filter(
         dataset => dataset.organization?.title === org
       ).length || 0,
     }));
@@ -140,7 +146,7 @@ const Theme = () => {
   const getResourceTypeCounts = () => {
     return resourceTypeOptions.map(format => ({
       name: format,
-      count: group?.packages.filter(
+      count: datasets.filter(
         dataset =>
           dataset.resources &&
           dataset.resources.some(resource => resource.format === format)
@@ -574,6 +580,7 @@ const Theme = () => {
         </main>
       </div>
       <BackToTop />
+
     </div>
   );
 };

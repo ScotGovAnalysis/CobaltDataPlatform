@@ -2,17 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
 import config from '../config';
-import styles from '../styles/Design_Style.module.css'
+import styles from '../styles/Design_Style.module.css';
 import BackToTop from '../components/BackToTop';
 import { PropagateLoader } from 'react-spinners';
 
 const Datasets = () => {
   useEffect(() => {
-    // Dynamically set the page title
     document.title = "Cobalt | Datasets";
-  }, []); 
-  
-  
+  }, []);
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q');
@@ -137,7 +135,6 @@ const Datasets = () => {
     }));
   };
 
-
   if (loading) return (
     <div className="ds_page__middle">
       <div className="ds_wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -149,7 +146,6 @@ const Datasets = () => {
       </div>
     </div>
   );
-
 
   if (error) {
     return (
@@ -178,30 +174,30 @@ const Datasets = () => {
           </div>
           <div className="ds_layout__sidebar">
             <div className="ds_search-filters">
-            <h3 className="ds_search-filters__title ds_h4">Search</h3>
-            <div className="ds_site-search">
-  <form action="/results" role="search" className="ds_site-search__form" method="GET">
-    <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
-    <div className="ds_input__wrapper ds_input__wrapper--has-icon">
-      <input
-        name="q"
-        required
-        id="site-search"
-        className="ds_input ds_site-search__input"
-        type="search"
-        placeholder="Search"
-        autoComplete="off"
-        value={searchQuery || ''} // Set the input value to searchQuery
-      />
-      <button type="submit" className="ds_button js-site-search-button">
-        <span className="visually-hidden">Search</span>
-        <svg className="ds_icon ds_icon--24" aria-hidden="true" role="img" viewBox="0 0 24 24">
-          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-        </svg>
-      </button>
-    </div>
-  </form>
-</div>
+              <h3 className="ds_search-filters__title ds_h4">Search</h3>
+              <div className="ds_site-search">
+                <form action="/datasets" role="search" className="ds_site-search__form" method="GET">
+                  <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
+                  <div className="ds_input__wrapper ds_input__wrapper--has-icon">
+                    <input
+                      name="q"
+                      required
+                      id="site-search"
+                      className="ds_input ds_site-search__input"
+                      type="search"
+                      placeholder="Search"
+                      autoComplete="off"
+                      defaultValue={searchQuery || ''} // Use defaultValue to set the initial value
+                    />
+                    <button type="submit" className="ds_button js-site-search-button">
+                      <span className="visually-hidden">Search</span>
+                      <svg className="ds_icon ds_icon--24" aria-hidden="true" role="img" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </form>
+              </div>
               <div className="ds_details ds_no-margin" data-module="ds-details">
                 <input id="filters-toggle" type="checkbox" className="ds_details__toggle visually-hidden" />
                 <label htmlFor="filters-toggle" className="ds_details__summary">
@@ -225,15 +221,15 @@ const Datasets = () => {
                           className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
                           id="organization-panel"
                         />
-                         <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
-                         <h3 className="ds_accordion-item__title">
-                          Organisation
-                          {selectedOrganizations.length > 0 && (
-                            <div className="ds_search-filters__filter-count">
-                              ({selectedOrganizations.length} selected)
-                            </div>
-                          )}
-                        </h3>
+                        <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
+                          <h3 className="ds_accordion-item__title">
+                            Organisation
+                            {selectedOrganizations.length > 0 && (
+                              <div className="ds_search-filters__filter-count">
+                                ({selectedOrganizations.length} selected)
+                              </div>
+                            )}
+                          </h3>
                           <span className={styles.accordionIndicator}></span>
                           <label
                             className="ds_accordion-item__label"
@@ -278,15 +274,15 @@ const Datasets = () => {
                           className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
                           id="resource-panel"
                         />
-                         <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
+                        <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
                           <h3 className="ds_accordion-item__title">
-                          Data Format
-                          {selectedResourceTypes.length > 0 && (
-                            <div className="ds_search-filters__filter-count">
-                              ({selectedResourceTypes.length} selected)
-                            </div>
-                          )}
-                        </h3>
+                            Data Format
+                            {selectedResourceTypes.length > 0 && (
+                              <div className="ds_search-filters__filter-count">
+                                ({selectedResourceTypes.length} selected)
+                              </div>
+                            )}
+                          </h3>
                           <span className={styles.accordionIndicator}></span>
                           <label
                             className="ds_accordion-item__label"
@@ -333,10 +329,10 @@ const Datasets = () => {
             </div>
           </div>
           <div className="ds_layout__list">
-            <div className="ds_search-results">   
-            <h2 aria-live="polite" className="ds_search-results__title">
-  {filteredResults.length} {searchQuery ? `result${filteredResults.length !== 1 ? 's' : ''} for "${searchQuery}"` : `Dataset${filteredResults.length !== 1 ? 's' : ''}`}
-</h2>
+            <div className="ds_search-results">
+              <h2 aria-live="polite" className="ds_search-results__title">
+                {filteredResults.length} {searchQuery ? `result${filteredResults.length !== 1 ? 's' : ''} for "${searchQuery}"` : `Dataset${filteredResults.length !== 1 ? 's' : ''}`}
+              </h2>
 
               <hr className="ds_search-results__divider" />
 
@@ -402,86 +398,84 @@ const Datasets = () => {
                     </button>
                   )}
                 </div>
-            
-<div className="ds_sort-options">
-  <label className="ds_label" htmlFor="sort-by">Sort by</label>
-  <span className={`ds_select-wrapper ${styles.selectWrapper}`}>
-    <select className={`ds_select ${styles.select}`} id="sort-by" value={sortBy} onChange={handleSortChange}>
-      <option value="relevance">Most relevant</option>
-      <option value="date">Updated (newest)</option>
-      <option value="adate">Updated (oldest)</option>
-    </select>
-    <span className={`ds_select-arrow ${styles.selectArrow}`} aria-hidden="true"></span>
-  </span>
-</div>
+
+                <div className="ds_sort-options">
+                  <label className="ds_label" htmlFor="sort-by">Sort by</label>
+                  <span className={`ds_select-wrapper ${styles.selectWrapper}`}>
+                    <select className={`ds_select ${styles.select}`} id="sort-by" value={sortBy} onChange={handleSortChange}>
+                      <option value="relevance">Most relevant</option>
+                      <option value="date">Updated (newest)</option>
+                      <option value="adate">Updated (oldest)</option>
+                    </select>
+                    <span className={`ds_select-arrow ${styles.selectArrow}`} aria-hidden="true"></span>
+                  </span>
+                </div>
               </div>
               <ol className="ds_search-results__list" data-total={filteredResults.length} start="1">
-              
-              {filteredResults.map((result) => (
-  <li key={result.id} className="ds_search-result">
-    <h3 className="ds_search-result__title">
-      <Link
-        to={{
-          pathname: `/dataset/${result.name}`,
-          state: { fromResults: true, searchQuery: searchQuery }
-        }}
-        className="ds_search-result__link"
-      >
-        {result.title}
-      </Link>
-    </h3>
-    <p className="ds_search-result__summary">
-      {(() => {
-        const text = result.notes || 'No description available';
-        const words = text.split(' ');
-        return words.length > 65 ? words.slice(0, 65).join(' ') + '...' : text;
-      })()}
-    </p>
-    <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
-      <div className="ds_metadata__item">
-        <dt className="ds_metadata__key">Organization</dt>
-        <dd className="ds_metadata__value">
-          {result.organization?.title || 'Unknown'}
-        </dd>
-      </div>
-      {result.resources && result.resources.length > 0 && (
-        <div className="ds_metadata__item">
-          <dt className="ds_metadata__key">Resource Types</dt>
-          <dd className="ds_metadata__value">
-            {
-              [...new Set(result.resources.map(resource => resource.format))]
-              .join(', ')
-            }
-          </dd>
-        </div>
-      )}
-    </dl>
-    <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
-      <div className="ds_metadata__item">
-        <dt className="ds_metadata__key">Last Updated</dt>
-        <dd className="ds_metadata__value">
-          Last updated: {new Date(result.metadata_modified).toLocaleDateString()}
-        </dd>
-      </div>
-    </dl>
-    
-    {/* Tags section added below Last Updated */}
-    {result.tags && result.tags.length > 0 && (
-      <div className={styles.sgTagList} style={{ marginTop: '0.75rem' }}>
-        {result.tags.map((tag, index) => (
-          <Link
-            key={index}
-            to={`/results?q=${encodeURIComponent(tag.name)}`}
-            className={styles.sgTag}
-          >
-            {tag.name}
-          </Link>
-        ))}
-      </div>
-    )}
-  </li>
-))}
+                {filteredResults.map((result) => (
+                  <li key={result.id} className="ds_search-result">
+                    <h3 className="ds_search-result__title">
+                      <Link
+                        to={{
+                          pathname: `/dataset/${result.name}`,
+                          state: { fromResults: true, searchQuery: searchQuery }
+                        }}
+                        className="ds_search-result__link"
+                      >
+                        {result.title}
+                      </Link>
+                    </h3>
+                    <p className="ds_search-result__summary">
+                      {(() => {
+                        const text = result.notes || 'No description available';
+                        const words = text.split(' ');
+                        return words.length > 65 ? words.slice(0, 65).join(' ') + '...' : text;
+                      })()}
+                    </p>
+                    <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Organization</dt>
+                        <dd className="ds_metadata__value">
+                          {result.organization?.title || 'Unknown'}
+                        </dd>
+                      </div>
+                      {result.resources && result.resources.length > 0 && (
+                        <div className="ds_metadata__item">
+                          <dt className="ds_metadata__key">Resource Types</dt>
+                          <dd className="ds_metadata__value">
+                            {
+                              [...new Set(result.resources.map(resource => resource.format))]
+                              .join(', ')
+                            }
+                          </dd>
+                        </div>
+                      )}
+                    </dl>
+                    <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
+                      <div className="ds_metadata__item">
+                        <dt className="ds_metadata__key">Last Updated</dt>
+                        <dd className="ds_metadata__value">
+                          Last updated: {new Date(result.metadata_modified).toLocaleDateString()}
+                        </dd>
+                      </div>
+                    </dl>
 
+                    {/* Tags section added below Last Updated */}
+                    {result.tags && result.tags.length > 0 && (
+                      <div className={styles.sgTagList} style={{ marginTop: '0.75rem' }}>
+                        {result.tags.map((tag, index) => (
+                          <Link
+                            key={index}
+                            to={`/results?q=${encodeURIComponent(tag.name)}`}
+                            className={styles.sgTag}
+                          >
+                            {tag.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                ))}
               </ol>
               <nav className="ds_pagination" aria-label="Search result pages">
                 <ul className="ds_pagination__list">

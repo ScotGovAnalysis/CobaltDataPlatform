@@ -335,7 +335,7 @@ const Organisations = () => {
                     <dl className="ds_search-result__metadata ds_metadata ds_metadata--inline">
                       <div className="ds_metadata__item">
                         <dt className="ds_metadata__key">Datasets</dt>
-                        <dd className="ds_metadata__value">{org.package_count || 0} Datasets Published</dd>
+                        <dd className="ds_metadata__value">{org.package_count || 0} {org.package_count === 1 ? 'Dataset' : 'Datasets'} Published</dd>
                       </div>
                     </dl>
                   </li>

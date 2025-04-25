@@ -171,6 +171,7 @@ const Header = () => {
                   className="ds_input ds_site-search__input"
                   id="site-search"
                   name="q"
+                  required
                   placeholder="Search"
                   type="search"
                   value={searchQuery}

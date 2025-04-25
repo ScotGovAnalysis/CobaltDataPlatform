@@ -323,13 +323,13 @@ const Resource = () => {
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Date Published</dt>
                   <dd className="ds_metadata__value">
-                    {dataset?.metadata_created ? format(new Date(dataset.metadata_created), 'dd MMMM yyyy') : 'N/A'}
+                  {' '}{dataset?.metadata_created ? format(new Date(dataset.metadata_created), 'dd MMMM yyyy') : 'N/A'}
                   </dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Last Updated</dt>
                   <dd className="ds_metadata__value">
-                    {dataset?.metadata_modified ? format(new Date(dataset.metadata_modified), 'dd MMMM yyyy') : 'N/A'}
+                  {' '}{dataset?.metadata_modified ? format(new Date(dataset.metadata_modified), 'dd MMMM yyyy') : 'N/A'}
                   </dd>
                 </div>
                 <div className="ds_metadata__item">
