@@ -10,8 +10,8 @@ const Header = () => {
   const lastScrollY = useRef(0);
   const navigate = useNavigate();
   const location = useLocation();
-  const menuButtonRef = useRef(null);
   const menuCheckboxRef = useRef(null);
+  const menuButtonRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,7 +60,10 @@ const Header = () => {
   };
 
   const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
+    setIsMenuOpen(!isMenuOpen);
+    if (menuCheckboxRef.current) {
+      menuCheckboxRef.current.checked = !isMenuOpen;
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -70,10 +73,31 @@ const Header = () => {
     }
   };
 
+  // Update checkbox when isMenuOpen changes
   useEffect(() => {
     if (menuCheckboxRef.current) {
       menuCheckboxRef.current.checked = isMenuOpen;
     }
+  }, [isMenuOpen]);
+
+  // Handle outside clicks to close menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMenuOpen && menuButtonRef.current && !menuButtonRef.current.contains(event.target)) {
+        const mobileNav = document.getElementById('mobile-navigation');
+        if (mobileNav && !mobileNav.contains(event.target)) {
+          setIsMenuOpen(false);
+          if (menuCheckboxRef.current) {
+            menuCheckboxRef.current.checked = false;
+          }
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isMenuOpen]);
 
   return (
@@ -99,14 +123,12 @@ const Header = () => {
           </div>
 
           <div className="ds_site-header__controls">
-            <label
+            <button
               aria-controls="mobile-navigation"
               className="ds_site-header__control js-toggle-menu"
-              htmlFor="menu"
-              tabIndex="0"
-              role="button"
               aria-expanded={isMenuOpen}
               ref={menuButtonRef}
+              onClick={toggleMenu}
               onKeyDown={handleKeyDown}
             >
               <span className="ds_site-header__control-text">Menu</span>
@@ -120,7 +142,7 @@ const Header = () => {
               >
                 <use href="/assets/images/icons/icons.stack.svg#close"></use>
               </svg>
-            </label>
+            </button>
           </div>
 
           <input
@@ -128,7 +150,7 @@ const Header = () => {
             id="menu"
             type="checkbox"
             ref={menuCheckboxRef}
-            onChange={toggleMenu}
+            onChange={(e) => setIsMenuOpen(e.target.checked)}
             aria-hidden="true"
           />
 

@@ -77,3 +77,60 @@ none;
 .header-hidden {
   transform: translateY(-100%);
 }
+
+/* Add these CSS rules to your App.css file to ensure keyboard accessibility */
+
+/* Ensure mobile navigation menu is visible when open */
+.ds_site-navigation--mobile.ds_site-navigation--open {
+  display: block;
+}
+
+/* Ensure focus state is clearly visible */
+.ds_site-navigation__link:focus,
+.ds_site-header__control:focus {
+  outline: 2px solid #0065bd;
+  outline-offset: 3px;
+}
+
+/* Add focus styles for links */
+.ds_site-navigation__link:focus-visible {
+  outline: 2px solid #0065bd;
+  outline-offset: 3px;
+}
+
+/* Remove default button styles */
+.ds_site-header__control {
+  border: none;
+  background: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: inherit;
+  font: inherit;
+}
+
+/* Make sure menu button shows hand cursor */
+.ds_site-header__control {
+  cursor: pointer;
+}
+
+/* Style menu button properly for keyboard navigation */
+.ds_site-header__control:focus,
+.ds_site-header__control:focus-visible {
+  outline: 2px solid #0065bd;
+  outline-offset: 3px;
+}
+
+/* Hide checkbox */
+.ds_site-navigation__toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

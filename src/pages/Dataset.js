@@ -254,18 +254,24 @@ const Dataset = () => {
                         </a>
                         <div id={`file-download-${index}`} className="ds_file-download__details">
                           <dl className="ds_metadata ds_metadata--inline">
-                            <div className="ds_metadata__item">
-                              <dt className="ds_metadata__key visually-hidden">File type</dt>
-                              <dd className="ds_metadata__value">{resource.format || 'Unknown format'} {' '}</dd>
-                            </div>
-                            <div className="ds_metadata__item">
-                              <dt className="ds_metadata__key visually-hidden">File size</dt>
-                              <dd className="ds_metadata__value">{(resource.size / 1024).toFixed(2)} KB{' '}</dd>
-                            </div>
-                            <div className="ds_metadata__item">
-                              <dt className="ds_metadata__key visually-hidden">Date Created</dt>
-                              <dd className="ds_metadata__value">{format(new Date(resource.created), 'dd MMMM yyyy')}</dd>
-                            </div>
+                          <div className="ds_metadata__item">
+                            <dt className="ds_metadata__key visually-hidden">File type</dt>
+                            <dd className="ds_metadata__value" style={{color: '#333333'}}>
+                              {resource.format || 'Unknown format'} {' '}
+                            </dd>
+                          </div>
+                          <div className="ds_metadata__item">
+                            <dt className="ds_metadata__key visually-hidden">File size</dt>
+                            <dd className="ds_metadata__value" style={{color: '#333333'}}>
+                              {(resource.size / 1024).toFixed(2)} KB{' '}
+                            </dd>
+                          </div>
+                          <div className="ds_metadata__item">
+                            <dt className="ds_metadata__key visually-hidden">Date Created</dt>
+                            <dd className="ds_metadata__value" style={{color: '#333333'}}>
+                              {format(new Date(resource.created), 'dd MMMM yyyy')}
+                            </dd>
+                          </div>
                           </dl>
                         </div>
                       </div>
