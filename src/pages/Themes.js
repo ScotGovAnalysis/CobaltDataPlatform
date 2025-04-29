@@ -105,7 +105,7 @@ const Themes = () => {
                       type="search"
                       placeholder="Search"
                       autoComplete="off"
-                      value={searchQuery || ''}
+                      defaultValue={searchQuery || ''} // Use defaultValue to set the initial value
                     />
                     <button type="submit" className="ds_button js-site-search-button">
                       <span className="visually-hidden">Search</span>

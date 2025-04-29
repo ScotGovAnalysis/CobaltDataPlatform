@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Header from './components/Header';
@@ -7,6 +7,7 @@ import ScrollToTop from './components/ScrollToTop';
 import './App.css';
 import routes from './routes';
 import '@scottish-government/design-system/dist/css/design-system.min.css';
+import '@scottish-government/design-system/dist/scripts/design-system.js';
 
 const theme = createTheme({
   palette: {
@@ -29,6 +30,13 @@ const theme = createTheme({
 });
 
 function App() {
+  useEffect(() => {
+    // Initialize all design system components once the component mounts
+    if (window.DS && typeof window.DS.initAll === 'function') {
+      window.DS.initAll();
+    }
+  }, []);
+  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
