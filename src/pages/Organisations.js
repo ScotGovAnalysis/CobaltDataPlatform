@@ -21,15 +21,25 @@ const Organisations = () => {
     isActive: false,
     hasDatasets: false,
   });
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
+  // Handle window resize for mobile detection
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+
+  // Fetch organisations
   useEffect(() => {
     const fetchOrganisations = async () => {
       try {
         const response = await fetch(`${config.apiBaseUrl}/api/3/action/organization_list`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             all_fields: true,
             include_dataset_count: true,
@@ -37,15 +47,9 @@ const Organisations = () => {
           }),
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch organisations');
-        }
-
+        if (!response.ok) throw new Error('Failed to fetch organisations');
         const data = await response.json();
-
-        if (!data.result) {
-          throw new Error('No organisations found');
-        }
+        if (!data.result) throw new Error('No organisations found');
 
         let filteredOrgs = data.result;
         if (searchQuery) {
@@ -62,15 +66,15 @@ const Organisations = () => {
         setLoading(false);
       }
     };
-
     fetchOrganisations();
   }, [searchQuery]);
 
   const handleFilterChange = (filter) => {
-    setSelectedFilters((prevFilters) => ({
-      ...prevFilters,
-      [filter]: !prevFilters[filter],
-    }));
+    setSelectedFilters((prev) => ({ ...prev, [filter]: !prev[filter] }));
+  };
+
+  const toggleMobileFilters = () => {
+    setShowMobileFilters(!showMobileFilters);
   };
 
   const filteredOrganisations = organisations.filter(org => {
@@ -79,17 +83,15 @@ const Organisations = () => {
     return isActive && hasDatasets;
   });
 
-  if (loading) return (
-    <div className="ds_page__middle">
-      <div className="ds_wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <PropagateLoader
-          color="#0065bd"
-          loading={true}
-          speedMultiplier={1}
-        />
+  if (loading) {
+    return (
+      <div className="ds_page__middle">
+        <div className="ds_wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <PropagateLoader color="#0065bd" loading={true} speedMultiplier={1} />
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   if (error) {
     return (
@@ -107,6 +109,7 @@ const Organisations = () => {
     <div className="ds_page__middle">
       <div className="ds_wrapper">
         <main className="ds_layout ds_layout--search-results--filters">
+          {/* Header */}
           <div className="ds_layout__header">
             <header className="ds_page-header">
               <h1 className="ds_page-header__title">
@@ -114,34 +117,51 @@ const Organisations = () => {
               </h1>
             </header>
           </div>
+
+          {/* Content (Search form and mobile filter toggle) */}
           <div className="ds_layout__content">
+            {isMobile && (
+              <button
+                onClick={toggleMobileFilters}
+                className="ds_button ds_button--secondary ds_button--small"
+                style={{ marginBottom: '1rem', width: '100%' }}
+              >
+                {showMobileFilters ? 'Hide Filters' : 'Show Filters'}
+              </button>
+            )}
           </div>
-          <div className="ds_layout__sidebar">
-            <div className="ds_search-filters">
-              <h3 className="ds_search-filters__title ds_h4">Search</h3>
-              <div className="ds_site-search">
-                <form action="/organisations" role="search" className="ds_site-search__form" method="GET">
-                  <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
-                  <div className="ds_input__wrapper ds_input__wrapper--has-icon">
-                    <input
-                      name="q"
-                      required
-                      id="site-search"
-                      className="ds_input ds_site-search__input"
-                      type="search"
-                      placeholder="Search"
-                      autoComplete="off"
-                      value={searchQuery || ''}
-                    />
-                    <button type="submit" className="ds_button js-site-search-button">
-                      <span className="visually-hidden">Search</span>
-                      <svg className="ds_icon ds_icon--24" aria-hidden="true" role="img" viewBox="0 0 24 24">
-                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                      </svg>
-                    </button>
-                  </div>
-                </form>
-              </div>
+
+          {/* Sidebar (Filters) */}
+          <div
+            className="ds_layout__sidebar"
+            style={{ display: isMobile && !showMobileFilters ? 'none' : 'block' }}
+          >
+                                    <div className="ds_search-filters">
+                                    <h3 className="ds_search-filters__title ds_h4">Search</h3>
+
+                        <div className="ds_site-search" style={{ marginBottom: '1rem' }}>
+              <form action="/organisations" role="search" className="ds_site-search__form" method="GET">
+                <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
+                <div className="ds_input__wrapper ds_input__wrapper--has-icon">
+                  <input
+                    name="q"
+                    required
+                    id="site-search"
+                    className="ds_input ds_site-search__input"
+                    type="search"
+                    placeholder="Search"
+                    autoComplete="off"
+                    defaultValue={searchQuery || ''}
+                  />
+                  <button type="submit" className="ds_button js-site-search-button">
+                    <span className="visually-hidden">Search</span>
+                    <svg className="ds_icon ds_icon--24" aria-hidden="true" role="img" viewBox="0 0 24 24">
+                      <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                  </button>
+                </div>
+              </form>
+            </div> 
               <div className="ds_details ds_no-margin" data-module="ds-details">
                 <input id="filters-toggle" type="checkbox" className="ds_details__toggle visually-hidden" />
                 <label htmlFor="filters-toggle" className="ds_details__summary">
@@ -158,6 +178,7 @@ const Organisations = () => {
                   <form id="filters">
                     <h3 className="ds_search-filters__title ds_h4">Filter by</h3>
                     <div className="ds_accordion ds_accordion--small ds_!_margin-top--0" data-module="ds-accordion">
+                      {/* Is Active Filter */}
                       <div className="ds_accordion-item">
                         <input
                           type="checkbox"
@@ -168,16 +189,11 @@ const Organisations = () => {
                           <h3 className="ds_accordion-item__title">
                             Is Active
                             {selectedFilters.isActive && (
-                              <div className="ds_search-filters__filter-count">
-                                (1 selected)
-                              </div>
+                              <div className="ds_search-filters__filter-count">(1 selected)</div>
                             )}
                           </h3>
                           <span className={styles.accordionIndicator}></span>
-                          <label
-                            className="ds_accordion-item__label"
-                            htmlFor="is-active-panel"
-                          >
+                          <label className="ds_accordion-item__label" htmlFor="is-active-panel">
                             <span className="visually-hidden">Show this section</span>
                           </label>
                         </div>
@@ -203,6 +219,7 @@ const Organisations = () => {
                           </fieldset>
                         </div>
                       </div>
+                      {/* Has Datasets Filter */}
                       <div className="ds_accordion-item">
                         <input
                           type="checkbox"
@@ -213,16 +230,11 @@ const Organisations = () => {
                           <h3 className="ds_accordion-item__title">
                             Has Datasets
                             {selectedFilters.hasDatasets && (
-                              <div className="ds_search-filters__filter-count">
-                                (1 selected)
-                              </div>
+                              <div className="ds_search-filters__filter-count">(1 selected)</div>
                             )}
                           </h3>
                           <span className={styles.accordionIndicator}></span>
-                          <label
-                            className="ds_accordion-item__label"
-                            htmlFor="has-datasets-panel"
-                          >
+                          <label className="ds_accordion-item__label" htmlFor="has-datasets-panel">
                             <span className="visually-hidden">Show this section</span>
                           </label>
                         </div>
@@ -257,6 +269,8 @@ const Organisations = () => {
               </div>
             </div>
           </div>
+
+          {/* Search Results */}
           <div className="ds_layout__list">
             <div className="ds_search-results">
               <h2 aria-live="polite" className="ds_search-results__title">
@@ -306,9 +320,10 @@ const Organisations = () => {
                     )}
                   </dl>
                   {(selectedFilters.isActive || selectedFilters.hasDatasets) && (
-                    <button className="ds_facets__clear-button ds_button ds_button--secondary" onClick={() => {
-                      setSelectedFilters({ isActive: false, hasDatasets: false });
-                    }}>
+                    <button
+                      className="ds_facets__clear-button ds_button ds_button--secondary"
+                      onClick={() => setSelectedFilters({ isActive: false, hasDatasets: false })}
+                    >
                       Clear all filters
                       <svg className="ds_facet__button-icon" aria-hidden="true" role="img" focusable="false">
                         <use href="/assets/images/icons/icons.stack.svg#cancel"></use>
@@ -317,7 +332,7 @@ const Organisations = () => {
                   )}
                 </div>
               </div>
-              <ol className="ds_search-results__list" data-total={filteredOrganisations.length} start="1">
+              <ol id="search-results" className="ds_search-results__list" data-total={filteredOrganisations.length} start="1">
                 {filteredOrganisations.map((org) => (
                   <li key={org.id} className="ds_search-result">
                     <h3 className="ds_search-result__title">

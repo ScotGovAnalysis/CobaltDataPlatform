@@ -204,3 +204,31 @@ none;
     fill: #003f87;
   }
 }
+
+/* Add this CSS to your stylesheet */
+@media (max-width: 768px) {
+  .ds_layout--search-results--filters {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ds_layout__sidebar {
+    order: 2; /* Place sidebar below content */
+    width: 100%;
+  }
+
+  .ds_layout__content {
+    order: 1;
+    width: 100%;
+  }
+
+  .ds_layout__list {
+    order: 3;
+    width: 100%;
+  }
+
+  .ds_layout__header {
+    order: 0;
+    width: 100%;
+  }
+}

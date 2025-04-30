@@ -19,17 +19,33 @@
   transform: rotate(-135deg);
 }
 
-@media (min-width: 768px) {
-  .accordionIndicator {
-    top: 21px;
-    right: 26px;
+@media (max-width: 768px) {
+  .ds_layout--search-results--filters {
+    display: flex;
+    flex-direction: column;
   }
 
-  .accordionItemControl:checked ~ .accordionItemHeader .accordionIndicator {
-    top: 27px;
-    right: 26px;
+  .ds_layout__sidebar {
+    order: 2; /* Place sidebar below content */
+    width: 100%;
+  }
+
+  .ds_layout__content {
+    order: 1;
+    width: 100%;
+  }
+
+  .ds_layout__list {
+    order: 3;
+    width: 100%;
+  }
+
+  .ds_layout__header {
+    order: 0;
+    width: 100%;
   }
 }
+
 
 /**
  * Sort Options and Select Styles

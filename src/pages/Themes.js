@@ -17,6 +17,17 @@ const Themes = () => {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  // Handle window resize for mobile detection
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -50,6 +61,10 @@ const Themes = () => {
 
     fetchGroups();
   }, [searchQuery]);
+
+  const toggleMobileFilters = () => {
+    setShowMobileFilters(!showMobileFilters);
+  };
 
   if (loading) {
     return (
@@ -89,11 +104,20 @@ const Themes = () => {
             </header>
           </div>
           <div className="ds_layout__content">
+            {isMobile && (
+              <button
+                onClick={toggleMobileFilters}
+                className="ds_button ds_button--secondary ds_button--small"
+                style={{ marginBottom: '1rem', width: '100%' }}
+              >
+                {showMobileFilters ? 'Hide Filters' : 'Show Filters'}
+              </button>
+            )}
           </div>
-          <div className="ds_layout__sidebar">
+          <div className="ds_layout__sidebar" style={{ display: isMobile && !showMobileFilters ? 'none' : 'block' }}>
             <div className="ds_search-filters">
               <h3 className="ds_search-filters__title ds_h4">Search</h3>
-              <div className="ds_site-search">
+              <div className="ds_site-search" style={{ marginBottom: '1rem' }}>
                 <form action="/themes" role="search" className="ds_site-search__form" method="GET">
                   <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
                   <div className="ds_input__wrapper ds_input__wrapper--has-icon">

@@ -18,6 +18,8 @@ const Datasets = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('relevance'); // Default sort by relevance
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Dynamic filter states
   const [selectedOrganizations, setSelectedOrganizations] = useState([]);
@@ -26,6 +28,15 @@ const Datasets = () => {
   // Derived filter options
   const [organizationOptions, setOrganizationOptions] = useState([]);
   const [resourceTypeOptions, setResourceTypeOptions] = useState([]);
+
+  // Handle window resize for mobile detection
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -135,6 +146,10 @@ const Datasets = () => {
     }));
   };
 
+  const toggleMobileFilters = () => {
+    setShowMobileFilters(!showMobileFilters);
+  };
+
   if (loading) return (
     <div className="ds_page__middle">
       <div className="ds_wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -171,11 +186,20 @@ const Datasets = () => {
             </header>
           </div>
           <div className="ds_layout__content">
+            {isMobile && (
+              <button
+                onClick={toggleMobileFilters}
+                className="ds_button ds_button--secondary ds_button--small"
+                style={{ marginBottom: '1rem', width: '100%' }}
+              >
+                {showMobileFilters ? 'Hide Filters' : 'Show Filters'}
+              </button>
+            )}
           </div>
-          <div className="ds_layout__sidebar">
+          <div className="ds_layout__sidebar" style={{ display: isMobile && !showMobileFilters ? 'none' : 'block' }}>
             <div className="ds_search-filters">
               <h3 className="ds_search-filters__title ds_h4">Search</h3>
-              <div className="ds_site-search">
+              <div className="ds_site-search" style={{ marginBottom: '1rem' }}>
                 <form action="/datasets" role="search" className="ds_site-search__form" method="GET">
                   <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
                   <div className="ds_input__wrapper ds_input__wrapper--has-icon">
@@ -333,9 +357,7 @@ const Datasets = () => {
               <h2 aria-live="polite" className="ds_search-results__title">
                 {filteredResults.length} {searchQuery ? `result${filteredResults.length !== 1 ? 's' : ''} for "${searchQuery}"` : `Dataset${filteredResults.length !== 1 ? 's' : ''}`}
               </h2>
-
               <hr className="ds_search-results__divider" />
-
               <div className="ds_search-controls">
                 <div className="ds_skip-links ds_skip-links--static">
                   <ul className="ds_skip-links__list">
@@ -398,7 +420,6 @@ const Datasets = () => {
                     </button>
                   )}
                 </div>
-
                 <div className="ds_sort-options">
                   <label className="ds_label" htmlFor="sort-by">Sort by</label>
                   <span className={`ds_select-wrapper ${styles.selectWrapper}`}>
@@ -459,8 +480,6 @@ const Datasets = () => {
                         </dd>
                       </div>
                     </dl>
-
-                    {/* Tags section added below Last Updated */}
                     {result.tags && result.tags.length > 0 && (
                       <div className={styles.sgTagList} style={{ marginTop: '0.75rem' }}>
                         {result.tags.map((tag, index) => (
