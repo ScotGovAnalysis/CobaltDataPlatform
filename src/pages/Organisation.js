@@ -258,7 +258,7 @@ const Organisation = () => {
                   <div className="ds_metadata__item">
                     <dt className="ds_metadata__key">Contact</dt>
                     <dd className="ds_metadata__value">
-                      {datasets[0]?.maintainer_email ? (
+                    {' '} {datasets[0]?.maintainer_email ? (
                         <a
                           href={`mailto:${datasets[0].maintainer_email}`}
                           className="ds_link"
