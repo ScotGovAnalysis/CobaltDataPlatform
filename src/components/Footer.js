@@ -16,6 +16,9 @@ const Footer = () => {
             <li className="ds_site-items__item">
               <a href="/contact">Contact</a>
             </li>
+            <li className="ds_site-items__item">
+              <a href="/help">How to use this site</a>
+            </li>
           </ul>
 
           {/* Copyright and Licensing */}

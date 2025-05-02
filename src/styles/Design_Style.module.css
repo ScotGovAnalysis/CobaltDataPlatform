@@ -922,3 +922,27 @@
     grid-column: 1 / -1 !important;
   }
 }
+
+.ds_facet-wrapper {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.ds_facet {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ds_facet__button {
+  margin-left: 0.25rem;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.ds_facet__button-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}

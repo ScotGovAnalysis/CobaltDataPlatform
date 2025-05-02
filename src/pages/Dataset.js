@@ -102,6 +102,19 @@ const Dataset = () => {
     </div>
   );
 
+  const formatFileSize = (sizeInBytes) => {
+    const sizeInKB = sizeInBytes / 1024;
+    const sizeInMB = sizeInKB / 1024;
+
+    if (sizeInMB >= 10) {
+      return `${Math.round(sizeInMB)} MB`;
+    } else if (sizeInMB >= 1) {
+      return `${sizeInMB.toFixed(1)} MB`;
+    } else {
+      return `${Math.round(sizeInKB)} KB`;
+    }
+  };
+
   return (
     <div className="ds_page__middle">
       <div className="ds_wrapper">
@@ -265,12 +278,13 @@ const Dataset = () => {
                               {resource.format || 'Unknown format'} {' '}
                             </dd>
                           </div>
-                          <div className="ds_metadata__item">
-                            <dt className="ds_metadata__key visually-hidden">File size</dt>
-                            <dd className="ds_metadata__value" style={{color: '#333333'}}>
-                              {(resource.size / 1024).toFixed(2)} KB{' '}
-                            </dd>
-                          </div>
+                          
+      <div className="ds_metadata__item">
+        <dt className="ds_metadata__key visually-hidden">File size</dt>
+        <dd className="ds_metadata__value" style={{color: '#333333'}}>
+          {formatFileSize(resource.size)}
+        </dd>
+      </div>
                           <div className="ds_metadata__item">
                             <dt className="ds_metadata__key visually-hidden">Date Created</dt>
                             <dd className="ds_metadata__value" style={{color: '#333333'}}>

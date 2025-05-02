@@ -7,10 +7,6 @@ import BackToTop from '../components/BackToTop';
 import { PropagateLoader } from 'react-spinners';
 
 const Organisations = () => {
-  useEffect(() => {
-    document.title = "Cobalt | Organisations";
-  }, []);
-
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q');
@@ -23,6 +19,10 @@ const Organisations = () => {
   });
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  useEffect(() => {
+    document.title = "Emerald | Organisations";
+  }, []);
 
   // Handle window resize for mobile detection
   useEffect(() => {
@@ -131,15 +131,9 @@ const Organisations = () => {
             )}
           </div>
 
-          {/* Sidebar (Filters) */}
-          <div
-            className="ds_layout__sidebar"
-            style={{ display: isMobile && !showMobileFilters ? 'none' : 'block' }}
-          >
-                                    <div className="ds_search-filters">
-                                    <h3 className="ds_search-filters__title ds_h4">Search</h3>
-
-                        <div className="ds_site-search" style={{ marginBottom: '1rem' }}>
+          {/* Search Results */}
+          <div className="ds_layout__content">
+          <div className="ds_site-search" style={{ marginBottom: '1rem' }}>
               <form action="/organisations" role="search" className="ds_site-search__form" method="GET">
                 <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
                 <div className="ds_input__wrapper ds_input__wrapper--has-icon">
@@ -161,117 +155,7 @@ const Organisations = () => {
                   </button>
                 </div>
               </form>
-            </div> 
-              <div className="ds_details ds_no-margin" data-module="ds-details">
-                <input id="filters-toggle" type="checkbox" className="ds_details__toggle visually-hidden" />
-                <label htmlFor="filters-toggle" className="ds_details__summary">
-                  Search filters
-                </label>
-                <div className="ds_skip-links ds_skip-links--static">
-                  <ul className="ds_skip-links__list">
-                    <li className="ds_skip-links__item">
-                      <a className="ds_skip-links__link" href="#search-results">Skip to results</a>
-                    </li>
-                  </ul>
-                </div>
-                <div className="ds_details__text">
-                  <form id="filters">
-                    <h3 className="ds_search-filters__title ds_h4">Filter by</h3>
-                    <div className="ds_accordion ds_accordion--small ds_!_margin-top--0" data-module="ds-accordion">
-                      {/* Is Active Filter */}
-                      <div className="ds_accordion-item">
-                        <input
-                          type="checkbox"
-                          className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
-                          id="is-active-panel"
-                        />
-                        <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
-                          <h3 className="ds_accordion-item__title">
-                            Is Active
-                            {selectedFilters.isActive && (
-                              <div className="ds_search-filters__filter-count">(1 selected)</div>
-                            )}
-                          </h3>
-                          <span className={styles.accordionIndicator}></span>
-                          <label className="ds_accordion-item__label" htmlFor="is-active-panel">
-                            <span className="visually-hidden">Show this section</span>
-                          </label>
-                        </div>
-                        <div className="ds_accordion-item__body">
-                          <fieldset>
-                            <legend className="visually-hidden">Select active organisations</legend>
-                            <div className="ds_search-filters__scrollable">
-                              <div className="ds_search-filters__checkboxes">
-                                <div className="ds_checkbox ds_checkbox--small">
-                                  <input
-                                    id="is-active"
-                                    type="checkbox"
-                                    className="ds_checkbox__input"
-                                    checked={selectedFilters.isActive}
-                                    onChange={() => handleFilterChange('isActive')}
-                                  />
-                                  <label htmlFor="is-active" className="ds_checkbox__label">
-                                    Active Organisations
-                                  </label>
-                                </div>
-                              </div>
-                            </div>
-                          </fieldset>
-                        </div>
-                      </div>
-                      {/* Has Datasets Filter */}
-                      <div className="ds_accordion-item">
-                        <input
-                          type="checkbox"
-                          className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
-                          id="has-datasets-panel"
-                        />
-                        <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
-                          <h3 className="ds_accordion-item__title">
-                            Has Datasets
-                            {selectedFilters.hasDatasets && (
-                              <div className="ds_search-filters__filter-count">(1 selected)</div>
-                            )}
-                          </h3>
-                          <span className={styles.accordionIndicator}></span>
-                          <label className="ds_accordion-item__label" htmlFor="has-datasets-panel">
-                            <span className="visually-hidden">Show this section</span>
-                          </label>
-                        </div>
-                        <div className="ds_accordion-item__body">
-                          <fieldset>
-                            <legend className="visually-hidden">Select organisations with datasets</legend>
-                            <div className="ds_search-filters__scrollable">
-                              <div className="ds_search-filters__checkboxes">
-                                <div className="ds_checkbox ds_checkbox--small">
-                                  <input
-                                    id="has-datasets"
-                                    type="checkbox"
-                                    className="ds_checkbox__input"
-                                    checked={selectedFilters.hasDatasets}
-                                    onChange={() => handleFilterChange('hasDatasets')}
-                                  />
-                                  <label htmlFor="has-datasets" className="ds_checkbox__label">
-                                    Organisations with Datasets
-                                  </label>
-                                </div>
-                              </div>
-                            </div>
-                          </fieldset>
-                        </div>
-                      </div>
-                    </div>
-                    <button type="submit" className="ds_button ds_button--primary ds_button--small ds_button--max ds_no-margin">
-                      Apply filter
-                    </button>
-                  </form>
-                </div>
-              </div>
             </div>
-          </div>
-
-          {/* Search Results */}
-          <div className="ds_layout__list">
             <div className="ds_search-results">
               <h2 aria-live="polite" className="ds_search-results__title">
                 {filteredOrganisations.length} {searchQuery ? `result${filteredOrganisations.length !== 1 ? 's' : ''} for "${searchQuery}"` : `Organisation${filteredOrganisations.length !== 1 ? 's' : ''}`}

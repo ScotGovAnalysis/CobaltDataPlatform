@@ -76,9 +76,9 @@ const Organisation = () => {
 
   useEffect(() => {
     if (organisation) {
-      document.title = `Cobalt | ${organisation.title}`;
+      document.title = `Emerald | ${organisation.title}`;
     } else {
-      document.title = "Cobalt | Organisation";
+      document.title = "Emerald | Organisation";
     }
   }, [organisation]);
 
@@ -178,6 +178,9 @@ const Organisation = () => {
                   <Link className="ds_breadcrumbs__link" to="/">Home</Link>
                 </li>
                 <li className={styles.ds_breadcrumbs__item}>
+                  <Link className="ds_breadcrumbs__link" to={`/organisations${searchQuery ? `?q=${searchQuery}` : ''}`}>Organisations</Link>
+                </li>
+                <li className={styles.ds_breadcrumbs__item}>
                   <span className="ds_breadcrumbs__current">{organisation.title}</span>
                 </li>
               </ol>
@@ -242,17 +245,6 @@ const Organisation = () => {
                       <span className={`ds_badge ${organisation.state === 'active' ? 'ds_badge--success' : ''}`}>
                         {' '}{organisation.state === 'active' ? 'Active' : organisation.state.charAt(0).toUpperCase() + organisation.state.slice(1).toLowerCase()}
                       </span>
-                    </dd>
-                  </div>
-                  <div className="ds_metadata__item">
-                    <dt className="ds_metadata__key">Administrators</dt>
-                    <dd className="ds_metadata__value">
-                      {' '}{organisation.users?.map(user => (
-                          <div key={user.id} className="ds_user-badge">
-                            <span className="ds_user-badge__name">{user.display_name}</span>
-                            <span className="ds_user-badge__role">{user.capacity}</span>
-                          </div>
-                        ))}
                     </dd>
                   </div>
                   <div className="ds_metadata__item">

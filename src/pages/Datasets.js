@@ -345,7 +345,7 @@ const Datasets = () => {
                       </div>
                     </div>
                     <button type="submit" className="ds_button ds_button--primary ds_button--small ds_button--max ds_no-margin">
-                      Apply filter
+                       Clear filters
                     </button>
                   </form>
                 </div>
@@ -372,7 +372,7 @@ const Datasets = () => {
                     {selectedOrganizations.length > 0 && (
                       <div className="ds_facet-group">
                         <dt className="ds_facet__group-title">
-                          Organization:
+                          Organisation:
                         </dt>
                         {selectedOrganizations.map(org => (
                           <dd key={org} className="ds_facet-wrapper">

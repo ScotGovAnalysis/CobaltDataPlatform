@@ -35,6 +35,7 @@ const Resource = () => {
   const [showJsonModal, setShowJsonModal] = useState(false);
   const [loadingJson, setLoadingJson] = useState(false);
   const [jsonData, setJsonData] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
 
   useEffect(() => {
     if (!id || !resourceId) {
@@ -129,6 +130,14 @@ const Resource = () => {
       document.title = "Cobalt | Dataset";
     }
   }, [dataset, resourceId]);
+
+  useEffect(() => {
+    const updateMedia = () => {
+      setIsDesktop(window.innerWidth > 768);
+    };
+    window.addEventListener('resize', updateMedia);
+    return () => window.removeEventListener('resize', updateMedia);
+  }, []);
 
   const handleViewMap = async () => {
     try {
@@ -257,12 +266,25 @@ const Resource = () => {
     );
   }
 
+  const formatFileSize = (sizeInBytes) => {
+    const sizeInKB = sizeInBytes / 1024;
+    const sizeInMB = sizeInKB / 1024;
+
+    if (sizeInMB >= 10) {
+      return `${Math.round(sizeInMB)} MB`;
+    } else if (sizeInMB >= 1) {
+      return `${sizeInMB.toFixed(1)} MB`;
+    } else {
+      return `${Math.round(sizeInKB)} KB`;
+    }
+  };
+
   return (
-<div className="ds_page__middle">
-  <div className="ds_wrapper">
-    <main className="ds_layout ds_layout--search-results--filters">
-    <div className={`ds_layout__header ${headerStyles.ds_header}`} style={{ marginBottom: 0 }}>
-    <nav aria-label="Breadcrumb">
+    <div className="ds_page__middle">
+      <div className="ds_wrapper">
+        <main className="ds_layout ds_layout--search-results--filters">
+          <div className={`ds_layout__header ${headerStyles.ds_header}`} style={{ marginBottom: 0 }}>
+            <nav aria-label="Breadcrumb">
               <ol className="ds_breadcrumbs">
                 <li className={styles.ds_breadcrumbs__item}>
                   <Link className="ds_breadcrumbs__link" to="/">Home</Link>
@@ -281,31 +303,24 @@ const Resource = () => {
               </ol>
             </nav>
 
-            <div
-          className={`ds_page-header ${headerStyles.ds_page_header}`}
-        >
-          <div className={headerStyles.ds_page_header_title}>
-            <h1 className="ds_page-header__title">{dataset?.title}</h1>
+            <div className={`ds_page-header ${headerStyles.ds_page_header}`}>
+              <div className={headerStyles.ds_page_header_title} style={{ width: isDesktop ? '70%' : '100%' }}>
+                <h1 className="ds_page-header__title">{dataset?.title}</h1>
+              </div>
+              <div className={headerStyles.action_buttons_container} style={{ marginBottom: 0 }}>
+                <ActionButtons
+                  resourceId={resourceId}
+                  resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
+                  resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
+                  onApiClick={() => setShowApiModal(true)}
+                />
+              </div>
+            </div>
           </div>
-          <div
-  className={headerStyles.action_buttons_container}
-  style={{ marginBottom: 0 }}
->
-  <ActionButtons
-    resourceId={resourceId}
-    resourceUrl={dataset?.resources?.find((r) => r.id === resourceId)?.url}
-    resourceFormat={dataset?.resources?.find((r) => r.id === resourceId)?.format}
-    onApiClick={() => setShowApiModal(true)}
-  />
-</div>
 
-        </div>
-          </div>
- 
           <div className="ds_layout__sidebar">
             <div className="ds_metadata__panel">
-            <hr />
-
+              <hr />
               <h3 className="ds_metadata__panel-title">Metadata</h3>
               <dl className="ds_metadata">
                 <div className="ds_metadata__item">
@@ -317,19 +332,19 @@ const Resource = () => {
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Size</dt>
                   <dd className="ds_metadata__value">
-                    {' '}{((dataset?.resources?.find(r => r.id === resourceId)?.size || 0) / 1024).toFixed(2)} KB
+                  {' '}{formatFileSize(dataset?.resources?.find(r => r.id === resourceId)?.size || 0)}
                   </dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Date Published</dt>
                   <dd className="ds_metadata__value">
-                  {' '}{dataset?.metadata_created ? format(new Date(dataset.metadata_created), 'dd MMMM yyyy') : 'N/A'}
+                    {' '}{dataset?.metadata_created ? format(new Date(dataset.metadata_created), 'dd MMMM yyyy') : 'N/A'}
                   </dd>
                 </div>
                 <div className="ds_metadata__item">
                   <dt className="ds_metadata__key">Last Updated</dt>
                   <dd className="ds_metadata__value">
-                  {' '}{dataset?.metadata_modified ? format(new Date(dataset.metadata_modified), 'dd MMMM yyyy') : 'N/A'}
+                    {' '}{dataset?.metadata_modified ? format(new Date(dataset.metadata_modified), 'dd MMMM yyyy') : 'N/A'}
                   </dd>
                 </div>
                 <div className="ds_metadata__item">
@@ -377,8 +392,7 @@ const Resource = () => {
           </div>
 
           <div className="ds_layout__list">
-          <hr />
-
+            <hr />
             <section className={styles.section}>
               {dataset.resources[0]?.description ? (
                 dataset.resources[0].description.split('\n').map((paragraph, index) => (
@@ -388,9 +402,7 @@ const Resource = () => {
                 <p>No description available</p>
               )}
             </section>
-
             <hr />
-
             <nav aria-label="Data view navigation">
               <ul className="ds_category-list ds_category-list--grid ds_category-list--narrow">
                 {resourceViewId && !hasMap && (
@@ -420,20 +432,20 @@ const Resource = () => {
                           disabled={loadingJson}
                         >
                           {loadingJson ? (
-                          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-                            <PropagateLoader
-                              color="#0065bd"
-                              loading={true}
-                              speedMultiplier={1}
-                            />
-                          </div>
-                        ) : (
-                          'View JSON'
-                        )}
+                            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                              <PropagateLoader
+                                color="#0065bd"
+                                loading={true}
+                                speedMultiplier={1}
+                              />
+                            </div>
+                          ) : (
+                            'View JSON'
+                          )}
                         </button>
                       </h2>
                       <p className="ds_category-item__summary">
-                      Explore the complete JSON document.
+                        Explore the complete JSON document.
                       </p>
                     </article>
                   </li>
@@ -465,7 +477,6 @@ const Resource = () => {
                     </p>
                   </article>
                 </li>
-
                 {hasMap && (
                   <li className="ds_card ds_card--has-hover">
                     <article className="ds_category-item ds_category-item--card">
@@ -485,11 +496,8 @@ const Resource = () => {
                   </li>
                 )}
               </ul>
-
               <DataDictionary dataset={dataset} resourceId={resourceId} config={config} />
-
             </nav>
-
             {showMapViewerModal && (
               <MapViewerModal
                 data={geoJsonData}
@@ -507,7 +515,6 @@ const Resource = () => {
           </div>
         </main>
       </div>
-
       {!hasMap && (
         <ApiModal
           resourceId={resourceId}
@@ -515,7 +522,6 @@ const Resource = () => {
           onClose={() => setShowApiModal(false)}
         />
       )}
-
       {!hasMap && (
         <DataViewerModal
           isOpen={showDataViewerModal}
@@ -523,7 +529,6 @@ const Resource = () => {
           src={getDataViewerUrl()}
         />
       )}
-
       <AnalysisModal
         isOpen={showAnalysisModal}
         onClose={() => setShowAnalysisModal(false)}
@@ -531,7 +536,6 @@ const Resource = () => {
         columns={analysisColumns}
         fileType={dataset?.resources.find(r => r.id === resourceId)?.format.toLowerCase() || 'csv'}
       />
-
       <BackToTop />
     </div>
   );
