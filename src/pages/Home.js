@@ -14,7 +14,6 @@ import '../styles/Search_Bar.module.css';
 import config from '../config.js';
 import styles from '../styles/Design_Style.module.css'
 
-
 const Home = () => {
   useEffect(() => {
     document.title = "Cobalt | Home";
@@ -24,7 +23,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [introText, setIntroText] = useState('');
-  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const fetchPopularTags = async () => {
@@ -54,41 +52,50 @@ const Home = () => {
             key: 'ckan.site_intro_text',
           }),
         });
-    
+
         if (!response.ok) {
           throw new Error('Failed to fetch intro text');
         }
-    
+
         const data = await response.json();
         if (data.success) {
           const formattedText = `
             <style>
-              .intro-link:hover {
+              .intro-link:hover, .intro-link:focus {
+                color: #002147 !important; /* Navy blue color */
+              }
+              .intro-text::selection {
+                color: #002147 !important; /* Navy blue color */
+                background: #FFFF00 !important; /* Yellow background */
+              }
+              .intro-link:focus {
                 color: #002147 !important; /* Navy blue color */
               }
             </style>
-            ${data.result
-              .replace(
-                'datasets',
-                '<strong><u><a href="/datasets" class="intro-link" style="color: #FFFFFF;">datasets</a></u></strong>'
-              )
-              .replace(
-                'contact us',
-                '<strong><u><a href="/contact" class="intro-link" style="color: #FFFFFF;">contact us</a></u></strong>'
-              )
-              .replace(
-                'help',
-                '<strong><u><a href="/help" class="intro-link" style="color: #FFFFFF;">help</a></u></strong>'
-              )
-              .replace(
-                'theme',
-                '<strong><u><a href="/themes" class="intro-link" style="color: #FFFFFF;">theme</a></u></strong>'
-              )
-              .replace(
-                'organisations',
-                '<strong><u><a href="/organisations" class="intro-link" style="color: #FFFFFF;">organisations</a></u></strong>'
-              )
-              .replace(/\r\n\r\n/g, '</p><p>')}
+            <div class="intro-text">
+              ${data.result
+                .replace(
+                  'datasets',
+                  '<strong><u><a href="/datasets" class="intro-link" style="color: #FFFFFF;">datasets</a></u></strong>'
+                )
+                .replace(
+                  'contact us',
+                  '<strong><u><a href="/contact" class="intro-link" style="color: #FFFFFF;">contact us</a></u></strong>'
+                )
+                .replace(
+                  'help',
+                  '<strong><u><a href="/help" class="intro-link" style="color: #FFFFFF;">help</a></u></strong>'
+                )
+                .replace(
+                  'theme',
+                  '<strong><u><a href="/themes" class="intro-link" style="color: #FFFFFF;">theme</a></u></strong>'
+                )
+                .replace(
+                  'organisations',
+                  '<strong><u><a href="/organisations" class="intro-link" style="color: #FFFFFF;">organisations</a></u></strong>'
+                )
+                .replace(/\r\n\r\n/g, '</p><p>')}
+            </div>
           `;
           setIntroText(formattedText || 'Find and access data from the Scottish Government and its agencies');
         } else {
@@ -117,10 +124,10 @@ const Home = () => {
                   <h1 className="ds_page-header__title" style={{ color: '#FFFFFF', marginBottom: '12.5px' }}>
                     Open access to Scotland's data
                   </h1>
-                  <p className="ds_lead" style={{ color: '#FFFFFF' }} dangerouslySetInnerHTML={{ __html: introText }} />
+                  <p className="ds_lead intro-text" style={{ color: '#FFFFFF' }} dangerouslySetInnerHTML={{ __html: introText }} />
                   <div className="ds_cb__inner">
-                  <div className="search-container" style={{ 
-  border: '4px solid white', 
+                  <div className="search-container" style={{
+  border: '4px solid white',
   borderRadius: '8px',
   display: 'inline-block',
   width: 'calc(100% - 4rem)', // Accounting for border width on both sides
