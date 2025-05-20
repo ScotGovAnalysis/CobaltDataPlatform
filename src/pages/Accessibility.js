@@ -14,16 +14,14 @@ const Accessibility = () => {
           <main id="main-content">
             <header className="ds_page-header">
               <h1 className="ds_page-header__title">Accessibility Statement</h1>
-              <div className="ds_page-header__subtitle">
-                For statistics.gov.scot
-              </div>
             </header>
 
             <div className="ds_layout ds_layout--article">
               <div className="ds_layout__content">
-                <section aria-labelledby="intro-heading">
-                  <h2 id="intro-heading" className="ds_h2">Introduction</h2>
-                  <p>This accessibility statement applies to statistics.gov.scot. This website is run by the Scottish Government. It is designed to be used by as many people as possible.</p>
+                <section>
+                  <p>We do not have an accessibility statement for this prototype website. As part of the current Alpha phase, we have completed an initial accessibility review and will be undertaking specific accessibility testing.</p>
+                      <p>If you would like to help test the site then <a href="https://forms.cloud.microsoft/e/PgLvWLxvuB">please register your interest</a> in our user testing sessions.</p>
+
                 </section>
 
                 <section aria-labelledby="features-heading">
