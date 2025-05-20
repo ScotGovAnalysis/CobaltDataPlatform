@@ -26,7 +26,6 @@ const Help = () => {
 
           <section className="ds_layout ds_layout--article">
             <div className="ds_layout__content">
-              <h2 className="ds_h2">Frequently Asked Questions</h2>
               <div className="ds_accordion">
                 <div className="ds_accordion-item">
                   <input
