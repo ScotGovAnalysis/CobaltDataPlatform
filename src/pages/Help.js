@@ -26,7 +26,6 @@ const Help = () => {
 
           <section className="ds_layout ds_layout--article">
             <div className="ds_layout__content">
-              <h2 className="ds_h2">Frequently Asked Questions</h2>
               <div className="ds_accordion">
                 <div className="ds_accordion-item">
                   <input
@@ -167,6 +166,27 @@ const Help = () => {
                     </p>
                   </div>
                 </div>
+<div className="ds_accordion-item">
+  <input
+    type="checkbox"
+    className={`visually-hidden ds_accordion-item__control ${styles.accordionItemControl}`}
+    id="faq-8"
+  />
+  <div className={`ds_accordion-item__header ${styles.accordionItemHeader}`}>
+    <h3 className="ds_accordion-item__title">How do I publish or update data and metadata?</h3>
+    <span className={styles.accordionIndicator}></span>
+    <label className="ds_accordion-item__label" htmlFor="faq-8">
+      <span className="visually-hidden">Show this section</span>
+    </label>
+  </div>
+  <div className="ds_accordion-item__body">
+    <p>
+      For this alpha project, the Open Data project team is managing the loading and handling of data and metadata. The data has been selected for test purposes. The ability for data publishers to load and publish datasets more generally will be available in later phases of the project.
+    </p>
+  </div>
+</div>
+
+                      
               </div>
             </div>
           </section>
