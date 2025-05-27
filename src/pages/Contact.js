@@ -7,7 +7,7 @@ import checkboxStyles from '../styles/Checkbox.module.css';
 
 const Contact = () => {
   useEffect(() => {
-    document.title = "Emerald | Contact Us";
+    document.title = "Cobalt | Contact Us";
   }, []);
 
   const navigate = useNavigate();
