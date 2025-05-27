@@ -76,9 +76,9 @@ const Organisation = () => {
 
   useEffect(() => {
     if (organisation) {
-      document.title = `Emerald | ${organisation.title}`;
+      document.title = `Cobalt | ${organisation.title}`;
     } else {
-      document.title = "Emerald | Organisation";
+      document.title = "Cobalt | Organisation";
     }
   }, [organisation]);
 
