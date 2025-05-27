@@ -21,7 +21,7 @@ const Organisations = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {
-    document.title = "Emerald | Organisations";
+    document.title = "Cobalt | Organisations";
   }, []);
 
   // Handle window resize for mobile detection
