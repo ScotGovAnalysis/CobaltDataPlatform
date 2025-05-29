@@ -12,17 +12,28 @@ const Header = () => {
   const location = useLocation();
   const menuCheckboxRef = useRef(null);
   const menuButtonRef = useRef(null);
+  const skipLinkRef = useRef(null);
 
+  // Focus the skip link on route change
+  useEffect(() => {
+    if (skipLinkRef.current) {
+      skipLinkRef.current.style.position = 'relative';
+      skipLinkRef.current.style.left = 'auto';
+      skipLinkRef.current.style.top = '4px';
+      skipLinkRef.current.style.zIndex = '1000';
+      skipLinkRef.current.focus();
+    }
+  }, [location.pathname]);
+
+  // Scroll behavior
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
       if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
         setShowHeader(false);
       } else if (currentScrollY < lastScrollY.current) {
         setShowHeader(true);
       }
-
       lastScrollY.current = currentScrollY;
     };
 
@@ -43,6 +54,7 @@ const Header = () => {
     };
   }, []);
 
+  // Set --header-height CSS variable
   useEffect(() => {
     const header = document.querySelector('.ds_site-header');
     if (header) {
@@ -51,6 +63,7 @@ const Header = () => {
     }
   }, []);
 
+  // Search form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -59,6 +72,7 @@ const Header = () => {
     }
   };
 
+  // Toggle mobile menu
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
     if (menuCheckboxRef.current) {
@@ -73,17 +87,21 @@ const Header = () => {
     }
   };
 
-  // Update checkbox when isMenuOpen changes
+  // Update checkbox state when isMenuOpen changes
   useEffect(() => {
     if (menuCheckboxRef.current) {
       menuCheckboxRef.current.checked = isMenuOpen;
     }
   }, [isMenuOpen]);
 
-  // Handle outside clicks to close menu
+  // Handle outside click to close menu
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isMenuOpen && menuButtonRef.current && !menuButtonRef.current.contains(event.target)) {
+      if (
+        isMenuOpen &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(event.target)
+      ) {
         const mobileNav = document.getElementById('mobile-navigation');
         if (mobileNav && !mobileNav.contains(event.target)) {
           setIsMenuOpen(false);
@@ -102,13 +120,47 @@ const Header = () => {
 
   return (
     <header className={`ds_site-header ds_site-header--gradient ${!showHeader ? 'header-hidden' : ''}`} role="banner">
-      <div className="ds_skip-links">
+      {/* Skip to main content link - shown only when focused */}
+      <div
+        className="ds_skip-links"
+        style={{ outline: 'none', position: 'absolute', left: '-999px' }}
+        tabIndex="-1"
+        ref={skipLinkRef}
+      >
         <ul className="ds_skip-links__list">
           <li className="ds_skip-links__item">
-            <a className="ds_skip-links__link" href="#main-content">Skip to main content</a>
+            <a
+              className="ds_skip-links__link"
+              href="#main-content"
+              onFocus={() => {
+                if (skipLinkRef.current) {
+                  skipLinkRef.current.style.position = 'relative';
+                  skipLinkRef.current.style.left = 'auto';
+                  skipLinkRef.current.style.top = '4px';
+                  skipLinkRef.current.style.zIndex = '1000';
+                }
+              }}
+              onBlur={() => {
+                if (skipLinkRef.current) {
+                  skipLinkRef.current.style.position = 'absolute';
+                  skipLinkRef.current.style.left = '-999px';
+                }
+              }}
+              onClick={() => {
+                // Optional: reset visibility after click
+                if (skipLinkRef.current) {
+                  skipLinkRef.current.style.position = 'absolute';
+                  skipLinkRef.current.style.left = '-999px';
+                }
+              }}
+            >
+              Skip to main content
+            </a>
           </li>
         </ul>
       </div>
+
+      {/* Rest of the header content... */}
       <div className="ds_wrapper">
         <div className="ds_site-header__content">
           <div className="ds_site-branding">
@@ -121,7 +173,6 @@ const Header = () => {
             </a>
             <div className="ds_site-branding__title">Cobalt Open Data Portal</div>
           </div>
-
           <div className="ds_site-header__controls">
             <button
               aria-controls="mobile-navigation"
@@ -144,7 +195,6 @@ const Header = () => {
               </svg>
             </button>
           </div>
-
           <input
             className="ds_site-navigation__toggle"
             id="menu"
@@ -153,7 +203,6 @@ const Header = () => {
             onChange={(e) => setIsMenuOpen(e.target.checked)}
             aria-hidden="true"
           />
-
           <nav
             id="mobile-navigation"
             className={`ds_site-navigation ds_site-navigation--mobile ${isMenuOpen ? 'ds_site-navigation--open' : ''}`}
@@ -162,7 +211,6 @@ const Header = () => {
           >
             <Navigation currentPath={location.pathname} />
           </nav>
-
           <div className="ds_site-search ds_site-header__search" data-module="ds-site-search">
             <form onSubmit={handleSubmit} role="search" className="ds_site-search__form">
               <label className="ds_label visually-hidden" htmlFor="site-search">Search</label>
@@ -188,7 +236,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-
       <div className="ds_site-header__navigation">
         <div className="ds_wrapper">
           <nav className="ds_site-navigation">
@@ -196,7 +243,6 @@ const Header = () => {
           </nav>
         </div>
       </div>
-
       <div className="ds_phase-banner">
         <div className="ds_wrapper">
           <p className="ds_phase-banner__content">
