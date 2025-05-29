@@ -41,11 +41,14 @@ const Datasets = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await fetch(`${config.apiBaseUrl}/api/3/action/package_search?q=${searchQuery || ''}`);
+        // Added rows=100 to fetch all results
+        const response = await fetch(`${config.apiBaseUrl}/api/3/action/package_search?q=${searchQuery || ''}&rows=100`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
+        console.log('API response count:', data.result.count);
+        console.log('API results length:', data.result.results.length);
         const fetchedResults = data.result.results;
         setResults(fetchedResults);
 
@@ -127,6 +130,14 @@ const Datasets = () => {
 
     return orgMatch && resourceMatch;
   });
+
+  // Debug filtered results
+  useEffect(() => {
+    console.log('Total results:', results.length);
+    console.log('Filtered results:', filteredResults.length);
+    console.log('Selected Organizations:', selectedOrganizations);
+    console.log('Selected Resource Types:', selectedResourceTypes);
+  }, [results, filteredResults, selectedOrganizations, selectedResourceTypes]);
 
   // Count results for each filter option
   const getOrganizationCounts = () => {
@@ -345,7 +356,7 @@ const Datasets = () => {
                       </div>
                     </div>
                     <button type="submit" className="ds_button ds_button--primary ds_button--small ds_button--max ds_no-margin">
-                       Clear filters
+                      Clear filters
                     </button>
                   </form>
                 </div>
