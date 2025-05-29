@@ -38,3 +38,5 @@ datastore_loader.log
 /automation/__pycache__
 /automation/Functions/__pycache__
 /automation/Functions/__pycache__/*
+*Archive
+*__pycache__/
