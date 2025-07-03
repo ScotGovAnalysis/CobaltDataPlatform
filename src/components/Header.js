@@ -5,9 +5,7 @@ import '../App.css';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showHeader, setShowHeader] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const lastScrollY = useRef(0);
   const navigate = useNavigate();
   const location = useLocation();
   const menuCheckboxRef = useRef(null);
@@ -24,35 +22,6 @@ const Header = () => {
       skipLinkRef.current.focus();
     }
   }, [location.pathname]);
-
-  // Scroll behavior
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-        setShowHeader(false);
-      } else if (currentScrollY < lastScrollY.current) {
-        setShowHeader(true);
-      }
-      lastScrollY.current = currentScrollY;
-    };
-
-    let throttleTimeout;
-    const throttledHandleScroll = () => {
-      if (!throttleTimeout) {
-        throttleTimeout = setTimeout(() => {
-          handleScroll();
-          throttleTimeout = null;
-        }, 100);
-      }
-    };
-
-    window.addEventListener('scroll', throttledHandleScroll);
-    return () => {
-      window.removeEventListener('scroll', throttledHandleScroll);
-      if (throttleTimeout) clearTimeout(throttleTimeout);
-    };
-  }, []);
 
   // Set --header-height CSS variable
   useEffect(() => {
@@ -119,7 +88,7 @@ const Header = () => {
   }, [isMenuOpen]);
 
   return (
-    <header className={`ds_site-header ds_site-header--gradient ${!showHeader ? 'header-hidden' : ''}`} role="banner">
+    <header className="ds_site-header ds_site-header--gradient" role="banner">
       {/* Skip to main content link - shown only when focused */}
       <div
         className="ds_skip-links"

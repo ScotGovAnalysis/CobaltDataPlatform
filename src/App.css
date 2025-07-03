@@ -58,21 +58,6 @@ none;
   margin-bottom: calc(1.5rem + -1px);
 }
 
-/* Add these styles to your CSS */
-.ds_site-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-  transition: transform 0.3s ease-in-out;
-  /* Ensure these match your existing header styles */
-  background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.ds_page {
-  padding-top: var(--header-height, 150px); /* Fallback value */
-}
 
 .header-hidden {
   transform: translateY(-100%);
