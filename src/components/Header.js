@@ -217,7 +217,7 @@ const Header = () => {
           <p className="ds_phase-banner__content">
             <strong className="ds_tag ds_phase-banner__tag">Alpha</strong>
             <span className="ds_phase-banner__text">
-              This is a new service. Your <a href="mailto:statistics.opendata@gov.scot">feedback</a> will help us to improve it.
+              This is a new service. Your <a href="https://forms.cloud.microsoft/pages/responsepage.aspx?id=CsCU1YR0PEazNR0Kvvr7INbiBK8XcjhBm_Ir8thbBqBURFI5OU5FODlXRlJMVEpXS0tEWTFaRlRNUi4u&route=shorturl">feedback</a> will help us to improve it.
             </span>
           </p>
         </div>
